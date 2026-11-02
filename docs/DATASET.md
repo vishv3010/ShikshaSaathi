@@ -33,7 +33,7 @@ Synthetic data for one cluster (`GJ-C07`) of 20 schools, May–October 2026. Eve
 | `visits.csv` | 39 | CRC visit | school_id, visit_date, focus_area, notes |
 | `facilities.csv` | 20 | school (snapshot 30 Sep 2025) | school_id, as_of_date, teacher_posts_sanctioned, teachers_in_position, multigrade_classes, drinking_water, girls_toilet, electricity |
 
-- 10 primary schools (Std 1–5, assessed in Grades 3–5) and 10 upper primary schools (Std 1–8, assessed in Grades 3–8).
+- 10 primary schools (Std 1–5, assessed in Grades 3–5) and 10 upper primary schools (Std 1–8, assessed in Grades 3–8). In Gujarat, government schools up to Std 8 are also called "Prathmik Shala" (primary school), so the names do not show the type; the `type` column does.
 - Subjects: Gujarati, Maths, and EVS (Grades 3–5) or Science (Grades 6–8).
 - Gujarati names (`name_gu`, `village_gu`) let replies in Gujarati use the right script without the LLM transliterating.
 - Files are UTF-8 with a BOM, so Gujarati displays correctly when opened in Excel.

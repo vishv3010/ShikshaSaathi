@@ -92,3 +92,19 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
 
 - **Context:** on the generated data, banded points gave several schools identical scores (34, 24, 14).
 - **Choice:** equal scores are ordered by lower average score, then higher share below basic, so the order is deterministic and still explainable.
+
+### D-017 · Actions come from ordered rules, first match wins — Accepted (3 Nov)
+
+- **Choice:** eight rules checked in a fixed order (table in `PLAN.md` §4). Sharp attendance drops come first because absent children cannot benefit from any classroom activity; teacher availability comes before learning because a remedial plan needs a teacher to run it.
+- **Why not "biggest-scoring indicator decides"?** A fixed order is easier to explain in one sentence ("attendance fell 15.9 points, so the first step is finding the absent children") and gives the same answers on every story school.
+- Action wording is stored in English and Gujarati in the code, so the no-LLM fallback can still give the action in Gujarati.
+
+### D-018 · Facts are plain data; missing is None; head teacher names never leave the code — Accepted (3 Nov)
+
+- **Choice:** every analysis function returns a plain JSON-ready dict. A missing value is `None`, never 0 or a guess. "Not applicable" (a grade the school does not have, a vacation month) has its own status. Head teacher names are not included in any facts.
+- **Why:** the facts are exactly what the LLM will see and what the number checker compares against, so they must be complete, honest and minimal. Leaving names out means no personal name is ever sent to an external LLM (privacy by design).
+
+### D-019 · The visit plan also mentions what the score alone would hide — Accepted (3 Nov)
+
+- **Choice:** besides the top schools, the visit-plan facts include schools moved down because of a recent visit, Low-priority schools where an action rule fires (a single weak class), schools with not enough data, and schools not visited for over 90 days.
+- **Why:** reviewing the first output showed Sonpura unvisited for 130 days and never mentioned, because its data looks fine. A CRC still needs to know that. The reply decides how much of this to show, so the message stays short.

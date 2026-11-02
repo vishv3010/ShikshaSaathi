@@ -6,6 +6,19 @@ Merged on 2 Nov from two plans: our own (built with Claude Code after research) 
 
 **Constraint:** free tools only.
 
+## Progress
+
+| Step | Status |
+|---|---|
+| Research, plan, decisions | Done (2 Nov) |
+| Synthetic dataset + validator | Done (2 Nov) |
+| Scoring, actions, analysis facts + tests | Done (3 Nov) |
+| Understand the question (intents, school-name matching) + no-LLM replies in Gujarati and English | **Next** |
+| Gemini layer + number checker | To do. Needs `GEMINI_API_KEY` in a local `.env` file, which is never committed. |
+| FastAPI + chat page | To do |
+| Guardrails, full test run, deploy | To do |
+| Solution note, demo video, submit | To do. Deadline Wed 4 Nov 2026, 11:59 PM. The repo is private: make it public or give the reviewers access before submitting. |
+
 ## 1. Architecture
 
 ```
@@ -72,10 +85,28 @@ Banded points, in the style of the DGT grading method (D-002). Starting threshol
 - **Visit planning rule** (kept separate from need): for "which schools to visit this week", a school visited in the last 14 days moves down the list with a note ("visited 5 days ago, follow up by phone").
 - **Evidence only, not scored:** teacher attendance, facilities, visit notes. They explain the flag and shape the action.
 - The weakest grade-subject is identified for every flagged school, because a school average can hide one very weak class.
+- **Also reported with the visit plan:** Low-priority schools where an action rule still fires (e.g. Rampura, Grade 5 Maths at 36%), and any school not visited for over 90 days.
+
+Built on 3 Nov in `saathi/scoring.py`. On the October data: High = Haripar 78, Chandrapur 75, Ambaliya 71; Medium = Manekpur, Pipaliya, Shivpura, Talavdi; Umarvada = not enough data; visit list = Haripar, Chandrapur, Manekpur (Ambaliya moved down, visited 5 days earlier).
 
 ## 4. Actions
 
 A small rule table maps the main reason a school was flagged to exactly one action a CRC can do on one visit (observe a class, run a short remedial activity, talk to the head teacher, escalate to the block officer). Rules pick the action; the LLM only words it.
+
+Rules in `saathi/actions.py`, checked in order, first match wins:
+
+| # | When | Action |
+|---|---|---|
+| 1 | Not enough data | Call the head teacher to find out why the month's data is missing |
+| 2 | Attendance fell 10+ points | List absent children with the head teacher and SMC, check reasons, follow up with families |
+| 3 | Teacher attendance below 85% | Discuss how classes are covered during leave or official duty; support the weakest class |
+| 4 | School average below 45% | Daily 30-minute remedial period in small groups |
+| 5 | One class below 40% | A subject activity for that class (e.g. place value with bundles and sticks) |
+| 6 | Student attendance below 80% | Review the register, follow up with parents through the SMC |
+| 7 | Otherwise, if Medium or High | Subject activity for the weakest class |
+| 8 | Otherwise | Routine support |
+
+Every action exists in English and Gujarati.
 
 ## 5. What she can ask (intents)
 

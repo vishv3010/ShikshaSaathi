@@ -19,3 +19,7 @@ The brief says to assume what it does not cover and to share those assumptions. 
 | A-13 | "Days since last visit" is counted from 2 November 2026, the date of this data snapshot. | Needed for the visit-planning rule. |
 | A-14 | CRC visit notes are written in English in this prototype. Real notes would often be in Gujarati, which the LLM can also read. | Keeps the no-LLM fallback simple. |
 | A-15 | Missing data comes from failed or late uploads (e.g. weak mobile network), not from schools hiding results. | Keeps framing respectful; matches a real cause of gaps. |
+| A-16 | A school's learning level is the simple average of its grade-subject results; classes are not weighted by size. | The data has no enrolment per grade. |
+| A-17 | Cluster attendance is the average across schools that reported, not weighted by enrolment, and always says how many schools reported. | Easy to explain; a school with no data is not counted as 0. |
+| A-18 | A school with fewer than half its expected results for the month, or fewer than 2 of the previous 3 months of attendance, is "not enough data" rather than scored. | A score from a few classes would not be fair to compare with full ones (D-003). |
+| A-19 | A CRC should see every school at least once in 90 days, whatever its data shows. | Basis for the "not visited for over 90 days" note (D-019). |

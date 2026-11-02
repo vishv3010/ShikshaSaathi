@@ -17,6 +17,18 @@ python -m venv .venv
 .venv\Scripts\python scripts\validate_data.py
 ```
 
+## Tests
+
+The scoring and analysis core lives in [`saathi/`](saathi/). Its tests use values worked out by hand from the CSVs:
+
+```
+.venv\Scripts\pip install -r requirements-dev.txt
+.venv\Scripts\python -m pytest -q
+.venv\Scripts\python scripts\check_tests_catch_bugs.py
+```
+
+The last command plants four known bugs, one at a time, in a throwaway copy of the code and confirms the tests catch every one.
+
 ## Docs
 
 - [Development plan](docs/PLAN.md): architecture, data design, scoring, tests and schedule

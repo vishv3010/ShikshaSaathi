@@ -2,9 +2,11 @@
 
 AI assistant for a Cluster Resource Coordinator (CRC) in Gujarat: answers "which schools need attention this month, and what will you do about it?" from school data, in Gujarati, English (and Hindi), in under two minutes of her time.
 
-This is the ConveGenius "CG AI Build" assignment. Brief: `../Assignment - Vishv Patel.pdf`. Due Wed 4 Nov 2026, 11:59 PM. Time budget 12–15 hours total.
+This is the ConveGenius "CG AI Build" assignment. Brief: `../Assignment - Vishv Patel.pdf` (kept outside git, next to the repo folder). Due Wed 4 Nov 2026, 11:59 PM. Time budget 12–15 hours total.
 
-The plan of record is `docs/PLAN.md`.
+The plan of record is `docs/PLAN.md`. **Progress and the next step are at the top of it**; update that table at the end of every step.
+
+Vishv works from two laptops: `git pull` before starting, commit and push before stopping.
 
 ## Non-negotiable rules
 
@@ -23,6 +25,9 @@ The plan of record is `docs/PLAN.md`.
 - Python 3.10 in `.venv` (`.venv/Scripts/python` on Windows).
 - `scripts/generate_data.py` rebuilds `data/` (seed 7, byte-identical output); `scripts/validate_data.py [data_dir]` must pass after any data change.
 - CSVs are UTF-8 with BOM; read them with `encoding="utf-8-sig"`.
+- `saathi/` is the core: `data.py` (loading), `scoring.py` (priority score, visit plan), `actions.py` (one action per school), `analytics.py` (facts per question type), `lang.py` (Gujarati words).
+- Tests: `.venv/Scripts/python -m pytest -q` (install with `requirements-dev.txt`). Expected values in tests are worked out by hand from the CSVs; keep it that way.
+- `scripts/check_tests_catch_bugs.py` plants known bugs in a temp copy and must report all of them caught; update its patterns if the code they target changes.
 
 ## How we work
 
