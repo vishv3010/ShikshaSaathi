@@ -1,6 +1,23 @@
 # Assumptions
 
-The brief says to assume what it does not cover and to share those assumptions. Each one is listed here as it is made.
+The brief says to assume what it does not cover and to share those assumptions. Each one is listed below with its reason, in the order it was made.
+
+## By perspective
+
+The same assumptions, grouped by whose point of view they come from, so each reader can find theirs.
+
+| Perspective | Assumptions |
+|---|---|
+| Bhavnaben, the CRC (the user) | A-09, A-10, A-13, A-19, A-22, A-23, A-26, A-28, A-29, A-38 |
+| Teachers and head teachers | A-15, A-30, A-31, A-33, A-35 |
+| Children and parents | A-04, A-05, A-32 |
+| Block officer and the education department | A-02, A-07, A-24, A-33, A-34 |
+| The data | A-01, A-03, A-06, A-08, A-11, A-12, A-14, A-16, A-17, A-18, A-21 |
+| The AI | A-20, A-27, A-36 |
+| The builder (scope and time) | A-37 |
+| Cost and privacy at scale | A-25, A-27 |
+
+## All assumptions
 
 | # | Assumption | Why |
 |---|---|---|
@@ -31,3 +48,14 @@ The brief says to assume what it does not cover and to share those assumptions. 
 | A-25 | Cost estimate: a CRC asks about 100 questions a month (about 5 on each of 20 working days); 80 get an AI opening line, 10 are Hindi, 10 need the AI to read them; Gemini 3.5 Flash-Lite at its paid price of November 2026 ($0.30 / $2.50 per million input / output tokens); ₹88 per US dollar. | Token counts per call were measured on live runs; usage per CRC had to be assumed. |
 | A-26 | Bhavnaben reads Gujarati script even when she types Gujarati in English letters, so such questions are answered in Gujarati script. | Common on WhatsApp in Gujarat: typing in English letters is easier on a phone keyboard than reading it. |
 | A-27 | Using Gemini's free tier, where Google may use the content to improve its products, is acceptable for this prototype only because all data is synthetic; a real deployment would use a paid or government-hosted model. | Privacy by design (solution note, section 6). |
+| A-28 | One CRC looks after one cluster and should see only her own schools; in a real deployment her login would decide which cluster she sees. The prototype holds one cluster and has no login. | The brief describes one CRC with 15–25 schools; logins are outside this timebox. |
+| A-29 | Lists of schools default to 3, about what a CRC can visit in a week; she can ask for up to 10. | The brief's own example is "Which 3 schools need my visit this week?". |
+| A-30 | Teacher attendance is not part of the priority score, because a teacher's absence is often leave, training or official duty (for example BLO or election work). Below 85% it only shapes the action: how classes are covered. | Ranking a school on teacher absence would blame people for duties they cannot refuse. |
+| A-31 | Suggested classroom activities use low-cost local materials (bundles and sticks, story cards, the village water source) and take 15–30 minutes a day, so a teacher can start them without new resources or training. | An action a school cannot start on the day of the visit is not an action. |
+| A-32 | Every school has a working School Management Committee (SMC), as the RTE Act requires; follow-up with parents goes through the head teacher and the SMC, and the CRC does not contact families directly. | Matches how government schools reach parents; keeps children's details out of the assistant. |
+| A-33 | Head teachers enter the data (the attendance app and monthly results). In a real deployment it would reach the assistant from VSK once a month; the prototype reads CSV files. | VSK Gujarat already collects attendance and assessment data (brief). |
+| A-34 | The summary for the block officer is a short text message she forwards on WhatsApp, not a report or a dashboard. | The brief: she uses WhatsApp daily, and charts with many filters do not help her. |
+| A-35 | Facility problems (toilets, drinking water, vacant teacher posts) explain results but never become the suggested action, because a CRC cannot fix them on a visit; the head teacher and the block office handle them. They are not in the score either (D-005). | Facilities change yearly and need budgets, not a visit. |
+| A-36 | The AI can be slow, wrong or unavailable (quota, network), and is never trusted with numbers: it never sees the data files, never calculates, and every number it writes is checked against what the code computed. Every answer must be correct without it. | Accuracy over fluency (brief); D-001, D-009, D-013. |
+| A-37 | With 12–15 hours, the must-haves (correct numbers, honest gaps, one action per school, Gujarati) come before extras such as WhatsApp integration, voice input, logins or dashboards. A web chat page stands in for WhatsApp; the same `/ask` endpoint is what a WhatsApp or SwiftChat webhook would call. | The brief caps the time and values thinking and shipping over polish. |
+| A-38 | She is online when she asks (no offline mode), and replies are plain text, so the same answer would work as a WhatsApp message. | Patchy 4G is handled by one small request per question and short replies, not by offline storage. |
