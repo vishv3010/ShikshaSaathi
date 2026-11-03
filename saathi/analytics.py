@@ -6,7 +6,8 @@ a vacation month) is reported separately from "missing".
 """
 import pandas as pd
 
-from .data import AS_OF, grades_mentioned, num, subjects_for
+from .actions import TEACHER_LOW
+from .data import AS_OF, ASSESSED_GRADES, grades_mentioned, num, subjects_for
 from .scoring import score_all, score_school, visit_plan
 
 SUBJECT_WORDS = {"Gujarati": ["gujarati", "read"], "Maths": ["math"],
@@ -21,15 +22,15 @@ def school_profile(data, school_id):
             "grades": data.grades(school_id), "enrolment": int(s["enrolment"])}
 
 
-def priority_list(data, limit=3):
+def priority_list(data, limit=3, month=None):
     """'Which schools need my visit this week?'"""
-    return visit_plan(data, limit)
+    return visit_plan(data, limit, month)
 
 
-def school_summary(data, school_id):
+def school_summary(data, school_id, month=None):
     """'Tell me about school X': score with reasons, attendance by month, facilities, last visit."""
     return {"school": school_profile(data, school_id),
-            "priority": score_school(data, school_id),
+            "priority": score_school(data, school_id, month),
             "attendance_by_month": attendance_months(data, school_id)}
 
 
@@ -37,6 +38,9 @@ def subject_analysis(data, school_id, grade, subject):
     """'Why is Grade 5 Maths low in school X?'"""
     school = school_profile(data, school_id)
     base = {"school": school, "grade": grade, "subject": subject}
+    if grade not in ASSESSED_GRADES:
+        return {**base, "status": "not_applicable", "reason": "grade_not_assessed",
+                "assessed_grades": ASSESSED_GRADES}
     if grade not in school["grades"]:
         return {**base, "status": "not_applicable", "reason": "grade_not_offered"}
     if subject not in subjects_for(grade):
@@ -129,15 +133,76 @@ def attendance_trend(data, school_id=None):
     scored = [e for e in score_all(data) if e["status"] == "scored"]
     drops = sorted((e for e in scored if e["indicators"]["attendance_drop"]["value"] >= 2),
                    key=lambda e: -e["indicators"]["attendance_drop"]["value"])
-    reported = set(data.attendance.loc[data.attendance.month == data.latest_month].dropna(
-        subset=["student_attendance_pct"]).school_id)
+    latest = data.attendance[data.attendance.month == data.latest_month]
+    reported = set(latest.dropna(subset=["student_attendance_pct"]).school_id)
+    names = data.schools.set_index("school_id")
+    teacher_low = latest[latest.teacher_attendance_pct < TEACHER_LOW].sort_values("teacher_attendance_pct")
     return {"month": data.latest_month,
             "months": cluster_attendance(data),
             "biggest_drops": [{"school_id": e["school_id"], "name": e["name"], "name_gu": e["name_gu"],
                                "student_attendance_pct": e["indicators"]["student_attendance"]["value"],
                                **e["indicators"]["attendance_drop"]} for e in drops[:3]],
+            # A school-level pattern, never a judgement of a person: leave and official duty count as absence.
+            "low_teacher_attendance": {"below_pct": TEACHER_LOW, "schools": [
+                {"school_id": r.school_id, "name": names.at[r.school_id, "name"],
+                 "name_gu": names.at[r.school_id, "name_gu"], "teacher_attendance_pct": num(r.teacher_attendance_pct)}
+                for r in teacher_low.itertuples()]},
             "not_reported": [{"school_id": s.school_id, "name": s.name, "name_gu": s.name_gu}
                              for s in data.schools.itertuples() if s.school_id not in reported]}
+
+
+def class_overview(data, grade=None, subject=None, limit=3):
+    """'Why is Grade 5 Maths low?' with no school named: that class across the cluster.
+    With only a subject, every grade that takes it; with only a grade, every subject in it."""
+    month = data.latest_month
+    base = {"grade": grade, "subject": subject, "month": month}
+    if grade is not None and grade not in ASSESSED_GRADES:
+        return {**base, "status": "not_applicable", "reason": "grade_not_assessed", "assessed_grades": ASSESSED_GRADES}
+    if grade is not None and subject and subject not in subjects_for(grade):
+        return {**base, "status": "not_applicable", "reason": "subject_not_taught",
+                "taught_instead": subjects_for(grade)[2]}
+
+    grades = [grade] if grade is not None else [g for g in ASSESSED_GRADES if not subject or subject in subjects_for(g)]
+    a = data.assessments
+    rows = a[(a.month == month) & a.grade.isin(grades) & ((a.subject == subject) if subject else True)]
+    rows = rows.dropna(subset=["avg_score_pct"]).sort_values(
+        ["avg_score_pct", "pct_below_basic", "school_id"], ascending=[True, False, True], na_position="last")
+    names = data.schools.set_index("school_id")
+    results = [{"school_id": r.school_id, "name": names.at[r.school_id, "name"], "name_gu": names.at[r.school_id, "name_gu"],
+                "grade": int(r.grade), "subject": r.subject, "avg_score_pct": num(r.avg_score_pct),
+                "pct_below_basic": num(r.pct_below_basic)} for r in rows.itertuples()]
+    expected = [s for s in data.schools.school_id if set(data.grades(s)) & set(grades)]
+    reported = set(rows.school_id)
+    return {**base, "status": "ok", "grades": grades,
+            "average_pct": num(rows.avg_score_pct.mean()), "results": len(results),
+            "below_concern": {"pct": CLASS_CONCERN, "count": sum(r["avg_score_pct"] < CLASS_CONCERN for r in results)},
+            "lowest": results[:limit],
+            "no_result": [{"school_id": s, "name": names.at[s, "name"], "name_gu": names.at[s, "name_gu"]}
+                          for s in expected if s not in reported]}
+
+
+def _brief(entry):
+    """The parts of a score entry a one-line mention needs."""
+    return {"school_id": entry["school_id"], "name": entry["name"], "name_gu": entry["name_gu"],
+            "score": entry["score"], "priority": entry["priority"], "reasons": entry["reasons"],
+            "indicators": {n: entry["indicators"][n] for n in entry["reasons"]} if entry["indicators"] else None,
+            "weakest_class": entry["weakest_class"], "action": entry["action"],
+            "days_since_visit": entry["last_visit"]["days_ago"] if entry["last_visit"] else None}
+
+
+def officer_summary(data):
+    """'Give me a summary for my block officer': a short message she can forward."""
+    plan = visit_plan(data, limit=3)
+    month = data.latest_month
+    need = [e for e in score_all(data) if e["priority"] in ("High", "Medium")]
+    return {"month": month, "as_of": AS_OF.isoformat(), "schools_total": len(data.schools),
+            "counts": plan["counts"],
+            "need_support": [_brief(e) for e in need],
+            "visit_plan": [_brief(e) for e in plan["schools"]],
+            "phone_follow_up": [_brief(e) for e in plan["moved_down"]],
+            "watch": [_brief(e) for e in plan["watch"]],
+            "not_enough_data": [_brief(e) for e in plan["not_enough_data"]],
+            "cluster_attendance": next(r for r in cluster_attendance(data) if r["month"] == month)}
 
 
 def school_gaps(data, school_id):

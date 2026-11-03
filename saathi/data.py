@@ -14,6 +14,7 @@ ENCODING = "utf-8-sig"
 AS_OF = date(2026, 11, 2)
 
 GRADES = {"primary": [3, 4, 5], "upper_primary": [3, 4, 5, 6, 7, 8]}
+ASSESSED_GRADES = GRADES["upper_primary"]   # Grades 1-2 are not assessed in this data (brief: grades 3-8)
 FACILITY_FIELDS = ["teacher_posts_sanctioned", "teachers_in_position", "multigrade_classes",
                    "drinking_water", "girls_toilet", "electricity"]
 

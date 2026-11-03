@@ -22,6 +22,14 @@ BUGS = [
      "RECENT_VISIT_DAYS = 14", "RECENT_VISIT_DAYS = -1"),
     ("teacher-availability rule skipped", "saathi/actions.py",
      "if teacher is not None and teacher < TEACHER_LOW:", "if False:"),
+    ("requests to change rules or data no longer refused", "saathi/understand.py",
+     "if _any(norm, NOT_ALLOWED):", "if False:"),
+    ("questions blaming teachers no longer declined", "saathi/understand.py",
+     "if about_people and (_any(norm, JUDGEMENT)", "if False and (_any(norm, JUDGEMENT)"),
+    ("a month with no attendance record not reported", "saathi/reply.py",
+     '        if row["status"] == "missing":', '        if False:'),
+    ("above / below the cluster average swapped", "saathi/reply.py",
+     '"cmp_below" if d < 0 else "cmp_above" if d > 0', '"cmp_below" if d > 0 else "cmp_above" if d < 0'),
 ]
 
 
