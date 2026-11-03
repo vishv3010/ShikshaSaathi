@@ -5,7 +5,7 @@ The brief says to assume what it does not cover and to share those assumptions. 
 | # | Assumption | Why |
 |---|---|---|
 | A-01 | The cluster is one CRC's 20 schools, cluster code `C07`, with school IDs `GJ-C07-001` … `GJ-C07-020`. | Matches the ID format in the brief's sample rows. |
-| A-02 | "Primary" means Std 1–5 and "upper primary" means Std 1–8. A primary school therefore has no Grade 6–8 assessments; that is *not applicable*, not missing data. | The brief gives the two types but not their grade ranges. |
+| A-02 | The brief's two `type` values map to the national school census (UDISE+) categories: **primary** = primary only (Std 1–5), **upper primary** = primary with upper primary (Std 1–8). A primary school therefore has no Grade 6–8 assessments; that is *not applicable*, not missing data. Standalone Std 6–8 schools are left out of this cluster to keep the prototype simple. | The brief gives the two types but not their grade ranges, and assesses Grades 3–8, so some schools must reach Std 8. See D-020. |
 | A-03 | Grades 3–5 take EVS and grades 6–8 take Science. | The brief lists the subject as "EVS/Science". |
 | A-04 | `pct_below_basic` is the percentage of tested students scoring below the "basic" proficiency level for that grade and subject. | The brief names the field but does not define it. |
 | A-05 | Assessment rows are school-level averages per grade, subject and month; no student-level data exists in the system. | Matches the brief's table grain, and keeps the design privacy-friendly. |

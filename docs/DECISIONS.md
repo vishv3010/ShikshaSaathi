@@ -108,3 +108,11 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
 
 - **Choice:** besides the top schools, the visit-plan facts include schools moved down because of a recent visit, Low-priority schools where an action rule fires (a single weak class), schools with not enough data, and schools not visited for over 90 days.
 - **Why:** reviewing the first output showed Sonpura unvisited for 130 days and never mentioned, because its data looks fine. A CRC still needs to know that. The reply decides how much of this to show, so the message stays short.
+
+### D-020 · School types follow the UDISE+ census categories — Accepted (3 Nov)
+
+- **Context:** the brief gives `type` as "primary / upper primary" and assesses Grades 3–8, but does not define the types. Checked online on 3 Nov.
+- **Findings:** the RTE Act 2009 defines elementary education as Class I–VIII and its rules split it into I–V (primary) and VI–VIII (upper primary). The national school census (UDISE+) has three categories: primary only (1–5), primary with upper primary (1–8), upper primary only (6–8). Gujarat's teacher eligibility test follows the same split (Std 1–5 and Std 6–8), and many Gujarat government schools run Std 1–8 under one roof and are still called "Prathmik Shala".
+- **Choice:** `primary` = primary only (Std 1–5, assessed Grades 3–5). `upper primary` = primary with upper primary (Std 1–8, assessed Grades 3–8). Standalone Std 6–8 schools are not modelled.
+- **Why:** it matches the census, covers the brief's Grade 3–8 range, and needs no change to the data or scoring. Only the wording in A-02 was imprecise: strictly, "upper primary" means Std 6–8, but the schools that offer it almost always also teach Std 1–5.
+- **Sources:** UDISE+ Data Capture Format 2022-23 and guidelines (udiseplus.gov.in), RTE Act 2009 (indiacode.nic.in), Gujarat TET paper structure.
