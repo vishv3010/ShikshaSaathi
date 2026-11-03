@@ -38,3 +38,7 @@ Vishv works from two laptops: `git pull` before starting, commit and push before
 - Vishv makes the final call on design decisions and must be able to explain each one.
 
 ## Applied Learning
+
+- Windows: run subprocesses with `encoding="utf-8"` and `PYTHONUTF8=1`; output holds Gujarati.
+- Git Bash curl garbles Gujarati arguments; send Gujarati requests from a Python script.
+- Vercel does not redeploy on push; run `npx vercel deploy --prod`.
