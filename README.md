@@ -22,7 +22,7 @@ python -m venv .venv
 .venv\Scripts\uvicorn saathi.web:app --port 8000
 ```
 
-Then open <http://localhost:8000> (it is built for a phone screen, and works on a laptop too).
+Then open <http://localhost:8000> (it is built for a phone screen, and works on a laptop too). To put it online, see [docs/DEPLOY.md](docs/DEPLOY.md).
 
 **Optional: turn on Gemini** (free key from [Google AI Studio](https://aistudio.google.com) → "Get API key"). Copy `.env.example` to `.env` and put the key in it. Gemini then writes a short opening line for each answer, answers in Hindi, and reads questions typed in English letters ("kai shala ni mulakat levi?"). The page footer shows "AI: on".
 
@@ -87,3 +87,5 @@ Expected values in the tests were worked out from the CSVs by hand, not copied f
 - [Decisions](docs/DECISIONS.md): every non-obvious design choice and why
 - [Assumptions](docs/ASSUMPTIONS.md): what the brief left open and what we assumed
 - [AI usage log](docs/AI_USAGE_LOG.md): which AI tools were used, for what, and where their output was wrong
+- [Solution note](docs/SOLUTION_NOTE.md) ([PDF](docs/Solution_Note.pdf)): the 2-page summary for reviewers
+- [Deploying](docs/DEPLOY.md) and the [demo video script](docs/DEMO_SCRIPT.md)

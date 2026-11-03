@@ -16,7 +16,7 @@ Merged on 2 Nov from two plans: our own (built with Claude Code after research) 
 | Understand the question (intents, school-name matching) + no-LLM replies in Gujarati and English | Done (3 Nov): `understand.py`, `assistant.py`, `reply.py`; 151 tests, 8 of 8 planted bugs caught |
 | Gemini layer + number checker | Done (3 Nov): `llm.py`, `llm_steps.py`, `checker.py`; rules read first (D-024), Gemini writes the opening line or the Hindi translation (D-025); 189 tests, 10 of 10 planted bugs caught; live: 12 demo questions, 0 rejections, 1.4 s average |
 | FastAPI + chat page | Done (3 Nov): `saathi/web.py`, `web/index.html` (about 4 KB over the network); checked in headless Chrome at phone width (390 px), no console errors; 200 tests |
-| Guardrails, full test run, deploy | **Next.** Guardrails and full test run done; deploy needs Vishv's account on a free host (D-026). |
+| Guardrails, full test run, deploy | Guardrails and full test run done. Deploy prepared (3 Nov): `render.yaml` + `docs/DEPLOY.md`; the start command was checked locally. **Needs Vishv:** a Render account (about 10 minutes) and a fresh Gemini key. |
 | Solution note, demo video, submit | Solution note drafted (3 Nov): `docs/SOLUTION_NOTE.md` → `docs/Solution_Note.pdf` (2 pages, built by `scripts/build_note.py`); cost uses measured tokens and Google's published price. Waiting for Vishv's review; add the live link after deploy. Demo video and submission to do. Deadline Wed 4 Nov 2026, 11:59 PM. The repo is private: make it public or give the reviewers access before submitting. |
 
 ## 1. Architecture
