@@ -138,6 +138,7 @@
   .send { width: 48px; height: 48px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink);
           cursor: pointer; flex: none; display: grid; place-items: center; }
   .send:disabled { opacity: .5; }
+  [aria-disabled=true] { opacity: .65; pointer-events: none; }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   details.review { font-size: 13px; color: var(--muted); margin-top: 4px; }
@@ -367,6 +368,7 @@ function renderHome() {
     list.appendChild(b);
   });
   home.append(list, el("p", "trust", t.trust));
+  setBusy(busy);                               // a redraw while loading stays dimmed
 }
 function aboutQuestion(name, key) { return key === "gu" ? name + " વિશે જણાવો" : key === "hi" ? name + " के बारे में बताओ" : "Tell me about " + name; }
 
@@ -452,10 +454,14 @@ function chips(box, options) {
 }
 
 let busy = false;
+function setBusy(on) {                         // one answer at a time: dim what must wait
+  busy = send.disabled = on;
+  chat.querySelectorAll("#home button, .chip:not(.ghost)").forEach((b) => b.setAttribute("aria-disabled", on));
+}
 async function askServer(question, schoolId, shown) {
   question = (question || "").trim();
   if (!question || busy) return;
-  busy = true; send.disabled = true;
+  setBusy(true);
   const tk = uiKey(scriptOf(question)), t = UI[tk];
   const q = el("div", "q"); q.lang = scriptOf(shown || question); q.appendChild(el("span", "", shown || question)); thread.appendChild(q);
   const answer = el("div", "a"), wait = el("div", "loading"), dots = el("span", "dots");
@@ -495,7 +501,7 @@ async function askServer(question, schoolId, shown) {
     answer.replaceChildren();
     retry(answer, t.offline, t, question, schoolId, shown);
   } finally {
-    clearTimeout(timer); busy = false; send.disabled = false;
+    clearTimeout(timer); setBusy(false);
     answer.removeAttribute("aria-busy");
     chat.scrollTop = q.offsetTop - chat.offsetTop - 8;          // the question on top, its answer below
   }
@@ -526,7 +532,7 @@ function setLang(value, announce) {
 }
 pick.addEventListener("change", () => setLang(pick.value, true));
 
-form.addEventListener("submit", (e) => { e.preventDefault(); const v = box.value; box.value = ""; grow(); askServer(v); });
+form.addEventListener("submit", (e) => { e.preventDefault(); if (busy) return; const v = box.value; box.value = ""; grow(); askServer(v); });
 box.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
 function grow() { box.style.height = "auto"; box.style.height = Math.min(box.scrollHeight, 120) + "px"; }
 box.addEventListener("input", grow);
