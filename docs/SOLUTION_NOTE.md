@@ -62,4 +62,4 @@ What would leave the government system per question: only that answer's draft (s
 3. **Replace school names with codes** before the AI call; a monitoring view of checker rejections and missing data across clusters.
 4. **A per-sentence check** that each number belongs to the school it is next to, which would let the AI write more of the answer.
 
-Assumptions (41) and decisions (30) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.
+Assumptions (41) and decisions (31) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.

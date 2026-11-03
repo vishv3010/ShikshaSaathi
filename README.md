@@ -26,7 +26,7 @@ python -m venv .venv
 
 Then open <http://localhost:8000> (it is built for a phone screen, and works on a laptop too). To put it online, see [docs/DEPLOY.md](docs/DEPLOY.md).
 
-**Optional: turn on Gemini** (free key from [Google AI Studio](https://aistudio.google.com) → "Get API key"). Copy `.env.example` to `.env` and put the key in it. Gemini then writes a short opening line for each answer, answers in Hindi, and reads questions typed in English letters ("kai shala ni mulakat levi?"). The page footer shows "AI: on".
+**Optional: turn on Gemini** (free key from [Google AI Studio](https://aistudio.google.com) → "Get API key"). Copy `.env.example` to `.env` and put the key in it. Gemini then writes a short opening line for each answer, answers in Hindi, and reads questions typed in English letters ("kai shala ni mulakat levi?"). **For reviewers**, at the bottom of the page, then shows "AI: on".
 
 ### What to ask
 
