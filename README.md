@@ -57,6 +57,14 @@ question ─▶ rules read it ─▶ (Gemini reads it only if the rules cannot, 
 
 Details: [architecture and plan](docs/PLAN.md) · [decisions](docs/DECISIONS.md) · [assumptions](docs/ASSUMPTIONS.md).
 
+## Dataset
+
+Synthetic data for one cluster of 20 schools, May-October 2026, as CSV files in [`data/`](data/): schools, attendance, assessments and visits (the brief's tables), plus facilities, a calendar and school holidays.
+
+- Made by `scripts/generate_data.py` with a fixed random seed, so re-running gives identical files; checked by `scripts/validate_data.py` before anything uses it.
+- Realistic on purpose: it follows the real 2026-27 Gujarat school calendar (May vacation, reopening 8 June, monsoon dips, Navratri, Diwali vacation from 5 November), CRC visits avoid Sundays and school holidays, and teacher posts follow the RTE norms (about 30 children per teacher). Seven schools carry a designed story: an attendance collapse before migration, one weak class, a slow decline, data gaps, a school visited 5 days ago, an improving school, and one not visited for months. A few values are missing on purpose.
+- Every name is invented. Details: [docs/DATASET.md](docs/DATASET.md).
+
 ## Checks
 
 ```

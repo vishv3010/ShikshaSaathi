@@ -8,11 +8,11 @@ The same assumptions, grouped by whose point of view they come from, so each rea
 
 | Perspective | Assumptions |
 |---|---|
-| Bhavnaben, the CRC (the user) | A-09, A-10, A-13, A-19, A-22, A-23, A-26, A-28, A-29, A-38 |
+| Bhavnaben, the CRC (the user) | A-09, A-10, A-13, A-19, A-22, A-23, A-26, A-28, A-29, A-38, A-40 |
 | Teachers and head teachers | A-15, A-30, A-31, A-33, A-35 |
 | Children and parents | A-04, A-05, A-32 |
-| Block officer and the education department | A-02, A-07, A-24, A-33, A-34 |
-| The data | A-01, A-03, A-06, A-08, A-11, A-12, A-14, A-16, A-17, A-18, A-21 |
+| Block officer and the education department | A-02, A-07, A-24, A-33, A-34, A-39 |
+| The data | A-01, A-03, A-06, A-08, A-11, A-12, A-14, A-16, A-17, A-18, A-21, A-41 |
 | The AI | A-20, A-27, A-36 |
 | The builder (scope and time) | A-37 |
 | Cost and privacy at scale | A-25, A-27 |
@@ -29,7 +29,7 @@ The same assumptions, grouped by whose point of view they come from, so each rea
 | A-06 | The data covers May–October 2026 and follows the Gujarat school calendar: summer vacation in May (no school data), reopening in early June, monsoon dips in July–August, Navratri in October, Diwali break in November. | Realistic seasonality is part of the brief; see D-014. |
 | A-07 | The `facilities` table is a yearly snapshot as of 30 September 2025 (the UDISE+ reference date), not monthly. | Facilities change slowly; see D-005. |
 | A-08 | All names (schools, villages, head teachers) are invented. | The brief forbids real data. |
-| A-09 | "This month" means the latest month with data (October 2026), and the assistant says which month it is using. | November 2026 is the Diwali break and is not complete. |
+| A-09 | "This month" means the latest month with data (October 2026), and the assistant says which month it is using. | On 2 November only two school days of November have passed, and schools close for Diwali from 5 to 25 November (Gujarat calendar 2026-27). |
 | A-10 | The CRC visits each school in person. In "visit this week" lists, a school visited in the last 14 days moves down the list, with a note saying when it was visited. | A school visited days ago is a lower priority for another trip. |
 | A-11 | Assessments are monthly unit tests from June to October; June is a post-vacation baseline and October includes the first-term exam. | The brief's table is monthly; Gujarat schools reopen in June. |
 | A-12 | Attendance % is the average daily attendance over the month's school days. | The brief gives one figure per school-month. |
@@ -59,3 +59,6 @@ The same assumptions, grouped by whose point of view they come from, so each rea
 | A-36 | The AI can be slow, wrong or unavailable (quota, network), and is never trusted with numbers: it never sees the data files, never calculates, and every number it writes is checked against what the code computed. Every answer must be correct without it. | Accuracy over fluency (brief); D-001, D-009, D-013. |
 | A-37 | With 12–15 hours, the must-haves (correct numbers, honest gaps, one action per school, Gujarati) come before extras such as WhatsApp integration, voice input, logins or dashboards. A web chat page stands in for WhatsApp; the same `/ask` endpoint is what a WhatsApp or SwiftChat webhook would call. | The brief caps the time and values thinking and shipping over polish. |
 | A-38 | She is online when she asks (no offline mode), and replies are plain text, so the same answer would work as a WhatsApp message. | Patchy 4G is handled by one small request per question and short replies, not by offline storage. |
+| A-39 | Sanctioned teacher posts follow the RTE Act's Schedule by enrolment (in a Std 1-8 school, 5 of every 8 children are taken to be in Std 1-5), and three schools have one vacant post. | Real posts are sanctioned by these norms; it gives a median of 30 children per teacher, as the RTE norm of 30-35 expects. |
+| A-40 | A CRC fits about 2 school visits a week around meetings, training and data work, so each school is visited about once every two months. | No Gujarat norm was found; Samagra Shiksha circulars elsewhere ask for once a month (Andhra Pradesh) to once in two months (Delhi). |
+| A-41 | The data follows the real 2026-27 Gujarat school calendar (reopening 8 June after a 35-day summer vacation; Diwali vacation 5-25 November), and no CRC visit falls on a Sunday or a school holiday (Muharram 26 June, Independence Day 15 August, Gandhi Jayanti 2 October, Dussehra 20 October). | Reviewers know this calendar; a visit on a holiday would look wrong. |

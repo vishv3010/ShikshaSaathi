@@ -98,7 +98,7 @@ def test_visit_plan():
 
 def test_visit_plan_fills_with_recent_schools_when_needed():
     plan = scoring.visit_plan(D, limit=7)  # exactly 7 schools are High or Medium
-    # Ambaliya (visited 28 Oct) and Talavdi (20 Oct) were both seen in the last 14 days,
+    # Ambaliya (visited 28 Oct) and Talavdi (22 Oct) were both seen in the last 14 days,
     # so they come last, still in order of need.
     assert [e["name"].split()[0] for e in plan["schools"][-2:]] == ["Ambaliya", "Talavdi"]
     assert len(plan["schools"]) == 7 and plan["moved_down"] == []

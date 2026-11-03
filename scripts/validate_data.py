@@ -18,6 +18,7 @@ ENCODING = "utf-8-sig"
 REQUIRED = {
     "schools": ["school_id", "name", "village", "type", "enrolment", "head_teacher"],
     "calendar": ["month", "school_open"],
+    "holidays": ["date", "name"],
     "attendance": ["school_id", "month", "student_attendance_pct", "teacher_attendance_pct"],
     "assessments": ["school_id", "month", "grade", "subject", "avg_score_pct", "pct_below_basic"],
     "visits": ["school_id", "visit_date", "focus_area", "notes", "notes_gu"],
@@ -84,6 +85,9 @@ def main():
         check(not bad, f"{name}: rows in closed or unknown months {sorted(bad)}")
     dates = pd.to_datetime(vis.visit_date, errors="coerce")
     check(dates.notna().all(), "visits: invalid visit_date")
+    holiday_visits = sorted(set(vis.visit_date) & set(tables["holidays"].date))
+    check(not holiday_visits, f"visits: on school holidays {holiday_visits}")
+    check((dates.dt.dayofweek != 6).all(), "visits: on a Sunday")
     check(dates.dt.strftime("%Y-%m").isin(open_months).all(), "visits: visit in a closed or unknown month")
 
     # Grades and subjects must match the school type and grade
@@ -106,6 +110,10 @@ def main():
     numbers_differ = [i for i, (en, gu) in enumerate(zip(vis.notes, vis.notes_gu.fillna("")))
                       if sorted(re.findall(r"\d+", str(en))) != sorted(re.findall(r"\d+", gu))]
     check(not numbers_differ, f"visits: notes_gu numbers differ from notes in rows {numbers_differ}")
+
+    fac = tables["facilities"]
+    over = fac[fac.teachers_in_position > fac.teacher_posts_sanctioned].school_id.tolist()
+    check(not over, f"facilities: more teachers in position than sanctioned posts {over}")
 
     # Coverage: expected rows vs actual (gaps are reported, not errors)
     n_open = len(open_months)

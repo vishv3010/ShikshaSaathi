@@ -7,6 +7,7 @@ patterns to find, and some values are deliberately missing.
 
 Run:  .venv/Scripts/python scripts/generate_data.py
 """
+import math
 import re
 from pathlib import Path
 
@@ -24,9 +25,16 @@ CALENDAR = [
     ("2026-07", "yes", "Monsoon"),
     ("2026-08", "yes", "Monsoon; festival season"),
     ("2026-09", "yes", ""),
-    ("2026-10", "yes", "Navratri; first-term exams"),
+    ("2026-10", "yes", "Navratri and Dussehra; first-term exams"),
 ]
 OPEN_MONTHS = [m for m, is_open, _ in CALENDAR if is_open == "yes"]
+# The 2026-27 Gujarat calendar matches: schools reopen 8 June after a 35-day summer break, and the
+# Diwali vacation runs 5-25 November, so 2 November (the data snapshot) is the last school week before it.
+
+# School holidays in the data window (Gujarat school holiday list 2026). No CRC visit falls on them.
+HOLIDAYS = [("2026-06-26", "Muharram"), ("2026-08-15", "Independence Day"), ("2026-10-02", "Gandhi Jayanti"),
+            ("2026-10-20", "Dussehra (21 October in some lists)")]
+NO_VISIT_DAYS = {day for day, _ in HOLIDAYS} | {"2026-10-21"}   # sources differ on Dussehra, so avoid both
 
 # Month effects shared by every school.
 STUDENT_SEASON = {"2026-06": -5, "2026-07": -3, "2026-08": -6, "2026-09": -1, "2026-10": -3}
@@ -42,7 +50,7 @@ SCHOOLS = [
     (3, "Chandrapur", "ચંદ્રપુર", "upper_primary", 280, "Bharat Solanki", 87, 92, 55),
     (4, "Dhamnod", "ધામણોદ", "primary", 140, "Meena Chaudhari", 88, 94, 60),
     (5, "Ganeshpura", "ગણેશપુરા", "upper_primary", 350, "Rajesh Vasava", 91, 95, 66),
-    (6, "Haripar", "હરિપર", "primary", 120, "Nayna Joshi", 74, 90, 38),
+    (6, "Haripar", "હરિપર", "primary", 88, "Nayna Joshi", 74, 90, 38),
     (7, "Jamla", "જામલા", "primary", 95, "Dilip Rathod", 85, 93, 54),
     (8, "Kesarpura", "કેસરપુરા", "primary", 110, "Hetal Shah", 84, 92, 42),
     (9, "Khodiyarnagar", "ખોડિયારનગર", "upper_primary", 330, "Pravin Makwana", 89, 95, 67),
@@ -56,7 +64,7 @@ SCHOOLS = [
     (17, "Umarvada", "ઉમરવાડા", "primary", 100, "Nilesh Chauhan", 84, 91, 53),
     (18, "Vasantpur", "વસંતપુર", "upper_primary", 240, "Pinal Bhatt", 86, 92, 56),
     (19, "Ambaliya", "આંબલિયા", "upper_primary", 270, "Arvind Rana", 76, 89, 41),
-    (20, "Shivpura", "શિવપુરા", "primary", 70, "Daxa Prajapati", 82, 90, 50),
+    (20, "Shivpura", "શિવપુરા", "primary", 58, "Daxa Prajapati", 82, 90, 50),
 ]
 
 
@@ -330,9 +338,13 @@ NOTES_GU = {
 
 
 def random_school_day(rng):
-    # A Monday-Saturday date between school reopening (8 June) and 30 October.
+    # A Monday-Saturday date between school reopening (8 June) and 30 October. A draw that lands on a
+    # holiday moves to the next school day; there is still exactly one draw, so other data stay the same.
     days = pd.bdate_range("2026-06-08", "2026-10-30", freq="C", weekmask="Mon Tue Wed Thu Fri Sat")
-    return days[rng.integers(len(days))].strftime("%Y-%m-%d")
+    i = int(rng.integers(len(days)))
+    while days[i].strftime("%Y-%m-%d") in NO_VISIT_DAYS and i < len(days) - 1:
+        i += 1
+    return days[i].strftime("%Y-%m-%d")
 
 
 def notes_for(focus, school_type):
@@ -366,14 +378,36 @@ def build_visits(rng):
     return df
 
 
-# Yearly snapshot (UDISE+ reference date 30 Sept 2025).
+def rte_posts(enrolment, school_type):
+    """Sanctioned teacher posts under the RTE Act's Schedule. Std 1-5: up to 60 children 2 teachers,
+    61-90 3, 91-120 4, 121-200 5, above 200 one per 40; Std 6-8: at least 3 (science and maths, social
+    studies, languages) and one per 35 children; a head teacher above 150 children in Std 1-5 or 100 in
+    Std 6-8. In a Std 1-8 school, 5 of every 8 children are taken to be in Std 1-5."""
+    primary = enrolment if school_type == "primary" else round(enrolment * 5 / 8)
+    upper = enrolment - primary
+    if primary <= 60:
+        posts = 2
+    elif primary <= 90:
+        posts = 3
+    elif primary <= 120:
+        posts = 4
+    elif primary <= 200:
+        posts = 5
+    else:
+        posts = math.ceil(primary / 40)
+    if upper:
+        posts += max(3, math.ceil(upper / 35))
+    return posts + (1 if primary > 150 or upper > 100 else 0)
+
+
+# Yearly snapshot (UDISE+ reference date 30 Sept 2025). Posts follow the RTE norms; three story
+# schools have one vacant post each.
+VACANT_POSTS = {LOW_UNVISITED: 1, WEAK_G5_MATHS: 1, RECENT_VISIT: 1}
 FACILITY_OVERRIDES = {
-    LOW_UNVISITED: dict(teacher_posts_sanctioned=3, teachers_in_position=2, multigrade_classes="yes",
-                        drinking_water="not functional", girls_toilet="not functional"),
-    WEAK_G5_MATHS: dict(teacher_posts_sanctioned=3, teachers_in_position=2, multigrade_classes="yes"),
-    RECENT_VISIT: dict(teacher_posts_sanctioned=7, teachers_in_position=6),
-    sid(13): dict(teacher_posts_sanctioned=3, teachers_in_position=3, multigrade_classes="yes"),
-    sid(20): dict(teacher_posts_sanctioned=2, teachers_in_position=2, multigrade_classes="yes"),
+    LOW_UNVISITED: dict(multigrade_classes="yes", drinking_water="not functional", girls_toilet="not functional"),
+    WEAK_G5_MATHS: dict(multigrade_classes="yes"),
+    sid(13): dict(multigrade_classes="yes"),
+    sid(20): dict(multigrade_classes="yes"),
     DATA_GAPS: dict(electricity=None),  # not reported
 }
 
@@ -382,9 +416,9 @@ def build_facilities():
     rows = []
     for n, _v, _vg, stype, enrol, *_ in SCHOOLS:
         school = sid(n)
-        posts = (3 if enrol < 150 else 4) if stype == "primary" else (6 if enrol < 300 else 8)
+        posts = rte_posts(enrol, stype)
         row = {"school_id": school, "as_of_date": "2025-09-30",
-               "teacher_posts_sanctioned": posts, "teachers_in_position": posts,
+               "teacher_posts_sanctioned": posts, "teachers_in_position": posts - VACANT_POSTS.get(school, 0),
                "multigrade_classes": "no", "drinking_water": "functional",
                "girls_toilet": "functional", "electricity": "yes"}
         row.update(FACILITY_OVERRIDES.get(school, {}))
@@ -398,6 +432,7 @@ def main():
     tables = {
         "schools": build_schools(),
         "calendar": build_calendar(),
+        "holidays": pd.DataFrame(HOLIDAYS, columns=["date", "name"]),
         "attendance": build_attendance(rng),
         "assessments": build_assessments(rng),
         "visits": build_visits(rng),

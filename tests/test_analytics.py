@@ -25,7 +25,7 @@ def test_rampura_grade5_maths():
     assert {o["subject"]: o["avg_score_pct"] for o in r["other_subjects_same_grade"]} == {"Gujarati": 63, "EVS": 57}
     assert r["cluster_average"]["schools"] == 19          # Umarvada has no October result
     assert r["context"]["multigrade_classes"] == "yes"
-    assert (r["context"]["teacher_posts_sanctioned"], r["context"]["teachers_in_position"]) == (3, 2)
+    assert (r["context"]["teacher_posts_sanctioned"], r["context"]["teachers_in_position"]) == (5, 4)  # RTE: 130 children
     assert len(r["related_visit_notes"]) == 2
     assert r["action"] == {"code": "class_remedial", "grade": 5, "subject": "Maths"}
 

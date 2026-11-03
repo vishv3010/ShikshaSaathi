@@ -28,6 +28,7 @@ Synthetic data for one cluster (`GJ-C07`) of 20 schools, May–October 2026. Eve
 |---|---|---|---|
 | `schools.csv` | 20 | school | school_id, name, name_gu, village, village_gu, type, enrolment, head_teacher |
 | `calendar.csv` | 6 | month | month, school_open, note |
+| `holidays.csv` | 4 | school holiday | date, name |
 | `attendance.csv` | 99 | school × month | school_id, month, student_attendance_pct, teacher_attendance_pct |
 | `assessments.csv` | 1,315 | school × month × grade × subject | school_id, month, grade, subject, avg_score_pct, pct_below_basic |
 | `visits.csv` | 39 | CRC visit | school_id, visit_date, focus_area, notes, notes_gu (the same note in Gujarati) |
@@ -37,6 +38,8 @@ Synthetic data for one cluster (`GJ-C07`) of 20 schools, May–October 2026. Eve
 - Subjects: Gujarati, Maths, and EVS (Grades 3–5) or Science (Grades 6–8).
 - Gujarati names (`name_gu`, `village_gu`) let replies in Gujarati use the right script without the LLM transliterating.
 - Files are UTF-8 with a BOM, so Gujarati displays correctly when opened in Excel.
+- The calendar matches the official 2026-27 Gujarat school calendar: schools reopened on 8 June after a 35-day summer vacation, and the Diwali vacation runs 5-25 November, so the snapshot date (2 November) is the last school week before it. No CRC visit falls on a Sunday or on a school holiday in `holidays.csv` (Muharram 26 June, Independence Day 15 August, Gandhi Jayanti 2 October, Dussehra 20 October); the validator checks this.
+- Teacher posts follow the RTE Act's Schedule: Std 1-5 by enrolment slab (up to 60 children 2 teachers, 61-90 3, 91-120 4, 121-200 5, then one per 40), Std 6-8 at least 3 and one per 35, and a head teacher above 150 (Std 1-5) or 100 (Std 6-8) children; in a Std 1-8 school, 5 of every 8 children are taken to be in Std 1-5. Haripar, Rampura and Ambaliya have one vacant post each. Median: 30 children per teacher in position.
 
 ## The designed stories
 

@@ -85,8 +85,8 @@ def score_school(data, school_id, month=None):
         change = num(student - previous_avg)
         indicators = {
             "student_attendance": {"value": student},
-            "attendance_drop": {"value": num(-change), "change": change,
-                                "previous_avg": previous_avg, "previous_months": history},
+            "attendance_drop": {"value": num(-change), "change": change, "previous_avg": previous_avg,
+                                "previous_months": history, "months_compared": len(history)},
             "learning_level": {"value": num(scores.mean()), "results": len(scores), "expected": expected},
             "below_basic": {"value": num(below.mean())},
         }

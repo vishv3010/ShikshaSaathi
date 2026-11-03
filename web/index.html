@@ -64,13 +64,16 @@
   .tools label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
   :focus-visible { outline: 3px solid #25d366; outline-offset: 2px; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  details.review { font-size: 12.5px; color: var(--muted); }
+  details.review summary { cursor: pointer; padding: 4px 0; }
+  details.review .row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
 </style>
 </head>
 <body>
 <header>
   <div class="titles">
     <h1>શિક્ષા સાથી · Shiksha Saathi</h1>
-    <p id="sub">Cluster GJ-C07 · 20 schools · synthetic data</p>
+    <p id="sub">Cluster GJ-C07</p>
   </div>
   <label class="sr" for="lang">Reply language</label>
   <select id="lang" title="Reply language">
@@ -86,37 +89,102 @@
 <footer>
   <form id="form">
     <label class="sr" for="q">Your question</label>
-    <textarea id="q" rows="1" maxlength="500" placeholder="પ્રશ્ન લખો… / Ask a question…" autocomplete="off"></textarea>
+    <textarea id="q" rows="1" maxlength="500" autocomplete="off"></textarea>
     <button class="send" id="send" type="submit" aria-label="Send">➤</button>
   </form>
-  <div class="tools">
-    <label title="Adds a made-up figure (99.9%) to the AI's text, to show the number checker catching it">
-      <input type="checkbox" id="test"> Test the number checker
-    </label>
-    <span id="status"></span>
-  </div>
+  <!-- Tools for reviewers, folded away so they do not distract a CRC; ?test=1 or ?review=1 opens them. -->
+  <details class="review" id="review">
+    <summary>For reviewers</summary>
+    <div class="row">
+      <label title="Adds a made-up figure (99.9%) to the AI's text, to show the number checker catching it">
+        <input type="checkbox" id="test"> Test the number checker
+      </label>
+      <span id="status"></span>
+    </div>
+  </details>
 </footer>
+
+<!-- Suggested questions in each language (a test checks that every one is understood). -->
+<script type="application/json" id="starters">
+{
+  "auto": ["Which 3 schools need my visit this week?", "આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?",
+           "Why is Grade 5 Maths low in Rampura?", "What was Umarvada's attendance in October?",
+           "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?", "Summary for my block officer"],
+  "en": ["Which 3 schools need my visit this week?", "Why is Grade 5 Maths low in Rampura?",
+         "What was Umarvada's attendance in October?", "Which schools have missing data?", "Summary for my block officer"],
+  "gu": ["આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?", "રામપુરામાં ધોરણ 5 ગણિત કેમ ઓછું છે?",
+         "ઉમરવાડાની ઑક્ટોબરની હાજરી બતાવો", "કઈ શાળાઓની માહિતી ખૂટે છે?", "બ્લોક અધિકારી માટે સારાંશ"],
+  "hi": ["इस हफ्ते किन 3 स्कूलों का दौरा करना चाहिए?", "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?",
+         "उमरवाडा की अक्टूबर की हाजिरी बताओ", "किस स्कूल का डेटा नहीं आया?", "ब्लॉक अधिकारी के लिए सारांश बनाओ"]
+}
+</script>
 
 <script>
 "use strict";
 const chat = document.getElementById("chat"), form = document.getElementById("form"), box = document.getElementById("q");
 const send = document.getElementById("send"), langSel = document.getElementById("lang"), test = document.getElementById("test");
-const statusEl = document.getElementById("status");
+const statusEl = document.getElementById("status"), review = document.getElementById("review");
+const STARTERS = JSON.parse(document.getElementById("starters").textContent);
 
-// Starter questions: the brief's examples, the missing-data case, and one per language.
-const STARTERS = [
-  "Which 3 schools need my visit this week?",
-  "આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?",
-  "Why is Grade 5 Maths low in Rampura?",
-  "What was Umarvada's attendance in October?",
-  "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?",
-  "Summary for my block officer",
-];
-const WELCOME = "નમસ્તે! Ask about your 20 schools in Gujarati, English or Hindi.\n" +
-  "Every number comes from the school records; the AI only words the answer.";
+// Every word on the page in her language. "Auto" shows Gujarati with English.
+const UI = {
+  en: {
+    welcome: "Namaste! Ask about your schools in Gujarati, English or Hindi. Every number comes from the school records; the AI only words the answer.",
+    placeholder: "Ask a question…", schools: "schools", upto: "synthetic data up to",
+    switched: "Replies will now be in English. You can ask:",
+    aiUsed: "✓ AI wording · every number checked against the records",
+    checked: "✓ Checked answer from the records",
+    rejected: (why) => "⚠ AI text rejected by the number checker (" + why + "). Checked answer shown.",
+    whyNumbers: (found) => "it had " + found + ", which is not in the records", whyOther: "it failed the check",
+    unavailable: "AI unavailable · checked answer shown",
+    paused: "AI paused (many questions right now) · checked answer shown",
+    testNeedsAi: "The number-checker test needs the AI; this answer did not use it.",
+    tooMany: "Too many questions in a minute. Please wait a little and try again.",
+    failed: (code) => "Sorry, that did not work (" + code + "). Please try again.",
+    offline: "No connection to the server. Check the network and tap Retry.", retry: "↻ Retry",
+  },
+  gu: {
+    welcome: "નમસ્તે! તમારી શાળાઓ વિશે ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો. દરેક આંકડો શાળાના રેકોર્ડમાંથી આવે છે; AI ફક્ત જવાબના શબ્દો લખે છે.",
+    placeholder: "પ્રશ્ન લખો…", schools: "શાળાઓ", upto: "સુધીની કાલ્પનિક માહિતી",
+    switched: "હવે જવાબ ગુજરાતીમાં આવશે. આ પૂછી શકો:",
+    aiUsed: "✓ AI શબ્દો · દરેક આંકડો રેકોર્ડ સાથે ચકાસેલો",
+    checked: "✓ રેકોર્ડમાંથી ચકાસેલો જવાબ",
+    rejected: (why) => "⚠ આંકડાની ચકાસણીએ AI લખાણ નકાર્યું (" + why + "). ચકાસેલો જવાબ બતાવ્યો છે.",
+    whyNumbers: (found) => "તેમાં " + found + " હતું, જે રેકોર્ડમાં નથી", whyOther: "ચકાસણીમાં પાસ ન થયું",
+    unavailable: "AI ઉપલબ્ધ નથી · ચકાસેલો જવાબ બતાવ્યો છે",
+    paused: "AI થોડી વાર બંધ છે (ઘણા પ્રશ્નો) · ચકાસેલો જવાબ બતાવ્યો છે",
+    testNeedsAi: "આંકડા-ચકાસણીની કસોટી માટે AI જોઈએ; આ જવાબમાં AI વપરાયું નથી.",
+    tooMany: "એક મિનિટમાં ઘણા પ્રશ્નો થયા. થોડી રાહ જોઈને ફરી પ્રયાસ કરો.",
+    failed: (code) => "માફ કરશો, જવાબ ન મળ્યો (" + code + "). ફરી પ્રયાસ કરો.",
+    offline: "સર્વર સાથે જોડાણ નથી. નેટવર્ક તપાસીને ‘ફરી પ્રયાસ’ દબાવો.", retry: "↻ ફરી પ્રયાસ",
+  },
+  hi: {
+    welcome: "नमस्ते! अपने स्कूलों के बारे में गुजराती, अंग्रेज़ी या हिंदी में पूछें। हर आंकड़ा स्कूल के रिकॉर्ड से आता है; AI सिर्फ़ जवाब के शब्द लिखता है।",
+    placeholder: "सवाल लिखें…", schools: "स्कूल", upto: "तक का काल्पनिक डेटा",
+    switched: "अब जवाब हिंदी में आएँगे। आप पूछ सकते हैं:",
+    aiUsed: "✓ AI शब्द · हर आंकड़ा रिकॉर्ड से जाँचा गया",
+    checked: "✓ रिकॉर्ड से जाँचा गया जवाब",
+    rejected: (why) => "⚠ आंकड़ों की जाँच ने AI का लिखा हटा दिया (" + why + ")। जाँचा गया जवाब दिखाया है।",
+    whyNumbers: (found) => "उसमें " + found + " था, जो रिकॉर्ड में नहीं है", whyOther: "जाँच में पास नहीं हुआ",
+    unavailable: "AI उपलब्ध नहीं · जाँचा गया जवाब दिखाया है",
+    paused: "AI थोड़ी देर बंद है (बहुत सवाल) · जाँचा गया जवाब दिखाया है",
+    testNeedsAi: "आंकड़ा-जाँच की परीक्षा के लिए AI चाहिए; इस जवाब में AI नहीं लगा।",
+    tooMany: "एक मिनट में बहुत सवाल हो गए। थोड़ा रुककर फिर कोशिश करें।",
+    failed: (code) => "माफ़ कीजिए, जवाब नहीं मिला (" + code + ")। फिर कोशिश करें।",
+    offline: "सर्वर से कनेक्शन नहीं है। नेटवर्क जाँचकर ‘फिर कोशिश’ दबाएँ।", retry: "↻ फिर कोशिश",
+  },
+};
+const AUTO_WELCOME = "નમસ્તે! તમારી શાળાઓ વિશે ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો.\n" +
+  "Ask about your schools in Gujarati, English or Hindi. Every number comes from the school records; the AI only words the answer.";
+const AUTO_SWITCHED = "જવાબ તમારા પ્રશ્નની ભાષામાં આવશે. / Replies follow the language of your question.";
 
-try { langSel.value = localStorage.getItem("saathi-lang") || ""; } catch (e) { /* storage blocked: use Auto */ }
-langSel.addEventListener("change", () => { try { localStorage.setItem("saathi-lang", langSel.value); } catch (e) {} });
+function scriptOf(text) {        // the language a question is written in, by its script
+  if (/[઀-૿]/.test(text)) return "gu";
+  if (/[ऀ-ॿ]/.test(text)) return "hi";
+  return "en";
+}
+// Words on the page: the chosen language, or for "Auto" the language of the question or reply.
+function ui(fallback) { return UI[langSel.value] || UI[fallback] || UI.gu; }
 
 function scrollDown() { chat.scrollTop = chat.scrollHeight; }
 // A long answer opens at its first line (the direct answer), not at its end.
@@ -155,17 +223,18 @@ function addChips(wrap, options) {
   scrollDown();
 }
 
-// The line under each answer says honestly how it was produced.
-function describe(check) {
+function starterChips(key) { return (STARTERS[key] || STARTERS.auto).map((q) => ({ label: q, question: q })); }
+
+// The line under each answer says honestly how it was produced, in her language.
+function describe(check, t) {
   if (check.rejected) {
     const found = (check.unsupported || []).concat(check.number_words || []).join(", ");
-    const why = found ? "it had " + found + ", which is not in the records" : (check.problem || "it failed the check");
-    return ["⚠ AI text rejected by the number checker (" + why + "). Checked answer shown.", "bad"];
+    return [t.rejected(found ? t.whyNumbers(found) : t.whyOther), "bad"];
   }
-  if (check.ai_used) return ["✓ AI wording · every number checked against the records", "ok"];
-  if (check.ai_paused) return ["AI paused (many questions right now) · checked answer shown", "warn"];
-  if (check.error) return ["AI unavailable (" + check.error + ") · checked answer shown", "warn"];
-  return ["✓ Checked answer from the records", "ok"];
+  if (check.ai_used) return [t.aiUsed, "ok"];
+  if (check.ai_paused) return [t.paused, "warn"];
+  if (check.error) return [t.unavailable, "warn"];
+  return [t.checked, "ok"];
 }
 
 let busy = false;
@@ -173,6 +242,7 @@ async function askServer(question, schoolId, shown) {
   question = (question || "").trim();
   if (!question || busy) return;
   busy = true; send.disabled = true;
+  const t = ui(scriptOf(question));
   addMessage("me", shown || question);
   const typing = addMessage("bot", "…");
   typing.querySelector(".bubble").classList.add("typing");
@@ -184,43 +254,68 @@ async function askServer(question, schoolId, shown) {
       body: JSON.stringify({ question, lang: langSel.value || null, school_id: schoolId || null, test_checker: test.checked }),
     });
     typing.remove();
-    if (res.status === 429) { retry("Too many questions in a minute. Please wait a little and try again.", question, schoolId, shown); return; }
-    if (!res.ok) { retry("Sorry, that did not work (" + res.status + "). Please try again.", question, schoolId, shown); return; }
+    if (res.status === 429) { retry(t.tooMany, t, question, schoolId, shown); return; }
+    if (!res.ok) { retry(t.failed(res.status), t, question, schoolId, shown); return; }
     const r = await res.json();
-    let [meta, cls] = describe(r.check || {});
-    if (test.checked && r.check && r.check.test_checker === false) { meta = "Number-checker test needs the AI; this answer did not use it. " + meta; cls = "warn"; }
+    const tr = ui(r.lang);
+    let [meta, cls] = describe(r.check || {}, tr);
+    if (test.checked && r.check && r.check.test_checker === false) { meta = tr.testNeedsAi + " " + meta; cls = "warn"; }
     const wrap = addMessage("bot", r.text, meta, cls);
     addChips(wrap, r.options);
     showStart(wrap);
   } catch (e) {
     typing.remove();
-    retry("No connection to the server. Check the network and tap Retry.", question, schoolId, shown);
+    retry(t.offline, t, question, schoolId, shown);
   } finally {
     clearTimeout(timer); busy = false; send.disabled = false;
   }
 }
 
-function retry(message, question, schoolId, shown) {
-  addChips(addMessage("bot", message, "", "warn"), [{ label: "↻ Retry", question, school_id: schoolId, shown: shown || question }]);
+function retry(message, t, question, schoolId, shown) {
+  addChips(addMessage("bot", message, "", "warn"), [{ label: t.retry, question, school_id: schoolId, shown: shown || question }]);
 }
+
+let health = null;
+function applyLanguage() {
+  const t = UI[langSel.value];
+  box.placeholder = t ? t.placeholder : "પ્રશ્ન લખો… / Ask a question…";
+  if (health) {
+    const code = langSel.value === "hi" ? "hi-IN" : langSel.value === "gu" ? "gu-IN" : "en-IN";
+    const month = new Date(health.latest_month + "-01T00:00:00").toLocaleString(code, { month: "short", year: "numeric" });
+    const words = t || UI.en;
+    document.getElementById("sub").textContent = "Cluster GJ-C07 · " + health.schools + " " + words.schools + " · " +
+      (langSel.value === "en" || !t ? words.upto + " " + month : month + " " + words.upto);
+  }
+}
+
+try { langSel.value = localStorage.getItem("saathi-lang") || ""; } catch (e) { /* storage blocked: use Auto */ }
+langSel.addEventListener("change", () => {
+  try { localStorage.setItem("saathi-lang", langSel.value); } catch (e) {}
+  applyLanguage();
+  const t = UI[langSel.value];
+  addChips(addMessage("bot", t ? t.switched : AUTO_SWITCHED), starterChips(langSel.value || "auto"));
+});
 
 form.addEventListener("submit", (e) => { e.preventDefault(); const q = box.value; box.value = ""; grow(); askServer(q); });
 box.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
 function grow() { box.style.height = "auto"; box.style.height = Math.min(box.scrollHeight, 120) + "px"; }
 box.addEventListener("input", grow);
 
-addChips(addMessage("bot", WELCOME), STARTERS.map((q) => ({ label: q, question: q })));
-
 // A shared link can carry a question: /?q=Which+3+schools+need+my+visit&lang=gu asks it on opening.
 const params = new URLSearchParams(location.search);
 if (["en", "gu", "hi"].includes(params.get("lang"))) langSel.value = params.get("lang");
-if (params.get("test") === "1") test.checked = true;     // demo link: show the number checker at work
+if (params.get("test") === "1") { test.checked = true; review.open = true; }   // demo link: the checker at work
+if (params.get("review") === "1") review.open = true;
+
+applyLanguage();
+const first = UI[langSel.value];
+addChips(addMessage("bot", first ? first.welcome : AUTO_WELCOME), starterChips(langSel.value || "auto"));
 if (params.get("q")) askServer(params.get("q").slice(0, 500));
 
 fetch("/health").then((r) => r.json()).then((h) => {
+  health = h;
   statusEl.textContent = h.llm ? "AI: on" : "AI: off (rules only)";
-  const month = new Date(h.latest_month + "-01T00:00:00").toLocaleString("en-IN", { month: "short", year: "numeric" });
-  document.getElementById("sub").textContent = "Cluster GJ-C07 · " + h.schools + " schools · synthetic data up to " + month;
+  applyLanguage();
 }).catch(() => { statusEl.textContent = "offline?"; });
 </script>
 </body>

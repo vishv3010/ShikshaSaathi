@@ -18,7 +18,7 @@ Bhavnaben, a CRC with 20 schools, asks on her phone in Gujarati, English or Hind
 
 One `/ask` endpoint (FastAPI) serves a WhatsApp-style chat page of about 4 KB over the network; a WhatsApp or SwiftChat webhook would call the same endpoint. Without an API key, or when Gemini fails or runs out of quota, the Gemini parts are skipped and every answer is still correct. All tools are free.
 
-**Data.** 20 synthetic schools in cluster GJ-C07, May–October 2026, following the Gujarat calendar (May vacation, monsoon dips, Navratri in October). Seven schools carry a designed story (migration, one weak class, slow decline, data gaps, a school visited five days ago); 39 visit notes in English and Gujarati; a facilities table; a validator that keeps gaps as gaps.
+**Data.** 20 synthetic schools in cluster GJ-C07, May–October 2026, on the real 2026-27 Gujarat school calendar (May vacation, reopening 8 June, monsoon dips, Navratri, Diwali vacation from 5 November), with teacher posts by the RTE norms and no CRC visit on a holiday. Seven schools carry a designed story (migration, one weak class, slow decline, data gaps, a school visited five days ago); 39 visit notes in English and Gujarati; a facilities table; a validator that keeps gaps as gaps.
 
 ## 2. Prioritisation: a need-for-support score, not a report card
 
@@ -62,4 +62,4 @@ What would leave the government system per question: only that answer's draft (s
 3. **Replace school names with codes** before the AI call; a monitoring view of checker rejections and missing data across clusters.
 4. **A per-sentence check** that each number belongs to the school it is next to, which would let the AI write more of the answer.
 
-Assumptions (38) and decisions (27) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.
+Assumptions (41) and decisions (28) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.

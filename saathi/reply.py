@@ -427,7 +427,7 @@ def school_summary(f, lang):
         ind = p["indicators"]
         drop = ind["attendance_drop"]
         lines += [t("priority_line", lang, p=prio(p["priority"], lang), s=p["score"]),
-                  "• " + t("attendance_line", lang, v=ind["student_attendance"]["value"], k=len(drop["previous_months"]),
+                  "• " + t("attendance_line", lang, v=ind["student_attendance"]["value"], k=drop["months_compared"],
                            prev=drop["previous_avg"], t=pct(p["teacher_attendance_pct"], lang)),
                   "• " + t("learning_line", lang, v=ind["learning_level"]["value"], b=ind["below_basic"]["value"],
                            r=ind["learning_level"]["results"], e=ind["learning_level"]["expected"])]
@@ -592,7 +592,7 @@ def _attendance_school(f, lang):
     change = f["change"]
     if change:
         m = month(f["latest_month"], lang)
-        k = len(change["previous_months"])
+        k = change["months_compared"]
         key = "att_lower" if change["change"] < 0 else "att_higher" if change["change"] > 0 else "att_same"
         lines.append(t(key, lang, month=m, v=abs(change["change"]), k=k, prev=change["previous_avg"]))
     c = next(r for r in f["cluster_months"] if r["month"] == f["latest_month"])

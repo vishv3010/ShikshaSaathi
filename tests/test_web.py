@@ -1,4 +1,6 @@
 """The web server: the page, /ask, input limits and the rate limit (LLM off, as in all tests)."""
+import gzip
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -16,7 +18,7 @@ def test_page_is_small_self_contained_and_locked_down(client):
     r = client.get("/", headers={"Accept-Encoding": "gzip"})
     assert r.status_code == 200 and "<title>Shiksha Saathi</title>" in r.text
     assert "http://" not in r.text and "https://" not in r.text                 # no external files at all
-    assert len(r.content) < 20_000                                              # one small file for patchy 4G
+    assert len(gzip.compress(r.content)) < 9_000                                # what travels over patchy 4G
     assert "default-src 'self'" in r.headers["content-security-policy"]
     assert r.headers["content-encoding"] == "gzip"
 
@@ -78,3 +80,23 @@ def test_forgotten_clients_are_swept(client, monkeypatch):
     monkeypatch.setattr(web, "_recent", web.defaultdict(web.deque, {"1.2.3.4": web.deque([0.0])}))
     web._sweep(now=1000.0)
     assert "1.2.3.4" not in web._recent
+
+
+def test_every_suggested_question_on_the_page_is_understood():
+    """The starter chips are the first thing a CRC taps; each must lead to the intended answer."""
+    import json
+    import re
+    from saathi.assistant import ask
+    page = (web.PAGE).read_text(encoding="utf-8")
+    starters = json.loads(re.search(r'<script type="application/json" id="starters">(.*?)</script>', page, re.S).group(1))
+    expected = ["top_priority_schools", "subject_analysis", "attendance_trend", "missing_data", "officer_summary"]
+    for lang in ("en", "gu", "hi"):
+        assert [ask(q)["intent"] for q in starters[lang]] == expected, lang
+    assert [ask(q)["intent"] for q in starters["auto"]] == [
+        "top_priority_schools", "top_priority_schools", "subject_analysis", "attendance_trend", "subject_analysis",
+        "officer_summary"]
+
+
+def test_reviewer_tools_are_folded_away(client):
+    page = client.get("/").text
+    assert '<details class="review" id="review">' in page and "For reviewers" in page
