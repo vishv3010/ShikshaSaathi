@@ -62,7 +62,7 @@ Details: [architecture and plan](docs/PLAN.md) · [decisions](docs/DECISIONS.md)
 ```
 .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python scripts/validate_data.py          # the dataset: IDs, ranges, gaps kept as gaps
-.venv/bin/python -m pytest -q                      # 219 tests; never calls Gemini
+.venv/bin/python -m pytest -q                      # 225 tests; never calls Gemini
 .venv/bin/python scripts/check_tests_catch_bugs.py # plants 10 known bugs and confirms the tests catch each
 .venv/bin/python scripts/eval_understanding.py eval/round2.csv   # how well new phrasings are understood
 .venv/bin/python scripts/try_llm.py                # optional: the demo questions against live Gemini

@@ -96,4 +96,4 @@ def test_every_action_renders_in_every_language(lang):
         text = render_action(action, lang)
         assert "{" not in text and text.strip()
         if lang == "gu":
-            assert any("઀" <= ch <= "૿" for ch in text)  # Gujarati script
+            assert any("\u0a80" <= ch <= "\u0aff" for ch in text)  # Gujarati script

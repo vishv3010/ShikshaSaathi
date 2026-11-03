@@ -50,15 +50,29 @@ def normalize(text):
 
 def to_gujarati_script(text):
     """Devanagari letters -> Gujarati letters, so a name typed in Hindi script ("रामपुरा") is found."""
-    return "".join(chr(ord(ch) + DEVANAGARI_TO_GUJARATI) if "ऀ" <= ch <= "ॿ" else ch for ch in text)
+    return "".join(chr(ord(ch) + DEVANAGARI_TO_GUJARATI) if "\u0900" <= ch <= "\u097f" else ch for ch in text)
+
+
+# Common words of Gujarati and Hindi typed in English letters. Two or more mark the language, so the
+# reply comes in her language even when the rules, not Gemini, read the question.
+ROMAN_GU = {"che", "chhe", "shu", "kem", "ma", "ni", "nu", "na", "kai", "kayi", "shala", "hajri", "ochhi", "ochhu",
+            "batavo", "mate", "athvadiye", "dhoran", "ganit", "levi", "joie", "joiye", "kevu", "kevi", "nathi",
+            "ane", "pan", "badhi", "mari", "tamari", "aaje", "kale", "mahine", "nabdu", "nabli", "ghati"}
+ROMAN_HI = {"hai", "hain", "kya", "kaun", "kis", "kin", "kyun", "kyon", "nahi", "nahin", "mein", "ka", "ki", "ke",
+            "aaya", "aayi", "batao", "bataiye", "chahiye", "kaksha", "haajri", "sabse", "kam", "jaana", "jana",
+            "dekhna", "konsi", "konsa", "kaunsi", "kaunsa", "pehle", "hafte", "aur", "kaise", "kaisa"}
 
 
 def detect_language(text):
-    gu = sum("઀" <= ch <= "૿" for ch in text)
-    hi = sum("ऀ" <= ch <= "ॿ" for ch in text)
-    if not gu and not hi:
-        return "en"
-    return "gu" if gu >= hi else "hi"
+    gu = sum("\u0a80" <= ch <= "\u0aff" for ch in text)
+    hi = sum("\u0900" <= ch <= "\u097f" for ch in text)
+    if gu or hi:
+        return "gu" if gu >= hi else "hi"
+    words = set(re.findall(r"[a-z]+", text.lower()))
+    gu_words, hi_words = len(words & ROMAN_GU), len(words & ROMAN_HI)
+    if max(gu_words, hi_words) >= 2:
+        return "gu" if gu_words > hi_words else "hi"
+    return "en"
 
 
 def _any(text, patterns):

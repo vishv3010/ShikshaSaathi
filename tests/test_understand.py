@@ -166,3 +166,16 @@ def test_short_names_are_not_matched_loosely():
 def test_romanised_question_words_are_not_school_names():
     q = parse("konsi school ko pehle dekhna chahiye?", D)
     assert (q.intent, q.unknown_school) == ("top_priority_schools", None)
+
+
+@pytest.mark.parametrize("text, lang", [
+    ("kaun se school mein haajri sabse kam hai?", "hi"),
+    ("rampura ma dhoran 5 ganit kem nabdu che", "gu"),
+    ("chandrapur ma attendance kem ghati?", "gu"),
+    ("Which school has the most absent kids?", "en"),
+    ("Tell me about Rampura in August", "en"),
+    ("Is the attendance in Navli going down?", "en"),
+])
+def test_language_of_text_typed_in_english_letters(text, lang):
+    """So the reply comes in her language even when the rules, not Gemini, read the question."""
+    assert detect_language(text) == lang

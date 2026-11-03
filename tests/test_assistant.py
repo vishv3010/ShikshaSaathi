@@ -10,7 +10,7 @@ import pytest
 from saathi.assistant import ask
 from saathi.reply import EXAMPLES
 
-GUJARATI = re.compile("[઀-૿]")
+GUJARATI = re.compile("[\u0a80-\u0aff]")
 
 
 def test_brief_question_same_facts_in_both_languages():
