@@ -259,6 +259,76 @@ GENERIC_NOTES = {
 }
 
 
+# Gujarati version of every note, so Gujarati replies are fully Gujarati. Numbers are kept
+# identical to the English note (the validator checks this). Terms follow Gujarat school usage:
+# એકમ કસોટી (unit test), ઉપચારાત્મક તાસ (remedial period), અધ્યયન નિષ્પત્તિ (learning outcomes).
+# SMC and BLO stay as the short forms used in schools.
+NOTES_GU = {
+    # story schools
+    "Grades 3 to 5 are taught together in one room as 1 of 3 teacher posts is vacant. "
+    "Girls' toilet not working; head teacher has written to the block office.":
+        "શિક્ષકોની 3માંથી 1 જગ્યા ખાલી હોવાથી ધોરણ 3 થી 5 એક જ ઓરડામાં સાથે ભણે છે. "
+        "કન્યા શૌચાલય ચાલુ નથી; આચાર્યએ બ્લોક કચેરીને પત્ર લખ્યો છે.",
+    "Attendance recovering after monsoon. Head teacher follows up with parents of absent children.":
+        "ચોમાસા પછી હાજરી સુધરી રહી છે. આચાર્ય ગેરહાજર બાળકોના વાલીઓ સાથે ફોલો-અપ કરે છે.",
+    "Head teacher expects several families to leave for sugarcane harvesting after Navratri. "
+    "Discussed keeping a list of children likely to migrate.":
+        "આચાર્યના અંદાજ મુજબ નવરાત્રિ પછી ઘણા પરિવારો શેરડી કાપણી માટે સ્થળાંતર કરશે. "
+        "સ્થળાંતર કરી શકે તેવાં બાળકોની યાદી રાખવા અંગે ચર્ચા કરી.",
+    "Unit test planning with teachers. Grade 7 science kit is unused; shared simple experiment ideas.":
+        "શિક્ષકો સાથે એકમ કસોટીનું આયોજન કર્યું. ધોરણ 7ની વિજ્ઞાન કીટ વપરાતી નથી; સાદા પ્રયોગોના વિચારો આપ્યા.",
+    "Two teachers deputed on BLO duty for electoral roll revision; remaining teachers are covering extra classes.":
+        "મતદાર યાદી સુધારણા માટે બે શિક્ષકો BLO ફરજ પર છે; બાકીના શિક્ષકો વધારાના વર્ગો સંભાળે છે.",
+    "Grade 5 maths: place value and division are weak. Grades 4 and 5 are taught together as one teacher post is vacant.":
+        "ધોરણ 5 ગણિત: સ્થાનકિંમત અને ભાગાકાર નબળા છે. શિક્ષકની એક જગ્યા ખાલી હોવાથી ધોરણ 4 અને 5 સાથે ભણે છે.",
+    "Observed Grade 5 maths; children struggle with 3-digit numbers. Shared a bundles-and-sticks place value activity.":
+        "ધોરણ 5 ગણિતનું નિરીક્ષણ કર્યું; બાળકોને 3 અંકની સંખ્યાઓમાં મુશ્કેલી પડે છે. "
+        "બંડલ-સળીઓ વડે સ્થાનકિંમતની પ્રવૃત્તિ બતાવી.",
+    "Many children in Grades 3 to 5 below grade level after the vacation. "
+    "Head teacher started a daily 30-minute remedial period in small groups.":
+        "વેકેશન પછી ધોરણ 3 થી 5નાં ઘણાં બાળકો પોતાના ધોરણના સ્તરથી પાછળ છે. "
+        "આચાર્યએ નાના જૂથોમાં રોજ 30 મિનિટનો ઉપચારાત્મક તાસ શરૂ કર્યો.",
+    "Remedial groups running regularly; more children reading short paragraphs. Encouraged teachers to continue.":
+        "ઉપચારાત્મક જૂથો નિયમિત ચાલે છે; વધુ બાળકો ટૂંકા ફકરા વાંચી શકે છે. શિક્ષકોને ચાલુ રાખવા પ્રોત્સાહન આપ્યું.",
+    "Attendance app not syncing because of weak mobile network; head teacher enters data later from the register.":
+        "નબળા મોબાઇલ નેટવર્કને કારણે હાજરી એપ સિંક થતી નથી; આચાર્ય પછીથી હાજરી પત્રકમાંથી માહિતી ભરે છે.",
+    "Attendance low in Grades 6 to 8; some older children help on farms during sowing.":
+        "ધોરણ 6 થી 8માં હાજરી ઓછી છે; વાવણી દરમિયાન કેટલાંક મોટાં બાળકો ખેતરમાં મદદ કરે છે.",
+    "Worked with the Grade 6 to 8 maths teacher on fractions; agreed on weekly practice sheets. Review in 3 weeks.":
+        "ધોરણ 6 થી 8ના ગણિત શિક્ષક સાથે અપૂર્ણાંક પર કામ કર્યું; સાપ્તાહિક મહાવરા પત્રકો નક્કી કર્યાં. "
+        "3 અઠવાડિયામાં સમીક્ષા.",
+    # generic notes
+    "Listened to Grade 3 children read aloud; most read simple words, a few need letter practice.":
+        "ધોરણ 3નાં બાળકોનું મોટેથી વાચન સાંભળ્યું; મોટા ભાગનાં સાદા શબ્દો વાંચે છે, થોડાંને અક્ષરોના મહાવરાની જરૂર છે.",
+    "Shared a story-card activity for Grade 4 reading.":
+        "ધોરણ 4ના વાચન માટે વાર્તા-કાર્ડની પ્રવૃત્તિ બતાવી.",
+    "Grade 4 maths: shared number games using local objects for addition and subtraction.":
+        "ધોરણ 4 ગણિત: સરવાળા-બાદબાકી માટે સ્થાનિક વસ્તુઓ વડે સંખ્યાની રમતો બતાવી.",
+    "Reviewed the Grade 6 unit test together; fractions need more practice.":
+        "ધોરણ 6ની એકમ કસોટીની સાથે મળીને સમીક્ષા કરી; અપૂર્ણાંકમાં વધુ મહાવરાની જરૂર છે.",
+    "Helped the Grade 7 teacher plan a simple plant experiment.":
+        "ધોરણ 7ના શિક્ષકને છોડ પરના સાદા પ્રયોગના આયોજનમાં મદદ કરી.",
+    "Grade 5 EVS: suggested a village water-source walk activity.":
+        "ધોરણ 5 પર્યાવરણ: ગામના પાણીના સ્ત્રોતની મુલાકાતની પ્રવૃત્તિ સૂચવી.",
+    "Checked registers; attendance steady. Head teacher calls parents after three days of absence.":
+        "હાજરી પત્રકો તપાસ્યાં; હાજરી સ્થિર છે. ત્રણ દિવસની ગેરહાજરી પછી આચાર્ય વાલીઓને ફોન કરે છે.",
+    "Discussed post-monsoon attendance with SMC members.":
+        "SMC સભ્યો સાથે ચોમાસા પછીની હાજરી અંગે ચર્ચા કરી.",
+    "Supported teachers in preparing unit test papers.":
+        "એકમ કસોટીનાં પ્રશ્નપત્રો તૈયાર કરવામાં શિક્ષકોને મદદ કરી.",
+    "Shared learning-outcome posters and how to use them in class.":
+        "અધ્યયન નિષ્પત્તિનાં પોસ્ટર અને વર્ગમાં તેનો ઉપયોગ કેવી રીતે કરવો તે બતાવ્યું.",
+    "Observed Grade 3 and 4 classes; good use of group work.":
+        "ધોરણ 3 અને 4ના વર્ગોનું નિરીક્ષણ કર્યું; જૂથકાર્યનો સારો ઉપયોગ થાય છે.",
+    "Observed a Grade 8 science class; children engaged in discussion.":
+        "ધોરણ 8ના વિજ્ઞાનના વર્ગનું નિરીક્ષણ કર્યું; બાળકો ચર્ચામાં સક્રિય હતાં.",
+    "Attended SMC meeting; discussed school safety and cleanliness.":
+        "SMC બેઠકમાં હાજરી આપી; શાળાની સલામતી અને સ્વચ્છતા અંગે ચર્ચા કરી.",
+    "Reviewed mid-day meal records and the school development plan.":
+        "મધ્યાહ્ન ભોજનના રેકોર્ડ અને શાળા વિકાસ યોજનાની સમીક્ષા કરી.",
+}
+
+
 def random_school_day(rng):
     # A Monday-Saturday date between school reopening (8 June) and 30 October.
     days = pd.bdate_range("2026-06-08", "2026-10-30", freq="C", weekmask="Mon Tue Wed Thu Fri Sat")
@@ -288,7 +358,12 @@ def build_visits(rng):
             note = rng.choice(notes_for(focus, stype))
             rows.append({"school_id": school, "visit_date": random_school_day(rng),
                          "focus_area": focus, "notes": note})
-    return pd.DataFrame(rows).sort_values(["visit_date", "school_id"]).reset_index(drop=True)
+    df = pd.DataFrame(rows).sort_values(["visit_date", "school_id"]).reset_index(drop=True)
+    untranslated = set(df.notes) - set(NOTES_GU)
+    if untranslated:
+        raise ValueError(f"visit notes without a Gujarati version: {sorted(untranslated)}")
+    df["notes_gu"] = df.notes.map(NOTES_GU)   # a lookup, so the random draws above are unchanged
+    return df
 
 
 # Yearly snapshot (UDISE+ reference date 30 Sept 2025).

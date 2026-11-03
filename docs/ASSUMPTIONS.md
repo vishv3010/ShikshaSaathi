@@ -17,7 +17,7 @@ The brief says to assume what it does not cover and to share those assumptions. 
 | A-11 | Assessments are monthly unit tests from June to October; June is a post-vacation baseline and October includes the first-term exam. | The brief's table is monthly; Gujarat schools reopen in June. |
 | A-12 | Attendance % is the average daily attendance over the month's school days. | The brief gives one figure per school-month. |
 | A-13 | "Days since last visit" is counted from 2 November 2026, the date of this data snapshot. | Needed for the visit-planning rule. |
-| A-14 | CRC visit notes are written in English in this prototype. Real notes would often be in Gujarati, which the LLM can also read. | Keeps the no-LLM fallback simple. |
+| A-14 | Each CRC visit note is stored in English and Gujarati (`notes`, `notes_gu`), and replies quote the note in the reply's language. Real notes would usually be typed in one language, often Gujarati; translating them would be the LLM's job. | Gujarati replies must be fully Gujarati; the two versions carry the same numbers (checked by the validator). |
 | A-15 | Missing data comes from failed or late uploads (e.g. weak mobile network), not from schools hiding results. | Keeps framing respectful; matches a real cause of gaps. |
 | A-16 | A school's learning level is the simple average of its grade-subject results; classes are not weighted by size. | The data has no enrolment per grade. |
 | A-17 | Cluster attendance is the average across schools that reported, not weighted by enrolment, and always says how many schools reported. | Easy to explain; a school with no data is not counted as 0. |

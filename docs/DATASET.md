@@ -15,7 +15,7 @@ Synthetic data for one cluster (`GJ-C07`) of 20 schools, May–October 2026. Eve
 
 `pct_below_basic` is derived from the average score with noise, fitted to the brief's own sample rows. The three sample rows printed in the brief (GJ-C07-014 and GJ-C07-009, August 2026) are reproduced exactly.
 
-`scripts/validate_data.py` checks the result before anything uses it: required columns, unknown or duplicate IDs, values outside 0–100, rows in vacation months, grades a school does not have, subjects not taught in a grade, visit notes that mention grades a school does not have, and expected vs actual row counts. It was tested on a deliberately corrupted copy of the data and caught all five planted errors.
+`scripts/validate_data.py` checks the result before anything uses it: required columns, unknown or duplicate IDs, values outside 0–100, rows in vacation months, grades a school does not have, subjects not taught in a grade, visit notes that mention grades a school does not have, Gujarati notes that are missing or carry different numbers from the English note, and expected vs actual row counts. It was tested on a deliberately corrupted copy of the data and caught all five planted errors.
 
 ```
 .venv/Scripts/python scripts/generate_data.py
@@ -30,7 +30,7 @@ Synthetic data for one cluster (`GJ-C07`) of 20 schools, May–October 2026. Eve
 | `calendar.csv` | 6 | month | month, school_open, note |
 | `attendance.csv` | 99 | school × month | school_id, month, student_attendance_pct, teacher_attendance_pct |
 | `assessments.csv` | 1,315 | school × month × grade × subject | school_id, month, grade, subject, avg_score_pct, pct_below_basic |
-| `visits.csv` | 39 | CRC visit | school_id, visit_date, focus_area, notes |
+| `visits.csv` | 39 | CRC visit | school_id, visit_date, focus_area, notes, notes_gu (the same note in Gujarati) |
 | `facilities.csv` | 20 | school (snapshot 30 Sep 2025) | school_id, as_of_date, teacher_posts_sanctioned, teachers_in_position, multigrade_classes, drinking_water, girls_toilet, electricity |
 
 - 10 primary schools (Std 1–5, assessed in Grades 3–5) and 10 upper primary schools (Std 1–8, assessed in Grades 3–8; "primary only" and "primary with upper primary" in the UDISE+ census, see D-020). In Gujarat, government schools up to Std 8 are also called "Prathmik Shala" (primary school), so the names do not show the type; the `type` column does.

@@ -126,6 +126,7 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
 ### D-023 · Replies are templates filled only from the facts — Accepted (3 Nov)
 
 - **Choice:** `reply.py` holds every sentence in English and Gujarati and fills it from the facts dict; it computes nothing. A month with no data, a class a school does not have, and a blank below-basic share each have their own wording, so a gap is never printed as a number or as "None".
+- **Gujarati quality (Vishv's review, 3 Nov):** visit notes are stored in Gujarati too, so Gujarati replies contain no English sentences (a test fails on any English word she did not type herself); clunky phrases were rewritten ("…ની માહિતી મુજબ", "…ની હાજરી હજી આવી નથી", "પોઇન્ટનો ઘટાડો") using school terms such as એકમ કસોટી, ઉપચારાત્મક તાસ, અધ્યયન નિષ્પત્તિ. Hindi replies come from the Gemini layer, not templates.
 - **Also:** the reply checks the question's premise against the data ("Why is Gujarati low in Navli?" answers that Navli is 12.6 points above the cluster average), lists stay under WhatsApp's 4,096-character message limit, and Gujarati sentences avoid gendered first-person verbs ("હું આ બતાવી શકું").
 
 ### D-020 · School types follow the UDISE+ census categories — Accepted (3 Nov)

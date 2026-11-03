@@ -114,5 +114,5 @@ def render_action(action, lang="en"):
         params["class_name"] = class_name(action["grade"], action["subject"], lang)
         params["activity"] = activity_for(action["grade"], action["subject"], lang)
     else:
-        params["class_name"] = {"en": "the most affected class", "gu": "સૌથી વધુ અસર પામેલા વર્ગ"}[lang]
+        params["class_name"] = {"en": "the most affected class", "gu": "સૌથી વધુ અસરગ્રસ્ત વર્ગ"}[lang]
     return TEXT[action["code"]][lang].format(**params)

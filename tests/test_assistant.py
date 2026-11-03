@@ -52,7 +52,7 @@ def test_missing_month_is_said_out_loud():
     assert r["text"].startswith("No attendance record for Umarvada in October: the data has not arrived.")
     assert "September: no data / 90.1%" in r["text"]                        # blank children's figure kept blank
     gu = ask("ઉમરવાડાની ઑક્ટોબરની હાજરી")
-    assert gu["text"].startswith("ઉમરવાડાનો ઑક્ટોબરની હાજરીનો રેકોર્ડ નથી")
+    assert gu["text"].startswith("ઉમરવાડા શાળાની ઑક્ટોબર મહિનાની હાજરી હજી આવી નથી.")
 
 
 @pytest.mark.parametrize("question, start", [
@@ -122,6 +122,13 @@ def test_visits():
     assert ask("Which schools have not been visited?")["text"].startswith("Visits in the last 30 days: 5.")
 
 
+def test_visit_notes_follow_the_reply_language():
+    en = ask("When did I last visit Sonpura?")["text"]
+    gu = ask("સોનપુરાની છેલ્લી મુલાકાત ક્યારે હતી?")["text"]
+    assert "Note: Grade 5 EVS: suggested a village water-source walk activity." in en
+    assert "નોંધ: ધોરણ 5 પર્યાવરણ: ગામના પાણીના સ્ત્રોતની મુલાકાતની પ્રવૃત્તિ સૂચવી." in gu
+
+
 def test_hindi_is_understood_and_answered_in_english_without_the_llm():
     r = ask("पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?")
     assert (r["intent"], r["lang"]) == ("subject_analysis", "en")
@@ -172,4 +179,8 @@ def test_every_answer_renders_cleanly(lang):
         assert len(text) < 3000, question       # well under WhatsApp's 4096-character limit for one message
         if lang == "gu":
             assert GUJARATI.search(text), question
+            # Fully Gujarati: no English words (SMC and BLO are 3 letters and stay as used in schools),
+            # except a name she typed herself, which is echoed as typed ("Khanpur").
+            english = [w for w in re.findall(r"[A-Za-z]{4,}", text) if w not in question]
+            assert not english, (question, english)
         json.dumps(r, allow_nan=False, ensure_ascii=False)

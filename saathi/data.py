@@ -78,7 +78,7 @@ class Data:
         """Visits to one school, newest first, with days since each visit."""
         rows = self.visits[self.visits.school_id == school_id].sort_values("visit_date", ascending=False)
         return [{"date": r.visit_date, "days_ago": (AS_OF - date.fromisoformat(r.visit_date)).days,
-                 "focus_area": r.focus_area, "notes": r.notes} for r in rows.itertuples()]
+                 "focus_area": r.focus_area, "notes": r.notes, "notes_gu": r.notes_gu} for r in rows.itertuples()]
 
     def facilities_for(self, school_id):
         row = self.facilities[self.facilities.school_id == school_id].iloc[0]

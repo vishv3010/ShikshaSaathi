@@ -20,7 +20,7 @@ REQUIRED = {
     "calendar": ["month", "school_open"],
     "attendance": ["school_id", "month", "student_attendance_pct", "teacher_attendance_pct"],
     "assessments": ["school_id", "month", "grade", "subject", "avg_score_pct", "pct_below_basic"],
-    "visits": ["school_id", "visit_date", "focus_area", "notes"],
+    "visits": ["school_id", "visit_date", "focus_area", "notes", "notes_gu"],
     "facilities": ["school_id", "teacher_posts_sanctioned", "teachers_in_position", "multigrade_classes",
                    "drinking_water", "girls_toilet", "electricity"],
 }
@@ -98,6 +98,14 @@ def main():
                  if any(int(g) not in GRADES[t]
                         for pair in re.findall(r"Grades? (\d)(?: (?:to|and) (\d))?", str(note)) for g in pair if g)]
     check(not bad_notes, f"visits: notes mention grades the school does not have {sorted(set(bad_notes))}")
+
+    # Gujarati notes: present, in Gujarati script, and carrying exactly the numbers of the English note
+    # (the number checker treats both as evidence, so they must agree).
+    gujarati = vis.notes_gu.fillna("").map(lambda s: bool(re.search("[\u0a80-\u0aff]", s)))
+    check(gujarati.all(), f"visits: {int((~gujarati).sum())} notes_gu missing or not in Gujarati")
+    numbers_differ = [i for i, (en, gu) in enumerate(zip(vis.notes, vis.notes_gu.fillna("")))
+                      if sorted(re.findall(r"\d+", str(en))) != sorted(re.findall(r"\d+", gu))]
+    check(not numbers_differ, f"visits: notes_gu numbers differ from notes in rows {numbers_differ}")
 
     # Coverage: expected rows vs actual (gaps are reported, not errors)
     n_open = len(open_months)

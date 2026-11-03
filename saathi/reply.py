@@ -26,33 +26,33 @@ W = {  # every sentence, in both languages
     "r_learning_level": ("average score {v}%", "સરેરાશ ગુણ {v}%"),
     "r_below_basic": ("{v}% of children below basic level", "{v}% બાળકો પાયાના સ્તરથી નીચે"),
     "r_student_attendance": ("attendance {v}%", "હાજરી {v}%"),
-    "r_attendance_drop": ("attendance down {v} points from {prev}%", "હાજરી {prev}% થી {v} પોઇન્ટ ઘટી"),
-    "r_attendance_with_drop": ("attendance {v}%, down {d} points from {prev}%", "હાજરી {v}%, {prev}% થી {d} પોઇન્ટ ઘટી"),
+    "r_attendance_drop": ("attendance down {v} points from {prev}%", "હાજરી {prev}%થી {v} પોઇન્ટ ઘટી"),
+    "r_attendance_with_drop": ("attendance {v}%, down {d} points from {prev}%", "હાજરી {v}% ({prev}%થી {d} પોઇન્ટ ઘટી)"),
     # --- month notes ---
-    "using_latest": ("{month} data, the latest available", "{month}ની માહિતી, સૌથી તાજી"),
+    "using_latest": ("{month} data, the latest available", "{month}ની માહિતી મુજબ"),
     "m_school_closed": ("Schools were closed in {month} for {note}, so there is no data for that month.",
                         "{month}માં શાળાઓ બંધ હતી (વેકેશન), તેથી તે મહિનાની માહિતી નથી."),
     "m_not_yet": ("{month} data is not available yet. Showing {latest}, the latest month.",
-                  "{month}ની માહિતી હજી ઉપલબ્ધ નથી. છેલ્લો મહિનો {latest} બતાવ્યો છે."),
+                  "{month}ની માહિતી હજી આવી નથી, તેથી છેલ્લા મહિના ({latest})ની માહિતી બતાવી છે."),
     "m_before_data": ("This data starts in {first}, so there is nothing for {month}. Showing {latest}.",
-                      "આ માહિતી {first}થી શરૂ થાય છે, તેથી {month}ની માહિતી નથી. {latest} બતાવ્યો છે."),
+                      "આ માહિતી {first}થી શરૂ થાય છે, તેથી {month}ની માહિતી નથી. {latest}ની માહિતી બતાવી છે."),
     # --- top priority schools ---
     "top_header": ("Schools to visit first ({using}):", "સૌથી પહેલાં મુલાકાત લેવાની શાળાઓ ({using}):"),
     "last_visit_short": ("Last visit: {when}", "છેલ્લી મુલાકાત: {when}"),
     "last_visit_paren": ("(last visit {when})", "(છેલ્લી મુલાકાત {when})"),
     "only_n_need": ("Only {n} schools need extra support in {month}; the rest are Low priority.",
-                    "{month}માં ફક્ત {n} શાળાઓને વધારાની મદદની જરૂર છે; બાકીની ઓછી પ્રાથમિકતામાં છે."),
+                    "{month}માં ફક્ત {n} શાળાઓને વધારાની મદદની જરૂર છે; બાકીની શાળાઓ ઓછી પ્રાથમિકતામાં છે."),
     "none_need": ("No school needs extra support in {month}: all scored schools are Low priority.",
                   "{month}માં કોઈ શાળાને વધારાની મદદની જરૂર નથી: બધી શાળાઓ ઓછી પ્રાથમિકતામાં છે."),
     "also": ("Also:", "આ પણ જુઓ:"),
     "moved_down": ("{name} ({p}, {s}) was visited {d} days ago, so it is lower on this list. Follow up by phone.",
-                   "{name} ({p}, {s})ની {d} દિવસ પહેલાં જ મુલાકાત થઈ છે, તેથી યાદીમાં નીચે છે. ફોનથી ફોલો-અપ કરો."),
+                   "{name} ({p}, {s}): {d} દિવસ પહેલાં જ મુલાકાત લીધી છે, તેથી યાદીમાં નીચે રાખી છે. ફોન પર ફોલો-અપ કરો."),
     "watch_class": ("{name}: Low priority overall, but {cls} is {v}%. Worth a short visit.",
-                    "{name}: એકંદરે ઓછી પ્રાથમિકતા, પણ {cls} {v}% છે. ટૂંકી મુલાકાત લેવા જેવી છે."),
+                    "{name}: એકંદરે ઓછી પ્રાથમિકતા, પણ {cls}માં {v}% છે. ટૂંકી મુલાકાત લેવી યોગ્ય રહેશે."),
     "watch_other": ("{name}: Low priority overall, but: {action}", "{name}: એકંદરે ઓછી પ્રાથમિકતા, પણ: {action}"),
     "not_enough_line": ("{name}: not enough {month} data to score. {action}",
-                        "{name}: {month}ની પૂરતી માહિતી નથી, તેથી સ્કોર નથી. {action}"),
-    "long_unvisited": ("Not visited for over {n} days: {list}", "{n} દિવસથી વધુ સમયથી મુલાકાત નથી: {list}"),
+                        "{name}: {month}ની પૂરતી માહિતી ન હોવાથી સ્કોર આપ્યો નથી. {action}"),
+    "long_unvisited": ("Not visited for over {n} days: {list}", "{n} દિવસથી વધુ સમયથી મુલાકાત લીધી નથી: {list}"),
     "ask_more": ('Ask "{q}" for details.', 'વિગત માટે પૂછો: "{q}"'),
     "q_about": ("Tell me about {name}", "{name} વિશે જણાવો"),
     "q_attendance": ("Show attendance for {name}", "{name}ની હાજરી બતાવો"),
@@ -63,13 +63,13 @@ W = {  # every sentence, in both languages
     "summary_header": ("{name} ({type}, {n} children), {month}", "{name} ({type}, {n} બાળકો), {month}"),
     "priority_line": ("Priority: {p}, score {s}/100", "પ્રાથમિકતા: {p}, સ્કોર {s}/100"),
     "attendance_line": ("Attendance {v}% (previous {k} months: {prev}%); teachers {t}",
-                        "હાજરી {v}% (અગાઉના {k} મહિના: {prev}%); શિક્ષકો {t}"),
+                        "બાળકોની હાજરી {v}% (અગાઉના {k} મહિનાની સરેરાશ {prev}%); શિક્ષકોની હાજરી {t}"),
     "learning_line": ("Learning: average {v}%, {b}% below basic ({r} of {e} class results)",
-                      "અભ્યાસ: સરેરાશ ગુણ {v}%, {b}% બાળકો પાયાના સ્તરથી નીચે ({e}માંથી {r} પરિણામ)"),
-    "lowest_class": ("Lowest class: {cls} {v}%", "સૌથી ઓછા ગુણ: {cls} {v}%"),
-    "facilities": ("School facts ({date}): {list}", "શાળાની સુવિધા ({date}): {list}"),
+                      "અધ્યયન: સરેરાશ ગુણ {v}%, {b}% બાળકો પાયાના સ્તરથી નીચે ({e}માંથી {r} વર્ગનાં પરિણામ)"),
+    "lowest_class": ("Lowest class: {cls} {v}%", "સૌથી ઓછા ગુણ: {cls}માં {v}%"),
+    "facilities": ("School facts ({date}): {list}", "શાળાની વિગત ({date} મુજબ): {list}"),
     "f_posts": ("{n} of {m} teacher posts filled", "શિક્ષકોની {m}માંથી {n} જગ્યા ભરાયેલી"),
-    "f_multigrade": ("multigrade classes", "એક વર્ગખંડમાં એકથી વધુ ધોરણ"),
+    "f_multigrade": ("multigrade classes", "એક ઓરડામાં એકથી વધુ ધોરણ ભણે છે"),
     "f_drinking_water": ("drinking water not functional", "પીવાનું પાણી ચાલુ નથી"),
     "f_girls_toilet": ("girls' toilet not functional", "કન્યા શૌચાલય ચાલુ નથી"),
     "f_missing": ("{field} not recorded", "{field}ની માહિતી નથી"),
@@ -77,21 +77,21 @@ W = {  # every sentence, in both languages
     "not_enough_header": ("Not enough {month} data to give a score. Please check:",
                           "{month}ની પૂરતી માહિતી નથી, તેથી સ્કોર આપી શકાતો નથી. કૃપા કરીને તપાસો:"),
     # --- subject analysis ---
-    "subject_header": ("{name}, {cls}, {month}: average {v}%{bb}.", "{name}, {cls}, {month}: સરેરાશ {v}%{bb}."),
+    "subject_header": ("{name}, {cls}, {month}: average {v}%{bb}.", "{name}, {cls} ({month}): સરેરાશ ગુણ {v}%{bb}."),
     "bb_long": (", {b}% of children below basic", ", {b}% બાળકો પાયાના સ્તરથી નીચે"),
     "bb_short": (" ({b}% below basic)", " ({b}% પાયાથી નીચે)"),
     "latest_is_old": ("This is the latest result; {missing} has not arrived.",
                       "આ છેલ્લું પરિણામ છે; {missing}નું પરિણામ આવ્યું નથી."),
     "trend": ("Trend: {list}", "વલણ: {list}"),
-    "change_down": ("down {v} points since {m}", "{m}થી {v} પોઇન્ટ ઘટ્યું"),
-    "change_up": ("up {v} points since {m}", "{m}થી {v} પોઇન્ટ વધ્યું"),
+    "change_down": ("down {v} points since {m}", "{m}થી {v} પોઇન્ટનો ઘટાડો"),
+    "change_up": ("up {v} points since {m}", "{m}થી {v} પોઇન્ટનો વધારો"),
     "change_none": ("no change since {m}", "{m}થી કોઈ ફેરફાર નથી"),
-    "same_class": ("Same class, other subjects: {list}", "આ જ વર્ગના બીજા વિષય: {list}"),
+    "same_class": ("Same class, other subjects: {list}", "આ જ ધોરણના બીજા વિષયો: {list}"),
     "cluster_avg": ("Cluster average for {cls}: {v}% ({n} schools){cmp}", "{cls}ની ક્લસ્ટર સરેરાશ: {v}% ({n} શાળા){cmp}"),
     "cmp_below": ("; this class is {d} points below it", "; આ વર્ગ તેનાથી {d} પોઇન્ટ નીચે છે"),
     "cmp_above": ("; this class is {d} points above it", "; આ વર્ગ તેનાથી {d} પોઇન્ટ ઉપર છે"),
     "cmp_same": ("; this class is at the average", "; આ વર્ગ સરેરાશ જેટલો જ છે"),
-    "visit_notes": ("Visit notes:", "મુલાકાત નોંધ:"),
+    "visit_notes": ("Visit notes:", "મુલાકાતની નોંધ:"),
     "na_grade_not_assessed": ("Only Grades {grades} are assessed in this data, so there are no Grade {g} results.",
                               "આ માહિતીમાં ફક્ત ધોરણ {grades}નું મૂલ્યાંકન છે, તેથી ધોરણ {g}નું પરિણામ નથી."),
     "na_grade_not_offered": ("{name} is a {type}, so it has no Grade {g}. Results are available for Grades {grades}.",
@@ -106,18 +106,18 @@ W = {  # every sentence, in both languages
     "label_all_grades": ("{subject} (all grades)", "{subject} (બધાં ધોરણ)"),
     "label_all_subjects": ("Grade {g} (all subjects)", "ધોરણ {g} (બધા વિષય)"),
     "class_header": ("{label} across the cluster, {month}: average {v}% ({n} class results).",
-                     "{label}, આખું ક્લસ્ટર, {month}: સરેરાશ {v}% ({n} પરિણામ)."),
-    "below_concern": ("{c} of {n} are below {p}%. Lowest:", "{n}માંથી {c} પરિણામ {p}%થી ઓછાં છે. સૌથી ઓછાં:"),
-    "lowest_only": ("Lowest:", "સૌથી ઓછાં:"),
+                     "આખા ક્લસ્ટરમાં {label} ({month}): સરેરાશ ગુણ {v}% ({n} વર્ગનાં પરિણામ)."),
+    "below_concern": ("{c} of {n} are below {p}%. Lowest:", "{n}માંથી {c} વર્ગમાં {p}%થી ઓછા ગુણ છે. સૌથી ઓછા ગુણ:"),
+    "lowest_only": ("Lowest:", "સૌથી ઓછા ગુણ:"),
     "class_row": ("{name}{cls}: {v}%{bb}", "{name}{cls}: {v}%{bb}"),
-    "no_result": ("No {month} result: {list}", "{month}નું પરિણામ નથી: {list}"),
+    "no_result": ("No {month} result: {list}", "{month}નું પરિણામ આવ્યું નથી: {list}"),
     "ask_one_school": ('For one school, ask: "{q}"', 'એક શાળા માટે પૂછો: "{q}"'),
     "q_subject": ("Why is {cls} low in {name}?", "{name}માં {cls} કેમ ઓછું છે?"),
     # --- attendance ---
     "att_school_header": ("{name} attendance (children / teachers):", "{name}ની હાજરી (બાળકો / શિક્ષકો):"),
     "att_month": ("{month}: {s} / {t}", "{month}: {s} / {t}"),
     "att_closed": ("{month}: school closed for {note}", "{month}: શાળા બંધ (વેકેશન)"),
-    "att_missing": ("{month}: no record", "{month}: રેકોર્ડ નથી"),
+    "att_missing": ("{month}: no record", "{month}: માહિતી આવી નથી"),
     "att_lower": ("{month} is {v} points below the previous {k} months ({prev}%).",
                   "{month}ની હાજરી અગાઉના {k} મહિના ({prev}%) કરતાં {v} પોઇન્ટ ઓછી છે."),
     "att_higher": ("{month} is {v} points above the previous {k} months ({prev}%).",
@@ -125,12 +125,12 @@ W = {  # every sentence, in both languages
     "att_same": ("{month} is the same as the previous {k} months ({prev}%).",
                  "{month}ની હાજરી અગાઉના {k} મહિના જેટલી જ છે ({prev}%)."),
     "att_cluster_line": ("Cluster, {month}: {v}% ({r} of {t} schools reported).",
-                         "ક્લસ્ટર, {month}: {v}% ({t}માંથી {r} શાળાની માહિતી)."),
+                         "ક્લસ્ટરની સરેરાશ ({month}): {v}% ({t}માંથી {r} શાળાની માહિતી)."),
     "att_no_record": ("No attendance record for {name} in {month}: the data has not arrived. "
                       "Please check with the head teacher.",
-                      "{name}નો {month}ની હાજરીનો રેકોર્ડ નથી: માહિતી હજી આવી નથી. કૃપા કરીને આચાર્ય સાથે ખાતરી કરો."),
+                      "{name} શાળાની {month} મહિનાની હાજરી હજી આવી નથી. કૃપા કરીને આચાર્ય સાથે વાત કરીને ખાતરી કરો."),
     "att_children_missing": ("Children's attendance for {name} in {month} is missing. Please check with the head teacher.",
-                             "{name}ની {month}ની બાળકોની હાજરી ખૂટે છે. કૃપા કરીને આચાર્ય સાથે ખાતરી કરો."),
+                             "{name} શાળાની {month} મહિનાની બાળકોની હાજરી ખૂટે છે. કૃપા કરીને આચાર્ય સાથે વાત કરીને ખાતરી કરો."),
     "att_asked": ("{name}, {month}: children {s}, teachers {t}.", "{name}, {month}: બાળકો {s}, શિક્ષકો {t}."),
     "att_cluster_header": ("Cluster attendance (average of schools that reported):",
                            "ક્લસ્ટરની હાજરી (માહિતી આપનાર શાળાઓની સરેરાશ):"),
@@ -141,24 +141,24 @@ W = {  # every sentence, in both languages
                         "worth a conversation with the head teacher.",
                         "શિક્ષકોની હાજરી {p}%થી ઓછી: {list}. રજા, તાલીમ કે સરકારી ફરજને કારણે હોઈ શકે; "
                         "આચાર્ય સાથે વાત કરવા જેવી છે."),
-    "att_not_reported": ("No {month} record: {list}", "{month}નો રેકોર્ડ નથી: {list}"),
+    "att_not_reported": ("No {month} record: {list}", "{month}ની માહિતી આવી નથી: {list}"),
     # --- missing data ---
     "gaps_header": ("Data gaps (as of {date}): {n} of {t} schools have at least one gap.",
                     "ખૂટતી માહિતી ({date} સુધી): {t}માંથી {n} શાળામાં કંઈક ખૂટે છે."),
     "gaps_not_enough": ("Not enough data to score {month}:", "{month}નો સ્કોર આપવા પૂરતી માહિતી નથી:"),
-    "gaps_other": ("Other gaps, most recent first:", "બીજી ખૂટતી માહિતી, તાજી પહેલાં:"),
+    "gaps_other": ("Other gaps, most recent first:", "બીજી ખૂટતી માહિતી (નવી પહેલાં):"),
     "gaps_also": ("Smaller or older gaps also at: {list}", "નાની કે જૂની ખૂટતી માહિતી આ શાળાઓમાં પણ: {list}"),
     "gaps_closed": ("{months}: schools were closed, so that is not missing data.",
                     "{months}માં શાળાઓ બંધ હતી, તે ખૂટતી માહિતી ગણાતી નથી."),
     "gaps_school_header": ("Data gaps for {name}:", "{name}ની ખૂટતી માહિતી:"),
     "gaps_school_none": ("No data gaps for {name}: every school month is complete.",
                          "{name}ની કોઈ માહિતી ખૂટતી નથી: શાળાના બધા મહિના પૂરા છે."),
-    "g_attendance_row": ("no attendance record for {month}", "{month}ની હાજરીનો રેકોર્ડ નથી"),
+    "g_attendance_row": ("no attendance record for {month}", "{month}ની હાજરી આવી નથી"),
     "g_student_attendance": ("children's attendance missing for {month}", "{month}ની બાળકોની હાજરી ખૂટે છે"),
     "g_teacher_attendance": ("teacher attendance missing for {month}", "{month}ની શિક્ષકોની હાજરી ખૂટે છે"),
-    "g_assessment_results": ("{a} of {e} results for {month}", "{month}નાં {e}માંથી {a} પરિણામ"),
+    "g_assessment_results": ("{a} of {e} results for {month}", "{month}: {e}માંથી {a} પરિણામ આવ્યાં"),
     "g_below_basic_class": ("below-basic share missing for {cls} in {month}", "{month}માં {cls}નો પાયાથી નીચેનો આંકડો ખૂટે છે"),
-    "g_below_basic": ("below-basic share for {a} of {e} results in {month}", "{month}માં {e}માંથી {a} પરિણામમાં પાયાથી નીચેનો આંકડો"),
+    "g_below_basic": ("below-basic share for {a} of {e} results in {month}", "{month}: {e}માંથી ફક્ત {a} પરિણામમાં પાયાથી નીચેનો આંકડો છે"),
     "g_attendance_history": ("only {a} of the previous {e} months of attendance", "અગાઉના {e} મહિનામાંથી ફક્ત {a} મહિનાની હાજરી"),
     "g_facilities": ("{field} not recorded", "{field}ની માહિતી નથી"),
     # --- visits ---
@@ -168,7 +168,7 @@ W = {  # every sentence, in both languages
     "visit_earlier": ("Earlier: {list}", "અગાઉ: {list}"),
     "visit_none": ("No visits to {name} are recorded.", "{name}ની કોઈ મુલાકાત નોંધાઈ નથી."),
     "visits_30": ("Visits in the last 30 days: {n}.", "છેલ્લા 30 દિવસમાં મુલાકાતો: {n}."),
-    "visits_longest": ("Not visited for longest:", "સૌથી લાંબા સમયથી મુલાકાત નથી:"),
+    "visits_longest": ("Not visited for longest:", "સૌથી લાંબા સમયથી મુલાકાત બાકી:"),
     "visit_row": ("{name}: {d} days ({date})", "{name}: {d} દિવસ ({date})"),
     "visit_row_never": ("{name}: no visit recorded", "{name}: કોઈ મુલાકાત નોંધાઈ નથી"),
     "ask_visit": ('For notes, ask: "When did I last visit {name}?"', 'નોંધ માટે પૂછો: "{name}ની છેલ્લી મુલાકાત ક્યારે હતી?"'),
@@ -183,7 +183,7 @@ W = {  # every sentence, in both languages
     "off_data": ("Data: {month} data from {list} has not arrived; I will follow up with the school.",
                  "માહિતી: {list}ની {month}ની માહિતી આવી નથી; હું શાળા સાથે ફોલો-અપ કરીશ."),
     "off_plan": ("Plan this week: visit {list}.", "આ અઠવાડિયાનું આયોજન: {list}ની મુલાકાત."),
-    "off_phone": ("Phone follow-up: {name} (visited {d} days ago).", "ફોન ફોલો-અપ: {name} ({d} દિવસ પહેલાં મુલાકાત થઈ)."),
+    "off_phone": ("Phone follow-up: {name} (visited {d} days ago).", "ફોન ફોલો-અપ: {name} ({d} દિવસ પહેલાં મુલાકાત લીધી છે)."),
     "off_watch": ("Also checking: {list}.", "આ પણ તપાસીશ: {list}."),
     # --- help, boundaries ---
     "help": ("I can help with your schools' attendance, learning results and visits. You can ask:",
@@ -203,7 +203,7 @@ W = {  # every sentence, in both languages
                     "અહીં માહિતી કે નિયમો બદલી શકાતા નથી, અને આંકડા ક્યારેય ઘડી કાઢવામાં આવતા નથી: "
                     "દરેક આંકડો શાળાના રેકોર્ડમાંથી જ આવે છે. આ રીતે પૂછો:"),
     "not_found": ('There is no school called "{name}" in your cluster.', 'તમારા ક્લસ્ટરમાં "{name}" નામની શાળા નથી.'),
-    "did_you_mean": ("Did you mean: {list}?", "શું તમે આ કહેવા માંગો છો: {list}?"),
+    "did_you_mean": ("Did you mean: {list}?", "શું તમે આમાંથી કોઈ શાળા વિશે પૂછો છો: {list}?"),
     "your_schools": ("Your schools: {list}", "તમારી શાળાઓ: {list}"),
     "clarify_school": ("Which school do you mean?", "કઈ શાળા વિશે પૂછો છો?"),
     "one_at_a_time": ("I can look at one school at a time. Which one?", "એક સમયે એક શાળા જોઈ શકાય છે. કઈ શાળા?"),
@@ -353,6 +353,11 @@ def month_note(note, lang):
     return t("m_before_data", lang, month=m, first=month(note["first"], lang), latest=month(note["latest"], lang))
 
 
+def note_for(visit, lang):
+    """A visit note in the reply's language (visits.csv holds English and Gujarati versions)."""
+    return visit["notes_gu"] if lang == "gu" else visit["notes"]
+
+
 def focus(area, lang):
     return FOCUS.get(area, area) if lang == "gu" else area
 
@@ -424,7 +429,7 @@ def school_summary(f, lang):
         lines.append("• " + facilities)
     v = p["last_visit"]
     if v:
-        lines.append("• " + t("last_visit_line", lang, date=date_text(v["date"], lang), d=v["days_ago"], note=v["notes"]))
+        lines.append("• " + t("last_visit_line", lang, date=date_text(v["date"], lang), d=v["days_ago"], note=note_for(v, lang)))
     else:
         lines.append("• " + t("last_visit_short", lang, when=t("never_visited", lang)))
     lines.append(f"{t('do', lang)}: {render_action(p['action'], lang)}")
@@ -479,7 +484,7 @@ def subject_analysis(f, lang):
         lines.append("• " + facilities)
     if f["related_visit_notes"]:
         lines.append(t("visit_notes", lang))
-        lines += [f"• {date_text(v['date'], lang)}: {v['notes']}" for v in f["related_visit_notes"][:2]]
+        lines += [f"• {date_text(v['date'], lang)}: {note_for(v, lang)}" for v in f["related_visit_notes"][:2]]
     if f["action"]["code"] != "routine":
         lines.append(t("cause_caveat", lang))
     lines.append(f"{t('do', lang)}: {render_action(f['action'], lang)}")
@@ -616,7 +621,7 @@ def recent_visits(f, lang):
             return [t("visit_none", lang, name=name)], []
         v = visits[0]
         lines = [t("visit_last", lang, name=name, date=date_text(v["date"], lang), d=v["days_ago"],
-                   focus=focus(v["focus_area"], lang)), t("visit_note", lang, note=v["notes"])]
+                   focus=focus(v["focus_area"], lang)), t("visit_note", lang, note=note_for(v, lang))]
         if len(visits) > 1:
             lines.append(t("visit_earlier", lang, list=", ".join(
                 f"{date_text(x['date'], lang)} ({focus(x['focus_area'], lang)})" for x in visits[1:])))
