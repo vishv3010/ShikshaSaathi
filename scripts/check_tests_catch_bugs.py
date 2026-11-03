@@ -4,6 +4,7 @@ A test suite that never fails proves nothing. Exit code 1 if any bug slips throu
 
 Run:  .venv/Scripts/python scripts/check_tests_catch_bugs.py
 """
+import os
 import shutil
 import subprocess
 import sys
@@ -55,11 +56,14 @@ def main():
                     sys.exit(f"cannot plant '{label}': {path} has changed, update this script")
                 code = code.replace(old, new)
             target.write_text(code, encoding="utf-8")
+            # UTF-8 both ways: test output holds Gujarati and Hindi, which Windows' default code page cannot.
             result = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"],
-                                    cwd=copy, capture_output=True, text=True)
+                                    cwd=copy, capture_output=True, encoding="utf-8", errors="replace",
+                                    env={**os.environ, "PYTHONUTF8": "1"})
         caught = result.returncode != 0
         missed += not caught
-        print(f"{'caught' if caught else 'MISSED'}  {label}  ({result.stdout.strip().splitlines()[-1]})")
+        summary = (result.stdout.strip().splitlines() or ["no output"])[-1]
+        print(f"{'caught' if caught else 'MISSED'}  {label}  ({summary})")
     sys.exit(1 if missed else 0)
 
 
