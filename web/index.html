@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f6f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1412" media="(prefers-color-scheme: dark)">
 <title>Shiksha Saathi</title>
 <style>
   /* One bold thing: this week's plan on a school blackboard; everything around it is quiet paper (D-032).
@@ -239,7 +239,7 @@ const UI = {
     tiles: ["Attendance", "A weak class", "Missing data", "Note for my officer"],
     trust: "Every number comes from the school records (synthetic demo data).", placeholder: "Ask in Gujarati, English or Hindi…",
     sub: (n, m) => n + " schools, " + m, pickLabel: "Reply language", qLabel: "Your question", sendLabel: "Send",
-    loading: "Checking your school records…",
+    loading: "Checking your school records…", slow: "Taking a little longer…",
     act: "What to do", why: "Why", last: "Last visited", copy: "Copy", copied: "Copied", next: "Ask next",
     aiUsed: "Written with AI, every number checked against school records", checked: "From your school records",
     rejectedNum: (x) => "The AI wrote a number (" + x + ") that isn't in the records, so its text was removed. This answer comes straight from the records.",
@@ -258,7 +258,7 @@ const UI = {
     tiles: ["હાજરી", "નબળો વર્ગ", "ખૂટતી માહિતી", "અધિકારી માટે નોંધ"],
     trust: "દરેક આંકડો શાળાના રેકોર્ડમાંથી આવે છે (ડેમો માટે કાલ્પનિક માહિતી).", placeholder: "ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો…",
     sub: (n, m) => n + " શાળાઓ, " + m, pickLabel: "જવાબની ભાષા", qLabel: "તમારો પ્રશ્ન", sendLabel: "મોકલો",
-    loading: "શાળાના રેકોર્ડ જોઈ રહ્યા છીએ…",
+    loading: "શાળાના રેકોર્ડ જોઈ રહ્યા છીએ…", slow: "થોડી વધુ વાર લાગી રહી છે…",
     act: "શું કરવું", why: "કારણ", last: "છેલ્લી મુલાકાત", copy: "નકલ કરો", copied: "નકલ થઈ ગઈ", next: "આગળ પૂછો",
     aiUsed: "AIની મદદથી લખ્યું, દરેક આંકડો રેકોર્ડ સાથે ચકાસ્યો", checked: "શાળાના રેકોર્ડમાંથી",
     rejectedNum: (x) => "AIએ એવો આંકડો (" + x + ") લખ્યો જે રેકોર્ડમાં નથી, તેથી તેનું લખાણ કાઢી નાખ્યું. આ જવાબ સીધો રેકોર્ડમાંથી છે.",
@@ -277,7 +277,7 @@ const UI = {
     tiles: ["हाजिरी", "कमज़ोर कक्षा", "अधूरा डेटा", "अधिकारी के लिए नोट"],
     trust: "हर आंकड़ा स्कूल के रिकॉर्ड से आता है (डेमो के लिए काल्पनिक डेटा)।", placeholder: "गुजराती, अंग्रेज़ी या हिंदी में पूछें…",
     sub: (n, m) => n + " स्कूल, " + m, pickLabel: "जवाब की भाषा", qLabel: "आपका सवाल", sendLabel: "भेजें",
-    loading: "स्कूल के रिकॉर्ड देख रहे हैं…",
+    loading: "स्कूल के रिकॉर्ड देख रहे हैं…", slow: "थोड़ा ज़्यादा समय लग रहा है…",
     act: "क्या करें", why: "कारण", last: "पिछला दौरा", copy: "कॉपी करें", copied: "कॉपी हो गया", next: "आगे पूछें",
     aiUsed: "AI की मदद से लिखा, हर आंकड़ा रिकॉर्ड से जाँचा", checked: "स्कूल के रिकॉर्ड से",
     rejectedNum: (x) => "AI ने ऐसा आंकड़ा (" + x + ") लिखा जो रिकॉर्ड में नहीं है, इसलिए उसका लिखा हटा दिया। यह जवाब सीधे रिकॉर्ड से है।",
@@ -298,7 +298,6 @@ const CHEV = '<path d="M9 6l6 6-6 6"/>';
 
 const scriptOf = (text) => /[઀-૿]/.test(text) ? "gu" : /[ऀ-ॿ]/.test(text) ? "hi" : "en";
 const uiKey = (fallback) => UI[lang] ? lang : UI[fallback] ? fallback : "en";
-const ui = (fallback) => UI[uiKey(fallback)];
 const homeLang = () => lang || "en";           // home: chosen language, English for Auto
 
 // DOM helpers: text goes in as text, never as HTML.
@@ -353,6 +352,11 @@ function renderHome() {
     wait.setAttribute("aria-hidden", "true");
     wait.innerHTML = '<p class="skel"></p>'.repeat(6);
     home.appendChild(wait);
+  } else {                                      // said out loud, never just missing
+    const again = el("button", "chip", t.retry);
+    again.type = "button";
+    again.addEventListener("click", () => location.reload());
+    home.append(el("p", "lede", t.offline), again);
   }
   home.appendChild(el("h2", "section", t.askAbout));
   const tiles = el("div", "tiles");
@@ -483,9 +487,11 @@ async function askServer(question, schoolId, shown) {
   answer.lang = tk;
   answer.setAttribute("aria-busy", "true");
   dots.append(el("i"), el("i"), el("i"));
-  wait.append(dots, el("span", "", t.loading));
+  const note = el("span", "", t.loading);
+  wait.append(dots, note);
   answer.appendChild(wait); thread.appendChild(answer);
   chat.scrollTop = q.offsetTop - chat.offsetTop - 8;
+  const slow = setTimeout(() => { note.textContent = t.slow; }, 6000);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 45000);   // longer than the server's worst case
   try {
@@ -517,7 +523,7 @@ async function askServer(question, schoolId, shown) {
     answer.replaceChildren();
     retry(answer, t.offline, t, question, schoolId, shown);
   } finally {
-    clearTimeout(timer); setBusy(false);
+    clearTimeout(timer); clearTimeout(slow); setBusy(false);
     answer.removeAttribute("aria-busy");
     chat.scrollTop = q.offsetTop - chat.offsetTop - 8;          // the question on top, its answer below
   }
