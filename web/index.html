@@ -8,71 +8,115 @@
 <style>
   /* Every text colour meets WCAG AA (4.5:1) on its background, in light and dark mode. */
   :root {
-    --bar: #075e54; --bar-text: #fff; --bg: #ece5dd; --me: #dcf8c6; --bot: #fff; --text: #111b21;
-    --muted: #54656f; --chip: #fff; --chip-border: #c9d3d8; --ok: #17643f; --warn: #7d4a00; --bad: #b3261e;
-    --input: #fff;
+    --page: #d8dfe2; --bar: #075e54; --bar-text: #fff; --bg: #efeae2; --bot: #fff; --me: #d9fdd3; --text: #111b21;
+    --muted: #54656f; --line: #e4e8eb; --chip: #fff; --chip-border: #c9d3d8; --input: #fff;
+    --ok: #17643f; --warn: #7d4a00; --bad: #b3261e; --accent: #075e54; --accent-text: #fff;
+    --high-bg: #fde8e7; --high: #a1251b; --high-edge: #d93025;
+    --med-bg: #fff3dc; --med: #7d4a00; --med-edge: #e8930c;
+    --low-bg: #e6f4ea; --low: #17643f; --low-edge: #1f8b4c;
+    --do-bg: #e7f6ec; --do-edge: #1f8b4c; --do-text: #0f3d23; --bar-track: #e4e8eb;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bar: #1f2c33; --bg: #0b141a; --me: #005c4b; --bot: #202c33; --text: #e9edef; --muted: #8696a0;
-      --chip: #202c33; --chip-border: #3b4a54; --ok: #6fd3a0; --warn: #f3b562; --bad: #ff8a80; --input: #2a3942;
+      --page: #070d11; --bar: #1f2c33; --bg: #0b141a; --bot: #1f2c33; --me: #005c4b; --text: #e9edef; --muted: #8696a0;
+      --line: #2a3942; --chip: #1f2c33; --chip-border: #3b4a54; --input: #2a3942; --ok: #6fd3a0; --warn: #f3b562;
+      --bad: #ff8a80; --accent: #00a884; --accent-text: #06231c;
+      --high-bg: #4a1c19; --high: #ffb4ab; --high-edge: #ff6b5e; --med-bg: #43300d; --med: #ffd27a; --med-edge: #f3b562;
+      --low-bg: #133d27; --low: #8fe0b0; --low-edge: #4cc184; --do-bg: #12352a; --do-edge: #00a884; --do-text: #d7f5e8;
+      --bar-track: #2a3942;
     }
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {
-    display: flex; flex-direction: column; height: 100dvh; background: var(--bg); color: var(--text);
+    background: var(--page); color: var(--text);
     font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Gujarati", "Noto Sans Devanagari", sans-serif;
   }
+  .app { display: flex; flex-direction: column; height: 100dvh; max-width: 780px; margin: 0 auto; background: var(--bg); }
+  @media (min-width: 800px) { .app { box-shadow: 0 0 24px rgba(0,0,0,.12); } }
   header { background: var(--bar); color: var(--bar-text); padding: 10px 16px; display: flex; gap: 12px; align-items: center; }
-  header h1 { font-size: 18px; margin: 0; line-height: 1.2; }
-  header p { margin: 2px 0 0; font-size: 12.5px; opacity: .85; }
+  .logo { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.16); display: grid; place-items: center;
+          font-size: 20px; flex: none; }
+  header h1 { font-size: 18px; margin: 0; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  header h1 small { font-size: 13px; font-weight: 500; opacity: .85; margin-left: 4px; }
+  header p { margin: 2px 0 0; font-size: 12.5px; opacity: .88; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   header .titles { flex: 1; min-width: 0; }
-  select {
-    font: inherit; font-size: 14px; color: var(--text); background: var(--input); border: 0; border-radius: 8px;
-    padding: 6px 8px; min-height: 36px;
-  }
+  select { font: inherit; font-size: 14px; color: var(--text); background: var(--input); border: 0; border-radius: 8px;
+           padding: 6px 8px; min-height: 36px; }
   main { flex: 1; overflow-y: auto; padding: 12px 12px 4px; }
-  .msg { display: flex; flex-direction: column; margin: 6px 0; }
+  .msg { display: flex; flex-direction: column; margin: 8px 0; }
   .msg.me { align-items: flex-end; }
-  .bubble {
-    max-width: min(88%, 640px); padding: 8px 11px; border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere;
-    background: var(--bot); box-shadow: 0 1px 1px rgba(0,0,0,.12);
-  }
-  .me .bubble { background: var(--me); }
-  .meta { font-size: 12px; color: var(--muted); margin: 3px 4px 0; max-width: min(88%, 640px); }
+  .bubble { max-width: min(92%, 640px); padding: 9px 12px; border-radius: 12px; overflow-wrap: anywhere;
+            background: var(--bot); box-shadow: 0 1px 1px rgba(0,0,0,.12); }
+  .me .bubble { background: var(--me); white-space: pre-wrap; }
+  .bubble p { margin: 0 0 6px; } .bubble p:last-child { margin-bottom: 0; }
+  .bubble ul { margin: 2px 0 8px; padding-left: 20px; } .bubble li { margin: 2px 0; }
+  .headline { font-weight: 600; font-size: 16.5px; }
+  .lead { font-weight: 600; font-size: 16.5px; border-left: 4px solid var(--accent); padding-left: 10px; margin-bottom: 10px; }
+  .subhead { font-weight: 600; margin-top: 8px; }
+  .item { font-weight: 600; margin-top: 8px; }
+  .sub { padding-left: 14px; }
+  .muted, .footer-note { color: var(--muted); font-size: 13.5px; }
+  .do { background: var(--do-bg); border-left: 4px solid var(--do-edge); color: var(--do-text); border-radius: 8px;
+        padding: 7px 10px; margin: 8px 0; }
+  .do b { display: block; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+  .card-title { color: var(--muted); font-size: 13.5px; margin-bottom: 8px; }
+  .school { border: 1px solid var(--line); border-left: 5px solid var(--high-edge); border-radius: 10px; padding: 10px 12px;
+            margin: 10px 0; }
+  .school.Medium { border-left-color: var(--med-edge); } .school.Low { border-left-color: var(--low-edge); }
+  .school-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rank { width: 24px; height: 24px; border-radius: 50%; background: var(--line); display: grid; place-items: center;
+          font-size: 13px; font-weight: 700; flex: none; }
+  .name { font-size: 18px; font-weight: 700; flex: 1; min-width: 0; }
+  .pill { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--high-bg); color: var(--high); }
+  .Medium .pill { background: var(--med-bg); color: var(--med); } .Low .pill { background: var(--low-bg); color: var(--low); }
+  .score { display: flex; align-items: center; gap: 8px; margin: 8px 0 6px; font-size: 13.5px; color: var(--muted); }
+  .track { flex: 1; height: 7px; background: var(--bar-track); border-radius: 99px; overflow: hidden; }
+  .track i { display: block; height: 100%; background: var(--high-edge); border-radius: 99px; }
+  .Medium .track i { background: var(--med-edge); } .Low .track i { background: var(--low-edge); }
+  .why-label { font-size: 12.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .also { background: var(--bg); border-radius: 10px; padding: 8px 12px; margin-top: 10px; font-size: 14.5px; }
+  .glance { width: min(92%, 640px); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0 10px; }
+  .stat { border-radius: 10px; padding: 8px 6px; text-align: center; background: var(--high-bg); color: var(--high); }
+  .stat.med { background: var(--med-bg); color: var(--med); } .stat.miss { background: var(--line); color: var(--text); }
+  .stat b { display: block; font-size: 26px; line-height: 1.1; } .stat span { font-size: 12.5px; font-weight: 600; }
+  .primary { font: inherit; font-weight: 600; width: 100%; margin-top: 10px; padding: 11px 14px; border: 0; border-radius: 10px;
+             background: var(--accent); color: var(--accent-text); cursor: pointer; min-height: 46px; }
+  .meta { font-size: 12px; color: var(--muted); margin: 3px 4px 0; max-width: min(92%, 640px); }
   .meta.ok { color: var(--ok); } .meta.warn { color: var(--warn); } .meta.bad { color: var(--bad); }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; max-width: 100%; }
-  .chip {
-    font: inherit; font-size: 14px; color: var(--text); background: var(--chip); border: 1px solid var(--chip-border);
-    border-radius: 18px; padding: 7px 12px; min-height: 36px; cursor: pointer; text-align: left;
-  }
-  .chip:active { transform: scale(.98); }
-  .typing { color: var(--muted); font-style: italic; }
+  .tools-row { display: flex; gap: 10px; align-items: center; margin: 4px 4px 0; }
+  .copy { font: inherit; font-size: 12.5px; color: var(--muted); background: none; border: 1px solid var(--chip-border);
+          border-radius: 99px; padding: 3px 10px; cursor: pointer; min-height: 28px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; max-width: 100%; }
+  .chip { font: inherit; font-size: 14px; color: var(--text); background: var(--chip); border: 1px solid var(--chip-border);
+          border-radius: 18px; padding: 7px 12px; min-height: 36px; cursor: pointer; text-align: left; }
+  .chip:active, .primary:active { transform: scale(.98); }
+  .dots { display: inline-flex; gap: 4px; padding: 4px 2px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite ease-in-out; }
+  .dots i:nth-child(2) { animation-delay: .2s; } .dots i:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .dots i { animation: none; opacity: .6; } }
   footer { padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: var(--bg); }
   form { display: flex; gap: 8px; align-items: flex-end; }
-  textarea {
-    flex: 1; font: inherit; color: var(--text); background: var(--input); border: 0; border-radius: 22px;
-    padding: 10px 14px; resize: none; max-height: 120px; min-height: 44px;
-  }
-  button.send {
-    width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--bar); color: #fff; font-size: 20px;
-    cursor: pointer; flex: none;
-  }
+  textarea { flex: 1; font: inherit; color: var(--text); background: var(--input); border: 0; border-radius: 22px;
+             padding: 10px 14px; resize: none; max-height: 120px; min-height: 44px; }
+  button.send { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-text);
+                font-size: 20px; cursor: pointer; flex: none; }
   button.send:disabled { opacity: .5; }
-  .tools { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 12.5px; color: var(--muted); }
-  .tools label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
   :focus-visible { outline: 3px solid #25d366; outline-offset: 2px; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  details.review { font-size: 12.5px; color: var(--muted); }
-  details.review summary { cursor: pointer; padding: 4px 0; }
+  details.review { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  details.review summary { cursor: pointer; padding: 2px 0; }
   details.review .row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
 </style>
 </head>
 <body>
+<div class="app">
 <header>
+  <div class="logo" aria-hidden="true">🏫</div>
   <div class="titles">
-    <h1>શિક્ષા સાથી · Shiksha Saathi</h1>
+    <h1>શિક્ષા સાથી <small>Shiksha Saathi</small></h1>
     <p id="sub">Cluster GJ-C07</p>
   </div>
   <label class="sr" for="lang">Reply language</label>
@@ -103,6 +147,7 @@
     </div>
   </details>
 </footer>
+</div>
 
 <!-- Suggested questions in each language (a test checks that every one is understood). -->
 <script type="application/json" id="starters">
@@ -121,23 +166,25 @@
 
 <script>
 "use strict";
-const chat = document.getElementById("chat"), form = document.getElementById("form"), box = document.getElementById("q");
-const send = document.getElementById("send"), langSel = document.getElementById("lang"), test = document.getElementById("test");
-const statusEl = document.getElementById("status"), review = document.getElementById("review");
-const STARTERS = JSON.parse(document.getElementById("starters").textContent);
+const $ = (id) => document.getElementById(id);
+const chat = $("chat"), form = $("form"), box = $("q"), send = $("send"), langSel = $("lang"), test = $("test");
+const statusEl = $("status"), review = $("review");
+const STARTERS = JSON.parse($("starters").textContent);
 
 // Every word on the page in her language. "Auto" shows Gujarati with English.
 const UI = {
   en: {
     welcome: "Namaste! Ask about your schools in Gujarati, English or Hindi. Every number comes from the school records; the AI only words the answer.",
-    placeholder: "Ask a question…", schools: "schools", upto: "synthetic data up to",
+    placeholder: "Ask a question…", schools: "schools", synthetic: "synthetic", locale: "en-IN",
     switched: "Replies will now be in English. You can ask:",
-    aiUsed: "✓ AI wording · every number checked against the records",
-    checked: "✓ Checked answer from the records",
+    glance: (m) => m + " at a glance", high: "High priority", medium: "Medium", missing: "Not enough data",
+    visitFirst: "Visit first", attendance: (v, r, t) => "Cluster attendance " + v + "% (" + r + " of " + t + " schools reported)",
+    plan: "Show this week's visit plan", about: (n) => "Tell me about " + n,
+    why: "Why", act: "Do this", lastVisit: "Last visit", copy: "Copy", copied: "Copied ✓",
+    aiUsed: "✓ AI wording · every number checked against the records", checked: "✓ Checked answer from the records",
     rejected: (why) => "⚠ AI text rejected by the number checker (" + why + "). Checked answer shown.",
     whyNumbers: (found) => "it had " + found + ", which is not in the records", whyOther: "it failed the check",
-    unavailable: "AI unavailable · checked answer shown",
-    paused: "AI paused (many questions right now) · checked answer shown",
+    unavailable: "AI unavailable · checked answer shown", paused: "AI paused (many questions right now) · checked answer shown",
     testNeedsAi: "The number-checker test needs the AI; this answer did not use it.",
     tooMany: "Too many questions in a minute. Please wait a little and try again.",
     failed: (code) => "Sorry, that did not work (" + code + "). Please try again.",
@@ -145,14 +192,16 @@ const UI = {
   },
   gu: {
     welcome: "નમસ્તે! તમારી શાળાઓ વિશે ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો. દરેક આંકડો શાળાના રેકોર્ડમાંથી આવે છે; AI ફક્ત જવાબના શબ્દો લખે છે.",
-    placeholder: "પ્રશ્ન લખો…", schools: "શાળાઓ", upto: "સુધીની કાલ્પનિક માહિતી",
+    placeholder: "પ્રશ્ન લખો…", schools: "શાળાઓ", synthetic: "કાલ્પનિક", locale: "gu-IN",
     switched: "હવે જવાબ ગુજરાતીમાં આવશે. આ પૂછી શકો:",
-    aiUsed: "✓ AI શબ્દો · દરેક આંકડો રેકોર્ડ સાથે ચકાસેલો",
-    checked: "✓ રેકોર્ડમાંથી ચકાસેલો જવાબ",
+    glance: (m) => m + " એક નજરે", high: "ઉચ્ચ પ્રાથમિકતા", medium: "મધ્યમ", missing: "પૂરતી માહિતી નથી",
+    visitFirst: "પહેલાં મુલાકાત", attendance: (v, r, t) => "ક્લસ્ટરની હાજરી " + v + "% (" + t + "માંથી " + r + " શાળાની માહિતી)",
+    plan: "આ અઠવાડિયાની મુલાકાત યોજના બતાવો", about: (n) => n + " વિશે જણાવો",
+    why: "કારણ", act: "શું કરવું", lastVisit: "છેલ્લી મુલાકાત", copy: "નકલ કરો", copied: "નકલ થઈ ✓",
+    aiUsed: "✓ AI શબ્દો · દરેક આંકડો રેકોર્ડ સાથે ચકાસેલો", checked: "✓ રેકોર્ડમાંથી ચકાસેલો જવાબ",
     rejected: (why) => "⚠ આંકડાની ચકાસણીએ AI લખાણ નકાર્યું (" + why + "). ચકાસેલો જવાબ બતાવ્યો છે.",
     whyNumbers: (found) => "તેમાં " + found + " હતું, જે રેકોર્ડમાં નથી", whyOther: "ચકાસણીમાં પાસ ન થયું",
-    unavailable: "AI ઉપલબ્ધ નથી · ચકાસેલો જવાબ બતાવ્યો છે",
-    paused: "AI થોડી વાર બંધ છે (ઘણા પ્રશ્નો) · ચકાસેલો જવાબ બતાવ્યો છે",
+    unavailable: "AI ઉપલબ્ધ નથી · ચકાસેલો જવાબ બતાવ્યો છે", paused: "AI થોડી વાર બંધ છે (ઘણા પ્રશ્નો) · ચકાસેલો જવાબ બતાવ્યો છે",
     testNeedsAi: "આંકડા-ચકાસણીની કસોટી માટે AI જોઈએ; આ જવાબમાં AI વપરાયું નથી.",
     tooMany: "એક મિનિટમાં ઘણા પ્રશ્નો થયા. થોડી રાહ જોઈને ફરી પ્રયાસ કરો.",
     failed: (code) => "માફ કરશો, જવાબ ન મળ્યો (" + code + "). ફરી પ્રયાસ કરો.",
@@ -160,14 +209,16 @@ const UI = {
   },
   hi: {
     welcome: "नमस्ते! अपने स्कूलों के बारे में गुजराती, अंग्रेज़ी या हिंदी में पूछें। हर आंकड़ा स्कूल के रिकॉर्ड से आता है; AI सिर्फ़ जवाब के शब्द लिखता है।",
-    placeholder: "सवाल लिखें…", schools: "स्कूल", upto: "तक का काल्पनिक डेटा",
+    placeholder: "सवाल लिखें…", schools: "स्कूल", synthetic: "काल्पनिक", locale: "hi-IN",
     switched: "अब जवाब हिंदी में आएँगे। आप पूछ सकते हैं:",
-    aiUsed: "✓ AI शब्द · हर आंकड़ा रिकॉर्ड से जाँचा गया",
-    checked: "✓ रिकॉर्ड से जाँचा गया जवाब",
+    glance: (m) => m + " एक नज़र में", high: "उच्च प्राथमिकता", medium: "मध्यम", missing: "डेटा अधूरा",
+    visitFirst: "पहले दौरा", attendance: (v, r, t) => "क्लस्टर उपस्थिति " + v + "% (" + t + " में से " + r + " स्कूलों का डेटा)",
+    plan: "इस हफ्ते की दौरा योजना दिखाएँ", about: (n) => n + " के बारे में बताओ",
+    why: "कारण", act: "क्या करें", lastVisit: "पिछला दौरा", copy: "कॉपी करें", copied: "कॉपी हो गया ✓",
+    aiUsed: "✓ AI शब्द · हर आंकड़ा रिकॉर्ड से जाँचा गया", checked: "✓ रिकॉर्ड से जाँचा गया जवाब",
     rejected: (why) => "⚠ आंकड़ों की जाँच ने AI का लिखा हटा दिया (" + why + ")। जाँचा गया जवाब दिखाया है।",
     whyNumbers: (found) => "उसमें " + found + " था, जो रिकॉर्ड में नहीं है", whyOther: "जाँच में पास नहीं हुआ",
-    unavailable: "AI उपलब्ध नहीं · जाँचा गया जवाब दिखाया है",
-    paused: "AI थोड़ी देर बंद है (बहुत सवाल) · जाँचा गया जवाब दिखाया है",
+    unavailable: "AI उपलब्ध नहीं · जाँचा गया जवाब दिखाया है", paused: "AI थोड़ी देर बंद है (बहुत सवाल) · जाँचा गया जवाब दिखाया है",
     testNeedsAi: "आंकड़ा-जाँच की परीक्षा के लिए AI चाहिए; इस जवाब में AI नहीं लगा।",
     tooMany: "एक मिनट में बहुत सवाल हो गए। थोड़ा रुककर फिर कोशिश करें।",
     failed: (code) => "माफ़ कीजिए, जवाब नहीं मिला (" + code + ")। फिर कोशिश करें।",
@@ -186,44 +237,105 @@ function scriptOf(text) {        // the language a question is written in, by it
 // Words on the page: the chosen language, or for "Auto" the language of the question or reply.
 function ui(fallback) { return UI[langSel.value] || UI[fallback] || UI.gu; }
 
+// Small DOM helper: el("p", "class", "text"). Text is always inserted as text, never as HTML.
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined && text !== null) n.textContent = text;
+  return n;
+}
 function scrollDown() { chat.scrollTop = chat.scrollHeight; }
-// A long answer opens at its first line (the direct answer), not at its end.
-function showStart(wrap) { chat.scrollTop = Math.max(0, wrap.offsetTop - chat.offsetTop - 8); }
+// Keep the question in view with the start of its answer below it.
+function showFrom(node) { chat.scrollTop = Math.max(0, node.offsetTop - chat.offsetTop - 8); }
 
+function addWrap(who) { const w = el("div", "msg " + who); chat.appendChild(w); return w; }
+function addMeta(wrap, bubble, text, cls) {
+  if (!text) return;
+  const meta = el("div", "meta " + (cls || ""), text);
+  // A warning (AI text rejected, AI unavailable) goes above the answer, where it is seen first.
+  if (cls === "bad" || cls === "warn") wrap.insertBefore(meta, bubble); else wrap.appendChild(meta);
+}
 function addMessage(who, text, metaText, metaClass) {
-  const wrap = document.createElement("div");
-  wrap.className = "msg " + who;
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.textContent = text;          // text only: nothing from the server is ever treated as HTML
+  const wrap = addWrap(who), bubble = el("div", "bubble", text);
+  if (who === "bot") bubble.style.whiteSpace = "pre-wrap";
   wrap.appendChild(bubble);
-  if (metaText) {
-    const meta = document.createElement("div");
-    meta.className = "meta " + (metaClass || "");
-    meta.textContent = metaText;
-    // A warning (AI text rejected, AI unavailable) goes above the answer, where it is seen first.
-    if (metaClass === "bad" || metaClass === "warn") wrap.insertBefore(meta, bubble); else wrap.appendChild(meta);
-  }
-  chat.appendChild(wrap);
+  addMeta(wrap, bubble, metaText, metaClass);
   scrollDown();
   return wrap;
 }
 
 function addChips(wrap, options) {
   if (!options || !options.length) return;
-  const row = document.createElement("div");
-  row.className = "chips";
+  const row = el("div", "chips");
   for (const o of options) {
-    const chip = document.createElement("button");
-    chip.type = "button"; chip.className = "chip"; chip.textContent = o.label;
+    const chip = el("button", "chip", o.label);
+    chip.type = "button";
     chip.addEventListener("click", () => askServer(o.question, o.school_id, o.shown || o.label));
     row.appendChild(chip);
   }
   wrap.appendChild(row);
   scrollDown();
 }
-
 function starterChips(key) { return (STARTERS[key] || STARTERS.auto).map((q) => ({ label: q, question: q })); }
+
+// The visit plan as cards. Every number on a card comes from the server's computed facts.
+function renderCards(bubble, c, lead, t) {
+  if (lead) bubble.appendChild(el("p", "lead", lead));
+  if (c.note) bubble.appendChild(el("p", "muted", c.note));
+  bubble.appendChild(el("p", "card-title", c.title));
+  c.schools.forEach((s, i) => {
+    const card = el("div", "school " + s.priority);
+    const head = el("div", "school-head");
+    head.append(el("span", "rank", String(i + 1)), el("span", "name", s.name), el("span", "pill", s.priority_label));
+    const score = el("div", "score"), track = el("div", "track"), fill = el("i");
+    fill.style.width = Math.max(0, Math.min(100, (100 * s.score) / s.score_scale)) + "%";
+    track.appendChild(fill);
+    score.append(track, el("span", "", s.score + "/" + s.score_scale));
+    const why = el("ul");
+    s.reasons.forEach((r) => why.appendChild(el("li", "", r)));
+    const act = el("div", "do");
+    act.append(el("b", "", t.act), document.createTextNode(s.action));
+    card.append(head, score, el("div", "why-label", t.why), why, act, el("div", "muted", t.lastVisit + ": " + s.last_visit));
+    bubble.appendChild(card);
+  });
+  if (c.status) bubble.appendChild(el("p", "", c.status));
+  if (c.also && c.also.length) {
+    const also = el("div", "also"), list = el("ul");
+    also.appendChild(el("b", "", c.also_title));
+    c.also.forEach((a) => list.appendChild(el("li", "", a)));
+    also.appendChild(list);
+    bubble.appendChild(also);
+  }
+  bubble.appendChild(el("p", "footer-note", c.footer));
+}
+
+// Every other answer: our text, laid out for scanning (headline, bullets, the action highlighted).
+const ACTION = /^(Do|શું કરવું|करें|क्या करें)\s*:\s*/;
+function renderText(bubble, text, lead) {
+  let list = null, first = true;
+  for (const raw of text.split("\n")) {
+    const line = raw.trimEnd();
+    if (!line.trim()) { list = null; continue; }
+    if (line.startsWith("• ")) {
+      if (!list) { list = el("ul"); bubble.appendChild(list); }
+      list.appendChild(el("li", "", line.slice(2)));
+      continue;
+    }
+    list = null;
+    if (first) { bubble.appendChild(el("p", lead && line === lead ? "lead" : "headline", line)); first = false; continue; }
+    const m = line.match(ACTION);
+    if (m) {
+      const d = el("div", "do");
+      d.append(el("b", "", m[1]), document.createTextNode(line.slice(m[0].length)));
+      bubble.appendChild(d);
+      continue;
+    }
+    if (/^\d+\.\s/.test(line)) { bubble.appendChild(el("p", "item", line)); continue; }
+    if (/^\s{2,}/.test(raw)) { bubble.appendChild(el("p", "sub", line.trim())); continue; }
+    if (line.endsWith(":") && line.length < 70) { bubble.appendChild(el("p", "subhead", line)); continue; }
+    bubble.appendChild(el("p", "", line));
+  }
+}
 
 // The line under each answer says honestly how it was produced, in her language.
 function describe(check, t) {
@@ -243,9 +355,12 @@ async function askServer(question, schoolId, shown) {
   if (!question || busy) return;
   busy = true; send.disabled = true;
   const t = ui(scriptOf(question));
-  addMessage("me", shown || question);
-  const typing = addMessage("bot", "…");
-  typing.querySelector(".bubble").classList.add("typing");
+  const mine = addMessage("me", shown || question);
+  const typing = addWrap("bot"), dots = el("div", "bubble"), dotRow = el("span", "dots");
+  dotRow.append(el("i"), el("i"), el("i"));
+  dots.appendChild(dotRow);
+  typing.appendChild(dots);
+  scrollDown();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 45000);   // longer than the server's worst case
   try {
@@ -260,9 +375,19 @@ async function askServer(question, schoolId, shown) {
     const tr = ui(r.lang);
     let [meta, cls] = describe(r.check || {}, tr);
     if (test.checked && r.check && r.check.test_checker === false) { meta = tr.testNeedsAi + " " + meta; cls = "warn"; }
-    const wrap = addMessage("bot", r.text, meta, cls);
+    const wrap = addWrap("bot"), bubble = el("div", "bubble");
+    if (r.cards) renderCards(bubble, r.cards, r.lead, UI[r.lang] || tr); else renderText(bubble, r.text, r.lead);
+    wrap.appendChild(bubble);
+    addMeta(wrap, bubble, meta, cls);
+    const tools = el("div", "tools-row"), copy = el("button", "copy", tr.copy);
+    copy.type = "button";
+    copy.addEventListener("click", () => {      // the plain text, ready to forward on WhatsApp
+      if (navigator.clipboard) navigator.clipboard.writeText(r.text).then(() => { copy.textContent = tr.copied; }, () => {});
+    });
+    tools.appendChild(copy);
+    wrap.appendChild(tools);
     addChips(wrap, r.options);
-    showStart(wrap);
+    showFrom(mine);
   } catch (e) {
     typing.remove();
     retry(t.offline, t, question, schoolId, shown);
@@ -275,16 +400,40 @@ function retry(message, t, question, schoolId, shown) {
   addChips(addMessage("bot", message, "", "warn"), [{ label: t.retry, question, school_id: schoolId, shown: shown || question }]);
 }
 
+// "This month at a glance": the block officer's question, answered before she types anything.
+let overview = null;
+function addGlance() {
+  if (!overview) return;
+  const t = UI[langSel.value] || UI.en, key = langSel.value || "auto", lang = langSel.value === "gu" ? "gu" : "en";
+  const month = new Date(overview.month + "-01T00:00:00").toLocaleString(t.locale, { month: "long", year: "numeric" });
+  const wrap = addWrap("bot"), card = el("div", "bubble glance");
+  card.appendChild(el("p", "headline", t.glance(month)));
+  const stats = el("div", "stats");
+  [[overview.counts.High, t.high, ""], [overview.counts.Medium, t.medium, "med"],
+   [overview.counts.not_enough_data, t.missing, "miss"]].forEach(([n, label, cls]) => {
+    const s = el("div", "stat " + cls);
+    s.append(el("b", "", String(n)), el("span", "", label));
+    stats.appendChild(s);
+  });
+  card.appendChild(stats);
+  card.appendChild(el("p", "", t.visitFirst + ": " + overview.visit_first.map((s) => s[lang]).join(" · ")));
+  card.appendChild(el("p", "muted", t.attendance(overview.attendance_pct, overview.schools_reporting, overview.schools_total)));
+  const go = el("button", "primary", t.plan);
+  go.type = "button";
+  go.addEventListener("click", () => askServer(STARTERS[key][0]));
+  card.appendChild(go);
+  wrap.appendChild(card);
+  addChips(wrap, overview.visit_first.map((s) => ({ label: s[lang], question: t.about(s[lang]), school_id: s.school_id })));
+}
+
 let health = null;
 function applyLanguage() {
   const t = UI[langSel.value];
   box.placeholder = t ? t.placeholder : "પ્રશ્ન લખો… / Ask a question…";
   if (health) {
-    const code = langSel.value === "hi" ? "hi-IN" : langSel.value === "gu" ? "gu-IN" : "en-IN";
-    const month = new Date(health.latest_month + "-01T00:00:00").toLocaleString(code, { month: "short", year: "numeric" });
     const words = t || UI.en;
-    document.getElementById("sub").textContent = "Cluster GJ-C07 · " + health.schools + " " + words.schools + " · " +
-      (langSel.value === "en" || !t ? words.upto + " " + month : month + " " + words.upto);
+    const month = new Date(health.latest_month + "-01T00:00:00").toLocaleString(words.locale, { month: "short", year: "numeric" });
+    $("sub").textContent = health.schools + " " + words.schools + " · " + month + " · " + words.synthetic;
   }
 }
 
@@ -309,8 +458,15 @@ if (params.get("review") === "1") review.open = true;
 
 applyLanguage();
 const first = UI[langSel.value];
-addChips(addMessage("bot", first ? first.welcome : AUTO_WELCOME), starterChips(langSel.value || "auto"));
-if (params.get("q")) askServer(params.get("q").slice(0, 500));
+addMessage("bot", first ? first.welcome : AUTO_WELCOME);
+
+// The glance card first (when its numbers arrive), then the suggested questions, then any question from the link.
+// The glance card's button already asks the visit-plan question, so that suggestion is not repeated.
+fetch("/overview").then((r) => r.json()).then((o) => { overview = o; addGlance(); }).catch(() => {}).then(() => {
+  addChips(addWrap("bot"), starterChips(langSel.value || "auto").slice(overview ? 1 : 0));
+  if (params.get("q")) askServer(params.get("q").slice(0, 500));
+  else chat.scrollTop = 0;                          // open at the top: the welcome and the month at a glance
+});
 
 fetch("/health").then((r) => r.json()).then((h) => {
   health = h;

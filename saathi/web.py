@@ -18,7 +18,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
-from . import llm
+from . import analytics, llm, reply
 from .assistant import ask
 from .data import load
 
@@ -121,6 +121,18 @@ def health():
             "llm": llm.enabled(), "model": llm.model_name() if llm.enabled() else None}
 
 
+@app.get("/overview")
+def overview():
+    """The first screen's "this month at a glance": computed by the same code as every answer."""
+    o = analytics.officer_summary(load())
+    names = lambda items: [{"school_id": b["school_id"], "en": reply.short(b, "en"), "gu": reply.short(b, "gu")}
+                           for b in items]
+    a = o["cluster_attendance"]
+    return {"month": o["month"], "schools_total": o["schools_total"], "counts": o["counts"],
+            "visit_first": names(o["visit_plan"]), "not_enough_data": names(o["not_enough_data"]),
+            "attendance_pct": a["student_attendance_pct"], "schools_reporting": a["schools_reporting"]}
+
+
 @app.post("/ask")
 def answer(body: Question, request: Request):
     if _too_many(_client(request)):
@@ -132,6 +144,7 @@ def answer(body: Question, request: Request):
     checked = phrase.get("check") or {}
     return {
         "text": r["text"], "lang": r["lang"], "intent": r["intent"], "options": r["options"], "mode": r["mode"],
+        "lead": r.get("lead"), "cards": r.get("cards"),
         # What the page shows under each answer: was AI wording used, and did the checker reject any?
         "check": {"ai_used": r["mode"] == "llm", "ai_tried": bool(phrase),
                   "rejected": bool(checked) and not phrase.get("ok"),

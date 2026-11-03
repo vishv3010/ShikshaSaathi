@@ -18,7 +18,7 @@ def test_page_is_small_self_contained_and_locked_down(client):
     r = client.get("/", headers={"Accept-Encoding": "gzip"})
     assert r.status_code == 200 and "<title>Shiksha Saathi</title>" in r.text
     assert "http://" not in r.text and "https://" not in r.text                 # no external files at all
-    assert len(gzip.compress(r.content)) < 9_000                                # what travels over patchy 4G
+    assert len(gzip.compress(r.content)) < 12_000     # what travels over patchy 4G: smaller than one photo
     assert "default-src 'self'" in r.headers["content-security-policy"]
     assert r.headers["content-encoding"] == "gzip"
 
@@ -100,3 +100,26 @@ def test_every_suggested_question_on_the_page_is_understood():
 def test_reviewer_tools_are_folded_away(client):
     page = client.get("/").text
     assert '<details class="review" id="review">' in page and "For reviewers" in page
+
+
+def test_overview_gives_the_months_numbers(client):
+    o = client.get("/overview").json()
+    assert (o["month"], o["counts"]) == ("2026-10", {"High": 3, "Medium": 4, "Low": 12, "not_enough_data": 1})
+    assert [s["en"] for s in o["visit_first"]] == ["Haripar", "Chandrapur", "Manekpur"]
+    assert [s["gu"] for s in o["not_enough_data"]] == ["ઉમરવાડા"]
+    assert (o["attendance_pct"], o["schools_reporting"], o["schools_total"]) == (81, 19, 20)
+
+
+@pytest.mark.parametrize("lang", ["en", "gu"])
+def test_visit_plan_cards_carry_only_numbers_from_the_facts(lang):
+    """Cards never pass through the LLM, and every number on them is in the computed facts."""
+    import json
+    from saathi.assistant import ask
+    from saathi.checker import check
+    r = ask("Which 3 schools need my visit this week?", lang=lang)
+    cards = r["cards"]
+    assert [s["name"] for s in cards["schools"]] == (["Haripar", "Chandrapur", "Manekpur"] if lang == "en"
+                                                     else ["હરિપર", "ચંદ્રપુર", "માણેકપુર"])
+    assert [(s["priority"], s["score"]) for s in cards["schools"]] == [("High", 78), ("High", 75), ("Medium", 66)]
+    assert check(json.dumps(cards, ensure_ascii=False), r["facts"]).ok
+    assert ask("Why is Grade 5 maths low in Rampura?")["cards"] is None      # other answers stay text

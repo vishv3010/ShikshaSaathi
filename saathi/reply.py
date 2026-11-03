@@ -286,6 +286,10 @@ def example_options(lang, count=3):
 
 def reasons_text(entry, lang, limit=3):
     """Why a school is flagged, biggest reason first. A low attendance and a fall in it are one phrase."""
+    return "; ".join(reason_parts(entry, lang, limit))
+
+
+def reason_parts(entry, lang, limit=3):
     names, ind = list(entry["reasons"]), entry["indicators"]
     merged = "student_attendance" in names and "attendance_drop" in names
     if merged:
@@ -298,7 +302,7 @@ def reasons_text(entry, lang, limit=3):
                            prev=drop["previous_avg"]))
         else:
             parts.append(t(f"r_{name}", lang, v=ind[name]["value"], prev=ind[name].get("previous_avg")))
-    return "; ".join(parts)
+    return parts
 
 
 def note_text(note):
@@ -373,25 +377,26 @@ def focus(area, lang):
 
 # --- one function per kind of answer --------------------------------------------------------
 
-def top_priority_schools(f, lang):
+def _last_visit(e, lang):
+    return t("days_ago", lang, d=e["last_visit"]["days_ago"]) if e["last_visit"] else t("never_visited", lang)
+
+
+def _list_status(f, lang):
+    """A line when fewer schools than asked need support, or none can be scored; otherwise None."""
     m = month(f["month"], lang)
-    using = "using_latest" if f["month"] == f.get("latest_month", f["month"]) else "using_month"
-    lines = [month_note(f.get("month_note"), lang), t("top_header", lang, using=t(using, lang, month=m)), ""]
-    reasons = 3 if len(f["schools"]) <= 3 else 2          # keep a long list readable on a phone
-    for i, e in enumerate(f["schools"], 1):
-        when = t("days_ago", lang, d=e["last_visit"]["days_ago"]) if e["last_visit"] else t("never_visited", lang)
-        lines += [f"{i}. {short(e, lang)}: {t('priority', lang, p=prio(e['priority'], lang))}, "
-                  f"{t('score', lang, s=e['score'])} {t('last_visit_paren', lang, when=when)}",
-                  f"   {t('why', lang)}: {reasons_text(e, lang, limit=reasons)}",
-                  f"   {t('do', lang)}: {render_action(e['action'], lang)}", ""]
     need = f["counts"]["High"] + f["counts"]["Medium"]
     if need + f["counts"]["Low"] == 0:
-        lines += [t("none_scored", lang, month=m), ""]
-    elif need == 0:
-        lines += [t("none_need", lang, month=m), ""]
-    elif len(f["schools"]) < f["limit"]:
-        lines += [t("only_n_need", lang, n=need, month=m), ""]
+        return t("none_scored", lang, month=m)
+    if need == 0:
+        return t("none_need", lang, month=m)
+    if len(f["schools"]) < f["limit"]:
+        return t("only_n_need", lang, n=need, month=m)
+    return None
 
+
+def _also_lines(f, lang):
+    """What the score alone would hide: recently visited, one weak class, missing data, not visited for long."""
+    m = month(f["month"], lang)
     also = [t("moved_down", lang, name=short(e, lang), p=prio(e["priority"], lang), s=e["score"],
               d=e["last_visit"]["days_ago"]) for e in f["moved_down"]]
     for e in f["watch"]:
@@ -409,6 +414,26 @@ def top_priority_schools(f, lang):
         rows = [f"{short(e, lang)} ({t('days', lang, d=e['last_visit']['days_ago'])})" if e["last_visit"]
                 else f"{short(e, lang)} ({t('never_visited', lang)})" for e in longest_first]
         also.append(t("long_unvisited", lang, n=f["rules"]["long_unvisited_days"], list=", ".join(rows)))
+    return also
+
+
+def _list_title(f, lang):
+    using = "using_latest" if f["month"] == f.get("latest_month", f["month"]) else "using_month"
+    return t("top_header", lang, using=t(using, lang, month=month(f["month"], lang)))
+
+
+def top_priority_schools(f, lang):
+    lines = [month_note(f.get("month_note"), lang), _list_title(f, lang), ""]
+    reasons = 3 if len(f["schools"]) <= 3 else 2          # keep a long list readable on a phone
+    for i, e in enumerate(f["schools"], 1):
+        lines += [f"{i}. {short(e, lang)}: {t('priority', lang, p=prio(e['priority'], lang))}, "
+                  f"{t('score', lang, s=e['score'])} {t('last_visit_paren', lang, when=_last_visit(e, lang))}",
+                  f"   {t('why', lang)}: {reasons_text(e, lang, limit=reasons)}",
+                  f"   {t('do', lang)}: {render_action(e['action'], lang)}", ""]
+    status = _list_status(f, lang)
+    if status:
+        lines += [status, ""]
+    also = _also_lines(f, lang)
     if also:
         lines += [t("also", lang)] + [f"• {line}" for line in also] + [""]
     lines.append(t("higher_score", lang))
@@ -416,6 +441,24 @@ def top_priority_schools(f, lang):
         lines.append(t("ask_more", lang, q=t("q_about", lang, name=short(f["schools"][0], lang))))
     options = [option(short(e, lang), t("q_about", lang, name=short(e, lang)), e["school_id"]) for e in f["schools"]]
     return lines, options
+
+
+def priority_cards(f, lang):
+    """The same visit plan as structured cards for the chat page. Every number on a card is read from
+    the facts the code computed; cards never pass through the LLM (D-013)."""
+    return {
+        "note": month_note(f.get("month_note"), lang),
+        "title": _list_title(f, lang),
+        "schools": [{"school_id": e["school_id"], "name": short(e, lang), "priority": e["priority"],
+                     "priority_label": t("priority", lang, p=prio(e["priority"], lang)),
+                     "score": e["score"], "score_scale": f.get("score_scale", 100),
+                     "reasons": reason_parts(e, lang, limit=3), "action": render_action(e["action"], lang),
+                     "last_visit": _last_visit(e, lang)} for e in f["schools"]],
+        "status": _list_status(f, lang),
+        "also_title": t("also", lang),
+        "also": _also_lines(f, lang),
+        "footer": t("higher_score", lang),
+    }
 
 
 def school_summary(f, lang):

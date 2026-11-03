@@ -219,7 +219,7 @@ def ask(text, lang=None, school_id=None, data=None, use_llm=None, test_checker=F
     draft_lang = out_lang if out_lang in LANGS else "en"
     draft, options = reply.render(kind, facts, draft_lang)
 
-    answer, mode = draft, "rules"
+    answer, mode, lead = draft, "rules", None
     if test_checker:
         trace["test_checker"] = use_llm and (out_lang not in LANGS or kind in DATA_KINDS)
     if use_llm and out_lang not in LANGS:                  # Hindi: Gemini translates the whole draft
@@ -231,8 +231,10 @@ def ask(text, lang=None, school_id=None, data=None, use_llm=None, test_checker=F
         worded = llm_steps.lead(text, kind, facts, draft, out_lang, tamper=test_checker)   # English, Gujarati
         trace["phrase"] = {k: v for k, v in worded.items() if k != "text"}
         if worded["ok"] and worded["text"]:
-            answer, mode = f"{worded['text']}\n\n{draft}", "llm"
+            answer, mode, lead = f"{worded['text']}\n\n{draft}", "llm", worded["text"]
     if mode == "rules":
         out_lang = draft_lang          # e.g. Hindi asked, Gemini unavailable: the English draft is sent
+    # The visit plan also comes as cards for the page, built from the facts (never through the LLM).
+    cards = reply.priority_cards(facts, out_lang) if kind == "top_priority_schools" and out_lang in LANGS else None
     return {"intent": kind, "lang": out_lang, "text": answer, "options": options, "facts": facts,
-            "question": asdict(q), "mode": mode, "draft": draft, "trace": trace}
+            "question": asdict(q), "mode": mode, "draft": draft, "lead": lead, "cards": cards, "trace": trace}
