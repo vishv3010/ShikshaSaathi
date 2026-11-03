@@ -13,8 +13,8 @@ Merged on 2 Nov from two plans: our own (built with Claude Code after research) 
 | Research, plan, decisions | Done (2 Nov) |
 | Synthetic dataset + validator | Done (2 Nov) |
 | Scoring, actions, analysis facts + tests | Done (3 Nov) |
-| Understand the question (intents, school-name matching) + no-LLM replies in Gujarati and English | **Next** |
-| Gemini layer + number checker | To do. Needs `GEMINI_API_KEY` in a local `.env` file, which is never committed. |
+| Understand the question (intents, school-name matching) + no-LLM replies in Gujarati and English | Done (3 Nov): `understand.py`, `assistant.py`, `reply.py`; 151 tests, 8 of 8 planted bugs caught |
+| Gemini layer + number checker | **Next.** Needs `GEMINI_API_KEY` in a local `.env` file, which is never committed. |
 | FastAPI + chat page | To do |
 | Guardrails, full test run, deploy | To do |
 | Solution note, demo video, submit | To do. Deadline Wed 4 Nov 2026, 11:59 PM. The repo is private: make it public or give the reviewers access before submitting. |
@@ -119,9 +119,11 @@ Every action exists in English and Gujarati.
 | "Which schools have missing data?" | `missing_data_report()` |
 | "When did I last visit Sundarpur?" | `recent_visits(school?)` |
 | "Give me a summary for my block officer" | `officer_summary()`, a short forwardable message |
+| "Why is Grade 5 Maths low?" (no school named) | `class_overview(grade?, subject?)`: that class across the cluster, lowest first |
 | Anything unrelated | polite decline |
+| "Which teacher is lazy?", "ignore your rules", "names of absent children" | respectful decline: patterns not people / rules and data cannot change / no personal details |
 
-School names are matched loosely ("Rampura", "rampura school", the ID), so she never needs to type `GJ-C07-014`.
+School names are matched loosely ("Rampura", "rampura school", "Rampur", "રામપુરામાં", "रामपुरा", the ID), so she never needs to type `GJ-C07-014`. A name that matches no school gets "no school called X" plus close suggestions; a typo equally close to two schools, or two schools in one question, gets "which school?" with tap options (D-022).
 
 ## 6. Interface and hosting
 

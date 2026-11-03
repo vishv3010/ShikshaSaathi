@@ -22,10 +22,10 @@ Vishv works from two laptops: `git pull` before starting, commit and push before
 
 ## Commands
 
-- Python 3.10 in `.venv` (`.venv/Scripts/python` on Windows).
+- Python 3.10+ in `.venv` (`.venv/Scripts/python` on Windows, `.venv/bin/python` on Linux).
 - `scripts/generate_data.py` rebuilds `data/` (seed 7, byte-identical output); `scripts/validate_data.py [data_dir]` must pass after any data change.
 - CSVs are UTF-8 with BOM; read them with `encoding="utf-8-sig"`.
-- `saathi/` is the core: `data.py` (loading), `scoring.py` (priority score, visit plan), `actions.py` (one action per school), `analytics.py` (facts per question type), `lang.py` (Gujarati words).
+- `saathi/` is the core: `data.py` (loading), `scoring.py` (priority score, visit plan), `actions.py` (one action per school), `analytics.py` (facts per question type), `lang.py` (Gujarati words), `understand.py` (question -> intent, school, grade, subject, month; no LLM), `reply.py` (English/Gujarati templates filled from facts), `assistant.py` (`ask()`: the one entry point).
 - Tests: `.venv/Scripts/python -m pytest -q` (install with `requirements-dev.txt`). Expected values in tests are worked out by hand from the CSVs; keep it that way.
 - `scripts/check_tests_catch_bugs.py` plants known bugs in a temp copy and must report all of them caught; update its patterns if the code they target changes.
 
