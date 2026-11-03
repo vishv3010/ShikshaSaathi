@@ -236,7 +236,7 @@ const UI = {
     trust: "Every number comes from the school records (synthetic demo data).", placeholder: "Ask in Gujarati, English or Hindi…",
     sub: (n, m) => n + " schools, " + m, pickLabel: "Reply language", qLabel: "Your question", sendLabel: "Send",
     loading: "Checking your school records…",
-    act: "What to do", why: "Why", last: "Last visited", copy: "Copy", copied: "Copied",
+    act: "What to do", why: "Why", last: "Last visited", copy: "Copy", copied: "Copied", next: "Ask next",
     aiUsed: "Written with AI, every number checked against school records", checked: "From your school records",
     rejectedNum: (x) => "The AI wrote a number (" + x + ") that isn't in the records, so its text was removed. This answer comes straight from the records.",
     rejectedOther: "The AI's text didn't pass our check, so this answer comes straight from the records.",
@@ -255,7 +255,7 @@ const UI = {
     trust: "દરેક આંકડો શાળાના રેકોર્ડમાંથી આવે છે (ડેમો માટે કાલ્પનિક માહિતી).", placeholder: "ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો…",
     sub: (n, m) => n + " શાળાઓ, " + m, pickLabel: "જવાબની ભાષા", qLabel: "તમારો પ્રશ્ન", sendLabel: "મોકલો",
     loading: "શાળાના રેકોર્ડ જોઈ રહ્યા છીએ…",
-    act: "શું કરવું", why: "કારણ", last: "છેલ્લી મુલાકાત", copy: "નકલ કરો", copied: "નકલ થઈ ગઈ",
+    act: "શું કરવું", why: "કારણ", last: "છેલ્લી મુલાકાત", copy: "નકલ કરો", copied: "નકલ થઈ ગઈ", next: "આગળ પૂછો",
     aiUsed: "AIની મદદથી લખ્યું, દરેક આંકડો રેકોર્ડ સાથે ચકાસ્યો", checked: "શાળાના રેકોર્ડમાંથી",
     rejectedNum: (x) => "AIએ એવો આંકડો (" + x + ") લખ્યો જે રેકોર્ડમાં નથી, તેથી તેનું લખાણ કાઢી નાખ્યું. આ જવાબ સીધો રેકોર્ડમાંથી છે.",
     rejectedOther: "AIનું લખાણ ચકાસણીમાં પાસ ન થયું, તેથી આ જવાબ સીધો રેકોર્ડમાંથી છે.",
@@ -274,7 +274,7 @@ const UI = {
     trust: "हर आंकड़ा स्कूल के रिकॉर्ड से आता है (डेमो के लिए काल्पनिक डेटा)।", placeholder: "गुजराती, अंग्रेज़ी या हिंदी में पूछें…",
     sub: (n, m) => n + " स्कूल, " + m, pickLabel: "जवाब की भाषा", qLabel: "आपका सवाल", sendLabel: "भेजें",
     loading: "स्कूल के रिकॉर्ड देख रहे हैं…",
-    act: "क्या करें", why: "कारण", last: "पिछला दौरा", copy: "कॉपी करें", copied: "कॉपी हो गया",
+    act: "क्या करें", why: "कारण", last: "पिछला दौरा", copy: "कॉपी करें", copied: "कॉपी हो गया", next: "आगे पूछें",
     aiUsed: "AI की मदद से लिखा, हर आंकड़ा रिकॉर्ड से जाँचा", checked: "स्कूल के रिकॉर्ड से",
     rejectedNum: (x) => "AI ने ऐसा आंकड़ा (" + x + ") लिखा जो रिकॉर्ड में नहीं है, इसलिए उसका लिखा हटा दिया। यह जवाब सीधे रिकॉर्ड से है।",
     rejectedOther: "AI का लिखा जाँच में पास नहीं हुआ, इसलिए यह जवाब सीधे रिकॉर्ड से है।",
@@ -496,6 +496,7 @@ async function askServer(question, schoolId, shown) {
     });
     row.appendChild(copy);
     answer.appendChild(row);
+    if (r.options && r.options.length) { const next = el("p", "label", tr.next); next.lang = rk; answer.appendChild(next); }
     chips(answer, r.options);
   } catch (e) {
     answer.replaceChildren();
