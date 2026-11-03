@@ -18,7 +18,7 @@ def test_page_is_small_self_contained_and_locked_down(client):
     r = client.get("/", headers={"Accept-Encoding": "gzip"})
     assert r.status_code == 200 and "<title>Shiksha Saathi</title>" in r.text
     assert "http://" not in r.text and "https://" not in r.text                 # no external files at all
-    assert len(gzip.compress(r.content)) < 12_000     # what travels over patchy 4G: smaller than one photo
+    assert len(gzip.compress(r.content)) < 13_000     # what travels over patchy 4G: smaller than one photo
     assert "default-src 'self'" in r.headers["content-security-policy"]
     assert r.headers["content-encoding"] == "gzip"
 

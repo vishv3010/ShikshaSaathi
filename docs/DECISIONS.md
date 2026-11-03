@@ -206,3 +206,11 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
   - The first screen jumped when its numbers arrived. → A placeholder holds the space.
 - **Measured after:** every control a CRC uses is at least 44 px (only the folded reviewer tools are smaller); no text sits under the wrong language; headings run h1 → h2 → h3; text contrast is unchanged (lowest 5.38:1). The page stays inside its 12 KB budget (11,991 bytes gzipped) because code comments were shortened, with the reasons kept here.
 - **Unchanged:** every answer and every number; the cards still never pass through the LLM.
+
+### D-032 · A visual identity from her world: this week's plan on a school blackboard — Accepted (3 Nov, Vishv)
+
+- **Problem:** after D-031 the page was correct and accessible but still looked plain to Vishv. He installed Anthropic's frontend-design skill and gave a 10-minute timebox.
+- **Direction:** one bold element taken from the subject, everything else quiet. The "This week" card is a green classroom blackboard (board green `#1e4b3e`, chalk-white type, a chalk-yellow label, a chalk ledge along the bottom), the object every government school in Gujarat has. The rest is flat paper with no shadows; the counts sit on the page as large numbers; answer cards carry a brick or marigold left edge for their priority, so the edge means something.
+- **Rejected as generic:** the ALL-CAPS "THIS WEEK" label (now sentence case), identical shadowed cards everywhere, decorative colour on tiles. No downloaded fonts: Gujarati fonts are large, so the personality comes from weight (800 for the greeting and the board title) and size, not from a new typeface.
+- **Checked:** every text pair ≥ 5.35:1 and every control ≥ 3.19:1 in light and dark; screenshots in light, dark and Gujarati.
+- **Cost:** the page is 12,218 bytes gzipped, so its budget test moves from 12 KB to 13 KB, still a tenth of one phone photo.
