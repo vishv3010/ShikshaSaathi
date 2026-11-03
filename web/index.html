@@ -433,8 +433,8 @@ function renderText(box, text, lead, t) {
       box.appendChild(d);
       continue;
     }
-    const pct = line.match(/^[^:]+: ([\d.]+)% \(\d+\/\d+ /);
-    if (pct) {                                  // a month: the same words, plus a bar
+    const pct = line.match(/^[^:]+: ([\d.]+)% (?:\(\d+\/\d+ |\/ )/);
+    if (pct) {                                  // a month (cluster or one school): the same words, plus a bar
       const m = el("div", "month", line), bar = el("div", "bar"), fill = el("i");
       bar.setAttribute("aria-hidden", "true");
       fill.style.width = pct[1] + "%";

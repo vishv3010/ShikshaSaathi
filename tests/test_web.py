@@ -99,7 +99,7 @@ def test_every_suggested_question_on_the_page_is_understood():
         assert ask(words["visit"][lang])["intent"] == "top_priority_schools", lang
         assert [ask(q)["intent"] for q in words["examples"][lang]] == [
             "subject_analysis", "attendance_trend", "school_summary"], lang
-    # Auto (the reviewer's first view) shows the demo's questions, one of them in Hindi
+    # Auto (the reviewer's first view) shows the demo's questions, one of them in Gujarati (D-033)
     assert [ask(q)["intent"] for q in words["examples"]["auto"]] == [
         "subject_analysis", "attendance_trend", "subject_analysis"]
 
@@ -149,3 +149,37 @@ def test_home_screen_tiles_are_understood_in_every_language():
     for lang in ("en", "gu", "hi"):
         assert [ask(q)["intent"] for q in tiles[lang]] == [
             "attendance_trend", "class_overview", "missing_data", "officer_summary"], lang
+
+
+def _bar_pattern():
+    """The page's attendance-bar pattern in Python (re.ASCII: JavaScript's \\d reads ASCII digits only)."""
+    import re
+    js = re.search(r"const pct = line\.match\(/(.+?)/\);", web.PAGE.read_text(encoding="utf-8")).group(1)
+    return re.compile(js, re.ASCII)
+
+
+@pytest.mark.parametrize("lang", ["en", "gu"])
+def test_attendance_bars_go_on_every_month_with_a_figure_and_nowhere_else(lang):
+    """The page draws a bar under a reply line only when the line matches its pattern, as wide as the line's
+    first figure. Checked on real replies: every month with a children's figure gets a bar of exactly that
+    figure (each school, and the cluster); a month with no figure, and every other kind of answer, gets none."""
+    from saathi import analytics
+    from saathi.assistant import ask
+    from saathi.data import load
+    bar, data = _bar_pattern(), load()
+
+    def bars(question):
+        return [float(m.group(1)) for m in map(bar.match, ask(question, lang=lang)["text"].splitlines()) if m]
+
+    for school_id, village in zip(data.schools.school_id, data.schools.village):
+        want = [r["student_attendance_pct"] for r in analytics.attendance_months(data, school_id)
+                if r["status"] == "recorded" and r["student_attendance_pct"] is not None]
+        assert bars(f"Show attendance trend for {village}") == want, village
+    # Umarvada: June-August recorded, September's children figure blank, October missing.
+    assert bars("What was Umarvada's attendance in October?") == [81.5, 79.4, 80.1]
+    assert bars("Show attendance trend") == [r["student_attendance_pct"] for r in analytics.cluster_attendance(data)
+                                             if r["status"] == "recorded"]
+    for question in ["Which 3 schools need my visit this week?", "Why is Grade 5 Maths low in Rampura?",
+                     "Tell me about Chandrapur", "Which schools have missing data?", "Summary for my block officer",
+                     "When did I last visit Sonpura?"]:
+        assert bars(question) == [], question
