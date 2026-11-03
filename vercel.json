@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{saathi/**,data/**,web/**}",
+      "excludeFiles": "{tests/**,docs/**,eval/**,scripts/**,logs/**}",
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
+}
