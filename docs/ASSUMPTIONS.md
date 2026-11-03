@@ -1,6 +1,6 @@
 # Assumptions
 
-The brief says to assume what it does not cover and to share those assumptions. Each one is listed below with its reason, in the order it was made.
+The brief says to assume what it does not cover and to share those assumptions. Each one is listed below with its reason, in the order it was made. A plain-language summary of the 10 that shape the answers most was emailed to the reviewer on 3 Nov, before the project was shown.
 
 ## By perspective
 
