@@ -61,6 +61,7 @@ Details: [architecture and plan](docs/PLAN.md) · [decisions](docs/DECISIONS.md)
 
 ```
 .venv/bin/pip install -r requirements-dev.txt
+bash scripts/check_all.sh                          # everything below in one go, plus a fresh-copy start
 .venv/bin/python scripts/validate_data.py          # the dataset: IDs, ranges, gaps kept as gaps
 .venv/bin/python -m pytest -q                      # 225 tests; never calls Gemini
 .venv/bin/python scripts/check_tests_catch_bugs.py # plants 10 known bugs and confirms the tests catch each
