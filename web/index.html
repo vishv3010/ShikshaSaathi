@@ -209,7 +209,7 @@
   },
   "examples": {
     "auto": ["Why is Grade 5 Maths low in Rampura?", "What was Umarvada's attendance in October?",
-             "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?"],
+             "રામપુરામાં ધોરણ 5 ગણિત કેમ ઓછું છે?"],
     "en": ["Why is Grade 5 Maths low in Rampura?", "What was Umarvada's attendance in October?", "Tell me about Chandrapur"],
     "gu": ["રામપુરામાં ધોરણ 5 ગણિત કેમ ઓછું છે?", "ઉમરવાડાની ઑક્ટોબરની હાજરી બતાવો", "ચંદ્રપુર વિશે જણાવો"],
     "hi": ["पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?", "उमरवाडा की अक्टूबर की हाजिरी बताओ", "चंद्रपुर के बारे में बताओ"]
@@ -236,7 +236,7 @@ const UI = {
     locale: "en-IN", hello: "Namaste 🙏", lede: (n, m) => "Here's how your " + n + " schools are doing in " + m + ".",
     week: "This week", heroTitle: (n) => "Visit these " + n + " schools first", heroBtn: "See the visit plan",
     stats: ["need help first", "to keep an eye on", "waiting for data"], askAbout: "Ask about", tryAsking: "Try asking",
-    tiles: ["Attendance", "A weak class", "Missing data", "Note for my officer"],
+    tiles: ["Attendance", "Low marks", "Missing data", "Note for my officer"],
     trust: "Every number comes from the school records (synthetic demo data).", placeholder: "Ask in Gujarati, English or Hindi…",
     sub: (n, m) => n + " schools, " + m, pickLabel: "Reply language", qLabel: "Your question", sendLabel: "Send",
     loading: "Checking your school records…", slow: "Taking a little longer…",
@@ -255,7 +255,7 @@ const UI = {
     locale: "gu-IN", hello: "નમસ્તે 🙏", lede: (n, m) => m + "માં તમારી " + n + " શાળાઓની સ્થિતિ.",
     week: "આ અઠવાડિયે", heroTitle: (n) => "પહેલાં આ " + n + " શાળાઓની મુલાકાત લો", heroBtn: "મુલાકાતની યોજના જુઓ",
     stats: ["પહેલાં મદદની જરૂર", "ધ્યાન રાખવા જેવી", "માહિતી આવવાની બાકી"], askAbout: "આ વિશે પૂછો", tryAsking: "આવું પૂછી જુઓ",
-    tiles: ["હાજરી", "નબળો વર્ગ", "ખૂટતી માહિતી", "અધિકારી માટે નોંધ"],
+    tiles: ["હાજરી", "ઓછા ગુણ", "ખૂટતી માહિતી", "અધિકારી માટે નોંધ"],
     trust: "દરેક આંકડો શાળાના રેકોર્ડમાંથી આવે છે (ડેમો માટે કાલ્પનિક માહિતી).", placeholder: "ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો…",
     sub: (n, m) => n + " શાળાઓ, " + m, pickLabel: "જવાબની ભાષા", qLabel: "તમારો પ્રશ્ન", sendLabel: "મોકલો",
     loading: "શાળાના રેકોર્ડ જોઈ રહ્યા છીએ…", slow: "થોડી વધુ વાર લાગી રહી છે…",
@@ -274,7 +274,7 @@ const UI = {
     locale: "hi-IN", hello: "नमस्ते 🙏", lede: (n, m) => m + " में आपके " + n + " स्कूलों का हाल।",
     week: "इस हफ्ते", heroTitle: (n) => "पहले इन " + n + " स्कूलों का दौरा करें", heroBtn: "दौरे की योजना देखें",
     stats: ["पहले मदद चाहिए", "नज़र रखें", "डेटा आना बाकी"], askAbout: "इनके बारे में पूछें", tryAsking: "ऐसे पूछकर देखें",
-    tiles: ["हाजिरी", "कमज़ोर कक्षा", "अधूरा डेटा", "अधिकारी के लिए नोट"],
+    tiles: ["हाजिरी", "कम अंक", "अधूरा डेटा", "अधिकारी के लिए नोट"],
     trust: "हर आंकड़ा स्कूल के रिकॉर्ड से आता है (डेमो के लिए काल्पनिक डेटा)।", placeholder: "गुजराती, अंग्रेज़ी या हिंदी में पूछें…",
     sub: (n, m) => n + " स्कूल, " + m, pickLabel: "जवाब की भाषा", qLabel: "आपका सवाल", sendLabel: "भेजें",
     loading: "स्कूल के रिकॉर्ड देख रहे हैं…", slow: "थोड़ा ज़्यादा समय लग रहा है…",
@@ -505,7 +505,7 @@ async function askServer(question, schoolId, shown) {
     const r = await res.json(), rk = uiKey(r.lang), tr = UI[rk];
     answer.lang = r.lang;
     let [meta, cls] = describe(r.check || {}, tr);
-    if (test.checked && r.check && r.check.test_checker === false) { meta = "(Number-checker test: the AI is off.) " + meta; cls = "warn"; }
+    if (test.checked && r.check && (r.check.test_checker === false || r.check.error)) { meta = "(Number-checker test: the AI is off.) " + meta; cls = "warn"; }
     const metaEl = el("p", "meta " + cls, (cls ? "" : "✓ ") + meta), row = el("div", "actions"), copy = el("button", "chip ghost", tr.copy);
     metaEl.lang = row.lang = rk;
     if (cls) answer.appendChild(metaEl);                         // warnings first, where they are seen
