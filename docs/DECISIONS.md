@@ -109,6 +109,14 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
 - **Choice:** besides the top schools, the visit-plan facts include schools moved down because of a recent visit, Low-priority schools where an action rule fires (a single weak class), schools with not enough data, and schools not visited for over 90 days.
 - **Why:** reviewing the first output showed Sonpura unvisited for 130 days and never mentioned, because its data looks fine. A CRC still needs to know that. The reply decides how much of this to show, so the message stays short.
 
+### D-020 · School types follow the UDISE+ census categories — Accepted (3 Nov)
+
+- **Context:** the brief gives `type` as "primary / upper primary" and assesses Grades 3–8, but does not define the types. Checked online on 3 Nov.
+- **Findings:** the RTE Act 2009 defines elementary education as Class I–VIII and its rules split it into I–V (primary) and VI–VIII (upper primary). The national school census (UDISE+) has three categories: primary only (1–5), primary with upper primary (1–8), upper primary only (6–8). Gujarat's teacher eligibility test follows the same split (Std 1–5 and Std 6–8), and many Gujarat government schools run Std 1–8 under one roof and are still called "Prathmik Shala".
+- **Choice:** `primary` = primary only (Std 1–5, assessed Grades 3–5). `upper primary` = primary with upper primary (Std 1–8, assessed Grades 3–8). Standalone Std 6–8 schools are not modelled.
+- **Why:** it matches the census, covers the brief's Grade 3–8 range, and needs no change to the data or scoring. Only the wording in A-02 was imprecise: strictly, "upper primary" means Std 6–8, but the schools that offer it almost always also teach Std 1–5.
+- **Sources:** UDISE+ Data Capture Format 2022-23 and guidelines (udiseplus.gov.in), RTE Act 2009 (indiacode.nic.in), Gujarat TET paper structure.
+
 ### D-021 · Rule-based understanding with guardrails checked first — Accepted (3 Nov)
 
 - **Choice:** without the LLM, `understand.py` reads the question with ordered rules: (1) attempts to change rules or data, or to get guessed figures; (2) questions judging a teacher or head teacher; (3) requests for personal details; (4) unclear or unknown school; then the question types. The first rule that matches decides. English uses word boundaries; Gujarati and Hindi words are matched inside words, because case endings attach to the word ("રામપુરામાં").
@@ -129,10 +137,16 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
 - **Gujarati quality (Vishv's review, 3 Nov):** visit notes are stored in Gujarati too, so Gujarati replies contain no English sentences (a test fails on any English word she did not type herself); clunky phrases were rewritten ("…ની માહિતી મુજબ", "…ની હાજરી હજી આવી નથી", "પોઇન્ટનો ઘટાડો") using school terms such as એકમ કસોટી, ઉપચારાત્મક તાસ, અધ્યયન નિષ્પત્તિ. Hindi replies come from the Gemini layer, not templates.
 - **Also:** the reply checks the question's premise against the data ("Why is Gujarati low in Navli?" answers that Navli is 12.6 points above the cluster average), lists stay under WhatsApp's 4,096-character message limit, and Gujarati sentences avoid gendered first-person verbs ("હું આ બતાવી શકું").
 
-### D-020 · School types follow the UDISE+ census categories — Accepted (3 Nov)
+### D-024 · Rules read first; Gemini reads only what the rules cannot place — Accepted (3 Nov)
 
-- **Context:** the brief gives `type` as "primary / upper primary" and assesses Grades 3–8, but does not define the types. Checked online on 3 Nov.
-- **Findings:** the RTE Act 2009 defines elementary education as Class I–VIII and its rules split it into I–V (primary) and VI–VIII (upper primary). The national school census (UDISE+) has three categories: primary only (1–5), primary with upper primary (1–8), upper primary only (6–8). Gujarat's teacher eligibility test follows the same split (Std 1–5 and Std 6–8), and many Gujarat government schools run Std 1–8 under one roof and are still called "Prathmik Shala".
-- **Choice:** `primary` = primary only (Std 1–5, assessed Grades 3–5). `upper primary` = primary with upper primary (Std 1–8, assessed Grades 3–8). Standalone Std 6–8 schools are not modelled.
-- **Why:** it matches the census, covers the brief's Grade 3–8 range, and needs no change to the data or scoring. Only the wording in A-02 was imprecise: strictly, "upper primary" means Std 6–8, but the schools that offer it almost always also teach Std 1–5.
-- **Sources:** UDISE+ Data Capture Format 2022-23 and guidelines (udiseplus.gov.in), RTE Act 2009 (indiacode.nic.in), Gujarat TET paper structure.
+- **Change from the plan:** `PLAN.md` had Gemini read every question, with keywords as the fallback. Now the rule-based reader goes first and Gemini is asked only when the rules answer "out of scope" (for example Gujarati or Hindi typed in English letters: "aa athvadiye kai 3 shala ni mulakat levi joie?").
+- **Why:** the free tier allows about 10 requests a minute, and two calls per question would halve what a reviewer can try; one call instead of two matters on patchy 4G; the rules are tested on 150+ cases and give the same answer every time, which a demo needs. Trap questions are caught by the rules before Gemini is ever called.
+- **Gemini's reading is checked before use:** its JSON is limited to fixed question types and the real school ids; a school the question never names is dropped (Gemini cannot add one); grades, months and counts out of range are dropped or clamped; if anything is unusable, the rules' answer stands.
+
+### D-025 · Gemini writes the opening line, the code writes the details; model gemini-3.5-flash-lite — Accepted (3 Nov)
+
+- **First version:** Gemini rewrote the whole draft. In the first live run every number passed the checker, but the English top-3 answer silently dropped its "Also" section, including the warning that Umarvada's October data had not arrived. The number checker cannot see a dropped line.
+- **Choice (back to `PLAN.md` §1, "short text + details from code"):** for English and Gujarati, Gemini writes only a one- or two-sentence direct answer (at most 300 characters) above the checked draft, so nothing can be dropped and every detail number stays next to its school. The code decides when an opening is worth a call: not when the draft already starts with the answer (one month's attendance, one school's gaps or visits) and not for the officer summary, which is forwarded as it is. For Hindi, which has no templates, Gemini translates the whole draft, and every number in the draft must also appear in the translation, so a dropped line is detected and the English draft is sent instead.
+- **Every number the reply may contain is in the facts:** the score scale (100), each action's wording ("30-minute") and the example questions were added to the facts, and every template answer now passes the same facts-only check as Gemini (a test).
+- **Model:** `gemini-3.5-flash-lite`. In a one-sentence test `gemini-3.5-flash` spent 647 hidden "thinking" tokens; lite spent none and answered in 1.4 s on average over the 12 demo questions, with 0 checker rejections and 0 errors (732 tokens in, 157 out per answer; most output is the Hindi translations). Lite once wrote Gujarati digits (૭૩.૨), which the checker reads.
+- **Failures fall back silently:** no key, quota (a 60-second pause before trying again), timeout, a cut-off reply or a failed check all send the checked draft, and each case is logged in `logs/llm_calls.jsonl` (kept out of git).

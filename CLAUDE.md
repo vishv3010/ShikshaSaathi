@@ -25,9 +25,10 @@ Vishv works from two laptops: `git pull` before starting, commit and push before
 - Python 3.10+ in `.venv` (`.venv/Scripts/python` on Windows, `.venv/bin/python` on Linux).
 - `scripts/generate_data.py` rebuilds `data/` (seed 7, byte-identical output); `scripts/validate_data.py [data_dir]` must pass after any data change.
 - CSVs are UTF-8 with BOM; read them with `encoding="utf-8-sig"`.
-- `saathi/` is the core: `data.py` (loading), `scoring.py` (priority score, visit plan), `actions.py` (one action per school), `analytics.py` (facts per question type), `lang.py` (Gujarati words), `understand.py` (question -> intent, school, grade, subject, month; no LLM), `reply.py` (English/Gujarati templates filled from facts), `assistant.py` (`ask()`: the one entry point).
+- `saathi/` is the core: `data.py` (loading), `scoring.py` (priority score, visit plan), `actions.py` (one action per school), `analytics.py` (facts per question type), `lang.py` (Gujarati words), `understand.py` (question -> intent, school, grade, subject, month; no LLM), `reply.py` (English/Gujarati templates filled from facts), `assistant.py` (`ask()`: the one entry point), `llm.py` (Gemini over HTTPS, call log), `llm_steps.py` (understand / opening line / Hindi translation), `checker.py` (number checker).
 - Tests: `.venv/Scripts/python -m pytest -q` (install with `requirements-dev.txt`). Expected values in tests are worked out by hand from the CSVs; keep it that way.
 - `scripts/check_tests_catch_bugs.py` plants known bugs in a temp copy and must report all of them caught; update its patterns if the code they target changes.
+- Gemini: key in `.env` as `GEMINI_API_KEY` (git-ignored; never print or commit it). `SAATHI_LLM=off` forces rules only; tests always run with it off. `scripts/try_llm.py` runs the demo questions against live Gemini (uses free-tier quota; it pauses between calls). LLM calls are logged to `logs/llm_calls.jsonl` (git-ignored).
 
 ## How we work
 

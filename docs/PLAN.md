@@ -14,8 +14,8 @@ Merged on 2 Nov from two plans: our own (built with Claude Code after research) 
 | Synthetic dataset + validator | Done (2 Nov) |
 | Scoring, actions, analysis facts + tests | Done (3 Nov) |
 | Understand the question (intents, school-name matching) + no-LLM replies in Gujarati and English | Done (3 Nov): `understand.py`, `assistant.py`, `reply.py`; 151 tests, 8 of 8 planted bugs caught |
-| Gemini layer + number checker | **Next.** Needs `GEMINI_API_KEY` in a local `.env` file, which is never committed. |
-| FastAPI + chat page | To do |
+| Gemini layer + number checker | Done (3 Nov): `llm.py`, `llm_steps.py`, `checker.py`; rules read first (D-024), Gemini writes the opening line or the Hindi translation (D-025); 189 tests, 10 of 10 planted bugs caught; live: 12 demo questions, 0 rejections, 1.4 s average |
+| FastAPI + chat page | **Next** |
 | Guardrails, full test run, deploy | To do |
 | Solution note, demo video, submit | To do. Deadline Wed 4 Nov 2026, 11:59 PM. The repo is private: make it public or give the reviewers access before submitting. |
 
