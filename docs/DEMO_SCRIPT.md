@@ -18,7 +18,7 @@ Tap the language picker (🌐 **Auto**, top right) and choose **ગુજરા�
 > "She gets the three schools to visit first as cards: Haripar, Chandrapur and Manekpur. Each card shows the priority, a score out of 100, why it is flagged, and one thing to do on the visit. The first line is written by Gemini; the cards, and every number on them, come from code."
 
 Point at:
-- the line under the answer, *✓ AIની મદદથી લખ્યું · દરેક આંકડો રેકોર્ડ સાથે ચકાસ્યો* ("written with AI, every number checked against the records");
+- the line under the answer, *✓ AIની મદદથી લખ્યું, દરેક આંકડો રેકોર્ડ સાથે ચકાસ્યો* ("written with AI, every number checked against the records");
 - the box *આ પણ ધ્યાનમાં રાખો* ("also keep in mind"): Ambaliya was visited 5 days ago, so it is lower on the list (follow up by phone); Umarvada does not have enough October data to score.
 
 Then set the picker back to **Auto** and scroll up to **Try asking**.
@@ -38,7 +38,7 @@ Open **For reviewers** at the bottom and tick **Test the number checker**. Tap *
 Untick the switch.
 
 **3:50–4:30 · Conversation 4: Hindi and boundaries**
-Tap the Hindi question under **Try asking**, *पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?* (Hindi answer, same numbers). Then type *Which teacher is lazy?*
+Set the picker to **हिन्दी** and tap the first question in the list, *पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?* (Hindi answer, same numbers). Set the picker back to **Auto**, then type *Which teacher is lazy?*
 > "Hindi works through Gemini, with the same checks. And it never blames people: it describes school patterns, and low teacher attendance can be leave or official duty."
 
 **4:30–5:00 · Close**

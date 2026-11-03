@@ -9,12 +9,13 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 - **ChatGPT** wrote a second development plan, compared with Claude Code's and merged.
 - **Gemini 3.5 Flash-Lite, inside the product**, writes a one-line opening for each answer, Hindi translations, and reads questions typed in English letters. It never computes a number; a checker rejects any number it writes that is not in the data.
 - **Vishv decided**: what to build first, every design choice that changed the answers, the Gujarati wording, and the assumptions emailed to the reviewer.
-- **Where the AI was wrong**: 32 times, listed at the end with how each was caught.
+- **Where the AI was wrong**: 35 times, listed at the end with how each was caught.
 
 ## Tools
 
 - **Claude Code** (desktop app, Claude Opus 5.5): reading the brief, research, design discussion, writing code and docs, running checks.
 - **Firecrawl** (web search and scraping, called from Claude Code): research on VSK, Gunotsav, CRC role, Gujarat school calendar, causes of low learning.
+- **Claude app** (phone, then linked to the PC; Claude Opus 5.5): the UI polish pass, reading the live site through Firecrawl.
 - **ChatGPT**: generated a second development plan from the brief, used as a comparison against the Claude Code plan.
 - **Gemini API** (gemini-3.5-flash-lite, free tier): inside the product, for the opening line, Hindi, and reading questions the rules cannot place.
 
@@ -45,6 +46,7 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 | 3 Nov | Claude Code + Gemini API | Wrote 68 new test questions in four language forms (`eval/`); measured understanding before and after general fixes, keeping round 2 as the held-out figure (rules 87%, with Gemini 91%). Checked every colour pair on the page against WCAG AA by calculation; two failed and were darkened. | |
 | 3 Nov | Claude Code + web search | Drafted the 2-page solution note from the code, the docs and the call log; took token counts from the 46 logged Gemini calls and the price from Google's pricing page; re-checked every claim against code and logs before building the PDF (3 corrected). | Away; the draft waits for Vishv's review. |
 | 3 Nov | Claude Code | Wrote the scoring and analysis core (`saathi/`): priority score, visit plan, action rules in English and Gujarati, and facts for each question type. Checked two schools' scores by hand against the raw CSV rows, wrote 54 tests from those hand-checked values, then planted 4 bugs in a copy of the code to confirm the tests catch them (all 4 caught). Both bug-planting checks now live in the repo (`tests/test_validator.py`, `scripts/check_tests_catch_bugs.py`) so anyone can rerun them. | Approved starting the scoring step; asked for everything to be pushed so work can continue from a second laptop. |
+| 3 Nov | Claude app + Firecrawl | Worked from the phone, first without the repo: drafted the UI ideas and small fixes against the live page, tested them in a headless browser with a stand-in server, and read the assignment PDF against live answers. Once linked to the PC, matched every edit against the real file, ran all 232 tests at each of the 8 commits, and ran the page on the real server. | Set the direction from the metro, chose what to keep, and reviewed and applied the commits. |
 
 ## Where AI output was wrong or uncertain
 
@@ -83,3 +85,5 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 | 3 Nov | Claude Code's first redesign (D-029) stopped showing the example questions: the list stayed in the page but nothing drew it, the tests still passed because they only checked the list, and `DEMO_SCRIPT.md` still told Vishv to tap them in the video. | Found by the design critique, reading the page's code next to the demo script; the questions are back as "Try asking" and the demo script was re-walked step by step in the browser. |
 | 3 Nov | Since the first chat page, `<html lang="gu">` was set while most of the page was English (a screen reader would read English with a Gujarati voice); priority on the home card was shown by colour alone; the question box's border and the chosen language stood out at only 1.1–1.2:1 (WCAG asks 3:1). D-030 had claimed "every colour pair passes WCAG AA" after checking text colours only. | Found by the accessibility audit, which measured the rendered page instead of reading the CSS; fixed and re-measured (D-031). |
 | 3 Nov | `scripts/check_tests_catch_bugs.py` crashed on Windows before planting its first bug: it read the tests' output in Windows' default code page, which cannot hold the Gujarati and Hindi text the tests now print. It had always worked on the Linux laptop, where text is UTF-8 by default. | Found by running every check on the Windows laptop after pulling; the script now asks for and reads UTF-8, and all 10 planted bugs are caught on Windows too. |
+| 3 Nov | The first board animation did not animate: its `clip-path` could not blend into "none", so the rows popped in instead of being written. | Found by freezing the animation frame by frame and reading the values; an explicit end state fixed it. |
+| 3 Nov | Working from the live page without the repo, Claude swapped the Hindi example in Auto for a Gujarati one and listed the demo script as only possibly affected. The script's Hindi step tapped exactly that example, so the video would have broken at that step. | Found by reading `docs/DEMO_SCRIPT.md` once the PC was linked; the step now uses the picker, and the whole script was walked through again on the real server. |

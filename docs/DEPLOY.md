@@ -33,7 +33,7 @@ The repository has what Vercel needs: `main.py` (the same FastAPI app as the loc
 ## Check it (2 minutes)
 
 - `https://<your-link>/health` should show `"llm": true` and `"latest_month": "2026-10"`.
-- Open the link on your phone and tap: *Which 3 schools need my visit this week?*, *What was Umarvada's attendance in October?*, the Hindi question, and once with **Test the number checker** ticked (the red "AI text rejected" line should appear above the answer).
+- Open the link on your phone and tap: *Which 3 schools need my visit this week?*, *What was Umarvada's attendance in October?*, the Hindi question (set the picker to हिन्दी first), and once with **Test the number checker** ticked (the red "AI text rejected" line should appear above the answer).
 
 ## Good to know
 
