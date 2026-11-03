@@ -14,7 +14,7 @@ The brief asks for three real conversations, one with missing data. This script 
 > "This is Shiksha Saathi, for a cluster coordinator like Bhavnaben with 20 schools. Her block officer asks: which schools need attention this month, and what will you do about it? She has 10 minutes and a basic phone. Before she types anything, the first screen answers it: the three schools to visit first, each with its reason, and the month in three numbers: 3 need help first, 4 to keep an eye on, 1 still waiting for data."
 
 **0:30–1:30 · Conversation 1: the main question, in Gujarati**
-Tap the language picker (🌐 **Auto**, top right) and choose **ગુજરાતી**: the whole screen switches to Gujarati. Tap the green button *મુલાકાતની યોજના જુઓ*.
+Tap the language picker (🌐 **Auto**, top right) and choose **ગુજરાતી**: the whole screen switches to Gujarati. Tap the white button at the bottom of the green "board", *મુલાકાતની યોજના જુઓ*.
 > "She gets the three schools to visit first as cards: Haripar, Chandrapur and Manekpur. Each card shows the priority, a score out of 100, why it is flagged, and one thing to do on the visit. The first line is written by Gemini; the cards, and every number on them, come from code."
 
 Point at:
