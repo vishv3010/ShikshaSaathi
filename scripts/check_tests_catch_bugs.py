@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# (the bug, file, correct code, buggy code)
+# (the bug, file, correct code, buggy code); a bug that needs several edits gives lists of both
 BUGS = [
     ("attendance band moved from 70 to 75", "saathi/scoring.py",
      "(None, 70, 25), (70, 80, 18)", "(None, 75, 25), (75, 80, 18)"),
@@ -30,6 +30,13 @@ BUGS = [
      '        if row["status"] == "missing":', '        if False:'),
     ("above / below the cluster average swapped", "saathi/reply.py",
      '"cmp_below" if d < 0 else "cmp_above" if d > 0', '"cmp_below" if d > 0 else "cmp_above" if d < 0'),
+    # Python's \d already reads Gujarati digits, so the digit conversion is a second layer; the real bug
+    # (as in a JavaScript port, where \d is ASCII-only) removes both.
+    ("number checker blind to Gujarati and Devanagari digits", "saathi/checker.py",
+     ["    text = text.translate(DIGITS)\n    if list_markers:", 'NUMBER = re.compile(r"\\d+(?:\\.\\d+)?")'],
+     ["    if list_markers:", 'NUMBER = re.compile(r"[0-9]+(?:\\.[0-9]+)?")']),
+    ("Hindi translation allowed to drop lines", "saathi/llm_steps.py",
+     'f"dropped numbers {dropped}" if dropped else None', "None"),
 ]
 
 
@@ -38,12 +45,16 @@ def main():
     for label, path, correct, buggy in BUGS:
         with tempfile.TemporaryDirectory() as tmp:
             copy = Path(tmp) / "repo"
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".venv", ".git", "__pycache__", ".pytest_cache"))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".venv", ".git", "__pycache__", ".pytest_cache",
+                                                                  ".env", "logs"))   # never copy the key
             target = copy / path
             code = target.read_text(encoding="utf-8")
-            if correct not in code:
-                sys.exit(f"cannot plant '{label}': {path} has changed, update this script")
-            target.write_text(code.replace(correct, buggy), encoding="utf-8")
+            edits = zip(correct, buggy) if isinstance(correct, list) else [(correct, buggy)]
+            for old, new in edits:
+                if old not in code:
+                    sys.exit(f"cannot plant '{label}': {path} has changed, update this script")
+                code = code.replace(old, new)
+            target.write_text(code, encoding="utf-8")
             result = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"],
                                     cwd=copy, capture_output=True, text=True)
         caught = result.returncode != 0

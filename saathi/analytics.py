@@ -13,6 +13,7 @@ from .scoring import score_all, score_school, visit_plan
 SUBJECT_WORDS = {"Gujarati": ["gujarati", "read"], "Maths": ["math"],
                  "EVS": ["evs"], "Science": ["science", "experiment"]}
 CLASS_CONCERN = 50   # a class average below this gets a remedial action in subject analysis
+RECENT_WINDOW_DAYS = 30   # "visits in the last 30 days"
 
 
 def school_profile(data, school_id):
@@ -259,11 +260,11 @@ def recent_visits(data, school_id=None):
     if school_id:
         return {"as_of": AS_OF.isoformat(), "school": school_profile(data, school_id),
                 "visits": data.visits_for(school_id)}
-    rows, last_30_days = [], 0
+    rows, recent = [], 0
     for s in data.schools.itertuples():
         visits = data.visits_for(s.school_id)
-        last_30_days += sum(v["days_ago"] <= 30 for v in visits)
+        recent += sum(v["days_ago"] <= RECENT_WINDOW_DAYS for v in visits)
         rows.append({"school_id": s.school_id, "name": s.name, "name_gu": s.name_gu,
                      "visits": len(visits), "last_visit": visits[0] if visits else None})
     rows.sort(key=lambda r: -(r["last_visit"]["days_ago"] if r["last_visit"] else float("inf")))
-    return {"as_of": AS_OF.isoformat(), "visits_last_30_days": last_30_days, "schools": rows}
+    return {"as_of": AS_OF.isoformat(), "window_days": RECENT_WINDOW_DAYS, "visits_in_window": recent, "schools": rows}

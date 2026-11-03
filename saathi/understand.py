@@ -256,7 +256,7 @@ def _unknown_school_name(text, norm, native, villages):
 
 
 def find_grade(norm):
-    patterns = [r"\b(?:grade|class|std\.?|standard)\s*(\d{1,2})\b",
+    patterns = [r"\b(?:grade|class|std\.?|standard|dhoran|dhoranu|kaksha)\s*(\d{1,2})\b",
                 r"\b(\d{1,2})\s*(?:st|nd|rd|th)\s*(?:grade|class|std|standard)\b",
                 r"\b([1-8])(?:st|nd|rd|th)\b(?!\s*(?:of\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))",
                 r"(?:ધોરણ|ધો\.?)\s*(\d{1,2})", r"(\d{1,2})\s*(?:મા|માં|મું|મી)?\s*ધોરણ",

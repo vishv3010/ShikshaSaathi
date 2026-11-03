@@ -167,7 +167,7 @@ W = {  # every sentence, in both languages
     "visit_note": ("Note: {note}", "નોંધ: {note}"),
     "visit_earlier": ("Earlier: {list}", "અગાઉ: {list}"),
     "visit_none": ("No visits to {name} are recorded.", "{name}ની કોઈ મુલાકાત નોંધાઈ નથી."),
-    "visits_30": ("Visits in the last 30 days: {n}.", "છેલ્લા 30 દિવસમાં મુલાકાતો: {n}."),
+    "visits_30": ("Visits in the last {w} days: {n}.", "છેલ્લા {w} દિવસમાં મુલાકાતો: {n}."),
     "visits_longest": ("Not visited for longest:", "સૌથી લાંબા સમયથી મુલાકાત બાકી:"),
     "visit_row": ("{name}: {d} days ({date})", "{name}: {d} દિવસ ({date})"),
     "visit_row_never": ("{name}: no visit recorded", "{name}: કોઈ મુલાકાત નોંધાઈ નથી"),
@@ -626,7 +626,7 @@ def recent_visits(f, lang):
             lines.append(t("visit_earlier", lang, list=", ".join(
                 f"{date_text(x['date'], lang)} ({focus(x['focus_area'], lang)})" for x in visits[1:])))
         return lines, []
-    lines = [t("visits_30", lang, n=f["visits_last_30_days"]), t("visits_longest", lang)]
+    lines = [t("visits_30", lang, w=f["window_days"], n=f["visits_in_window"]), t("visits_longest", lang)]
     for i, r in enumerate(f["schools"][:MAX_VISIT_ROWS], 1):
         v = r["last_visit"]
         row = (t("visit_row", lang, name=short(r, lang), d=v["days_ago"], date=date_text(v["date"], lang)) if v

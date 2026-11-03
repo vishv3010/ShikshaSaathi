@@ -113,6 +113,8 @@ def test_pinned_school_overrides_the_text():
     ("રામપુરા પાંચમા ધોરણ ગણિત", 5, "Maths"),
     ("रामपुरा कक्षा 4 विज्ञान", 4, "Science"),
     ("Science and maths in Grade 7 at Amrapur", 7, "Science"),   # the first subject named
+    ("rampura ma dhoran 5 ganit", 5, "Maths"),                    # Gujarati typed in English letters
+    ("rampura kaksha 4 ganit", 4, "Maths"),                       # Hindi typed in English letters
 ])
 def test_grade_and_subject(question, grade, subject):
     q = parse(question, D)

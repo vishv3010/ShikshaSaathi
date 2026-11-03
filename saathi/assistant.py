@@ -2,21 +2,38 @@
 
     understand -> validate -> compute facts -> phrase
 
-`ask()` is the one entry point: the chat page calls it today, and a WhatsApp or
-SwiftChat webhook would call the same function. In this version both the
-"understand" and "phrase" steps are rule-based, so every answer is correct with
-no LLM at all (D-009). The Gemini layer will plug into the same two steps and
-be checked against the same facts.
+`ask()` is the one entry point: the chat page calls it, and a WhatsApp or
+SwiftChat webhook would call the same function.
+
+    1. rules read the question (understand.py)
+    2. only if the rules cannot place it, Gemini reads it; the code validates its JSON
+    3. Python computes the facts (analytics.py); every number comes from here
+    4. a template writes a draft from the facts (reply.py)
+    5. Gemini adds a one- or two-sentence direct answer above the draft (English,
+       Gujarati), or translates the whole draft (Hindi)
+    6. the number checker compares every number with the facts (checker.py), and for
+       a translation also that no number was dropped; if not, the draft is sent
+
+Without a key, or when Gemini fails, steps 2, 5 and 6 are skipped and every
+answer is still correct (D-009).
 """
 from dataclasses import asdict
 from difflib import get_close_matches
 
-from . import analytics, reply, understand
+from . import analytics, llm, llm_steps, reply, understand
+from .actions import render_action
 from .data import AS_OF, ASSESSED_GRADES, load, subjects_for
 from .lang import LANGS
 from .scoring import LONG_UNVISITED_DAYS, RECENT_VISIT_DAYS
 
 SUGGESTION_CUTOFF = 0.6   # how close an unknown name must be to suggest a school ("Rampur school" -> Rampura)
+SCORE_SCALE = 100         # priority scores are out of 100
+SCORED_KINDS = {"top_priority_schools", "school_summary", "officer_summary"}
+EXAMPLE_KINDS = {"help", "out_of_scope", "people_judgement", "personal_info", "not_allowed"}
+# Answers built from school data get Gemini's wording; boundaries and "which one?" questions keep
+# the fixed wording, except in Hindi, which has no templates.
+DATA_KINDS = {"top_priority_schools", "school_summary", "subject_analysis", "class_overview", "attendance_trend",
+              "missing_data", "recent_visits", "officer_summary"}
 
 
 def month_note(data, month):
@@ -40,7 +57,36 @@ def _school_brief(data, school_id):
 
 
 def compute(q, data):
-    """(kind of answer, facts). Facts hold every number the reply may use, and nothing more."""
+    """(kind of answer, facts). Facts hold every number the reply may use, and nothing more:
+    the number checker treats them as the only source of truth."""
+    kind, facts = _compute(q, data)
+    return kind, complete(kind, facts)
+
+
+def complete(kind, facts):
+    """Add what the reply shows besides data: the score scale, each action's wording
+    (it contains numbers such as "30-minute"), and example questions."""
+    if kind in SCORED_KINDS:
+        facts["score_scale"] = SCORE_SCALE
+    if kind in EXAMPLE_KINDS:
+        facts["examples"] = reply.EXAMPLES
+    _add_action_text(facts)
+    return facts
+
+
+def _add_action_text(value):
+    if isinstance(value, dict):
+        action = value.get("action")
+        if isinstance(action, dict) and "code" in action:
+            value["action_text"] = {lang: render_action(action, lang) for lang in LANGS}
+        for v in list(value.values()):
+            _add_action_text(v)
+    elif isinstance(value, list):
+        for v in value:
+            _add_action_text(v)
+
+
+def _compute(q, data):
     intent = q.intent
     sid = q.school_ids[0] if len(q.school_ids) == 1 else None
     note = month_note(data, q.month)
@@ -124,20 +170,58 @@ def _not_found(q, data):
             "schools": [_school_brief(data, s) for s in data.schools.school_id]}
 
 
-def reply_language(q, lang=None):
+def needs_opening(kind, facts):
+    """Is an LLM opening line worth a call? Not when the template already starts with the
+    direct answer (one month's attendance, one school's gaps or visits), and not for the
+    officer summary, which is meant to be forwarded as it is."""
+    if kind == "attendance_trend":
+        return not facts.get("asked_month")
+    if kind in ("missing_data", "recent_visits"):
+        return "school" not in facts
+    return kind in DATA_KINDS and kind != "officer_summary"
+
+
+def reply_language(q, lang=None, llm_on=False):
     """Explicit choice (UI toggle) first, then a request in the question, then the question's own language.
-    Hindi has no templates yet, so without the LLM it is answered in English (A-20)."""
+    Hindi needs the LLM; without it Hindi is answered in English (A-20)."""
     chosen = lang or q.reply_lang or q.lang
-    return chosen if chosen in LANGS else "en"
+    if chosen in LANGS or (chosen == "hi" and llm_on):
+        return chosen
+    return "en"
 
 
-def ask(text, lang=None, school_id=None, data=None):
-    """Answer one question. `lang` forces 'en' or 'gu'; `school_id` pins the school
-    (sent back by the chat page when she taps an option)."""
+def ask(text, lang=None, school_id=None, data=None, use_llm=None):
+    """Answer one question. `lang` forces 'en', 'gu' or 'hi'; `school_id` pins the school
+    (sent back by the chat page when she taps an option); `use_llm` overrides the
+    GEMINI_API_KEY / SAATHI_LLM setting."""
     data = data or load()
-    q = understand.parse(text or "", data, school_id=school_id)
+    use_llm = llm.enabled() if use_llm is None else use_llm
+    text = text or ""
+    trace = {"understood_by": "rules"}
+
+    q = understand.parse(text, data, school_id=school_id)
+    if use_llm and q.intent == "out_of_scope" and text.strip():
+        better = llm_steps.understand_question(text, data)
+        if better:
+            q, trace["understood_by"] = better, "llm"
+
     kind, facts = compute(q, data)
-    out_lang = reply_language(q, lang)
-    answer, options = reply.render(kind, facts, out_lang)
+    out_lang = reply_language(q, lang, llm_on=use_llm)
+    draft_lang = out_lang if out_lang in LANGS else "en"
+    draft, options = reply.render(kind, facts, draft_lang)
+
+    answer, mode = draft, "rules"
+    if use_llm and out_lang not in LANGS:                  # Hindi: Gemini translates the whole draft
+        worded = llm_steps.translate(text, kind, facts, draft, out_lang)
+        trace["phrase"] = {k: v for k, v in worded.items() if k != "text"}
+        if worded["ok"]:
+            answer, mode = worded["text"], "llm"
+    elif use_llm and needs_opening(kind, facts):           # English, Gujarati: a checked opening line
+        worded = llm_steps.lead(text, kind, facts, draft, out_lang)
+        trace["phrase"] = {k: v for k, v in worded.items() if k != "text"}
+        if worded["ok"] and worded["text"]:
+            answer, mode = f"{worded['text']}\n\n{draft}", "llm"
+    if mode == "rules":
+        out_lang = draft_lang          # e.g. Hindi asked, Gemini unavailable: the English draft is sent
     return {"intent": kind, "lang": out_lang, "text": answer, "options": options, "facts": facts,
-            "question": asdict(q), "mode": "rules"}
+            "question": asdict(q), "mode": mode, "draft": draft, "trace": trace}

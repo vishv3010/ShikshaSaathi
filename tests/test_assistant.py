@@ -88,7 +88,7 @@ def test_unknown_school_is_not_guessed():
 ])
 def test_boundaries_give_no_data(question, intent):
     r = ask(question)
-    assert r["intent"] == intent and r["facts"] == {}
+    assert r["intent"] == intent and set(r["facts"]) == {"examples"}     # no school data at all
     assert not re.search(r"\d+(?:\.\d+)?%", r["text"])                      # no figures at all, so no 99%
 
 
@@ -120,6 +120,15 @@ def test_visits():
     assert ask("When did I last visit Sonpura?")["text"].startswith(
         "Last visit to Sonpura: 25 June (130 days ago), focus: EVS/Science.")
     assert ask("Which schools have not been visited?")["text"].startswith("Visits in the last 30 days: 5.")
+
+
+@pytest.mark.parametrize("lang", ["en", "gu"])
+def test_template_answers_pass_the_number_checker(lang):
+    """The fallback must meet the same bar as the LLM: every number traceable to the facts alone."""
+    from saathi.checker import check
+    for question in QUESTIONS:
+        r = ask(question, lang=lang)
+        assert check(r["text"], r["facts"]).ok, (question, check(r["text"], r["facts"]).summary())
 
 
 def test_visit_notes_follow_the_reply_language():
