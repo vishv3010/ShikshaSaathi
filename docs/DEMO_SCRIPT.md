@@ -9,12 +9,12 @@ The brief asks for three real conversations, one with missing data. This script 
 
 ---
 
-**0:00–0:30 · The problem**
-> "This is Shiksha Saathi, for Bhavnaben, a cluster coordinator with 20 schools. Her block officer asks: which schools need attention this month, and what will you do about it? She has 10 minutes and a basic phone. She can ask in Gujarati, English or Hindi."
+**0:00–0:30 · The problem, and the first screen**
+> "This is Shiksha Saathi, for a cluster coordinator like Bhavnaben with 20 schools. Her block officer asks: which schools need attention this month, and what will you do about it? She has 10 minutes and a basic phone. Before she types anything, the first screen answers it at a glance: 3 schools need support first, 4 to watch, 1 whose data has not arrived, and which schools to visit first."
 
 **0:30–1:30 · Conversation 1: the main question, in Gujarati**
-Tap *આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?*
-> "She gets the three schools to visit first: Haripar, Chandrapur and Manekpur. For each one: why it is flagged, a score out of 100 she can explain, and one action. The first line is written by Gemini; everything below it, every number, comes from code."
+Switch the language to ગુજરાતી (top right), then tap the green button *આ અઠવાડિયાની મુલાકાત યોજના બતાવો*.
+> "She gets the three schools to visit first as cards: Haripar, Chandrapur and Manekpur. Each card shows the priority, a score out of 100, why it is flagged, and one thing to do on the visit. The first line is written by Gemini; the cards, and every number on them, come from code."
 
 Point at:
 - the green line **"AI wording · every number checked"**;
