@@ -4,6 +4,8 @@ A chat assistant for a Cluster Resource Coordinator (CRC) in Gujarat. It answers
 
 ConveGenius "CG AI Build" assignment · 4 Nov 2026 · synthetic data only.
 
+**Try it live: <https://shiksha-saathi-ruddy.vercel.app>** (built for a phone screen; works on a laptop too).
+
 ## Try it in under 5 minutes
 
 Needs Python 3.10 or newer. No API key needed: without one, the assistant runs on rules only and every answer is still correct.

@@ -11,7 +11,9 @@ The first key was pasted into a chat, so make a new one for the public link:
 
 ## Deploy on Vercel (free Hobby plan)
 
-The repository already has what Vercel needs: `vercel.json` and `api/index.py` (the same app as the local run).
+**Live now: <https://shiksha-saathi-ruddy.vercel.app>** (project `shiksha-saathi` on Vishv's account; Vercel added "-ruddy" because `shiksha-saathi.vercel.app` belongs to someone else).
+
+The repository has what Vercel needs: `main.py` (the same FastAPI app as the local run, at a name Vercel looks for) and `vercel.json` (`"framework": "fastapi"`, so Vercel uses its FastAPI preset). Redeploy from this folder with `npx vercel deploy --prod`, or connect the GitHub repository in the project's **Settings → Git** so every push redeploys.
 
 1. Go to <https://vercel.com> and log in **with GitHub**.
 2. **Add New** → **Project** → find `ShikshaSaathi` → **Import**. (If it is not listed: **Adjust GitHub App Permissions** and allow the repository.)

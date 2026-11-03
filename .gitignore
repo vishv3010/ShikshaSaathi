@@ -21,3 +21,8 @@ dist/
 
 # local logs (LLM calls, number-checker rejections)
 logs/
+
+# Vercel CLI (local project link and pulled settings)
+.vercel/
+.env*
+!.env.example

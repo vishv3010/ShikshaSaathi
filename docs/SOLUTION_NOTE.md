@@ -1,6 +1,6 @@
 # Shiksha Saathi: solution note
 
-**Vishv Patel · CG AI Build assignment · November 2026** · Code, data and docs: <https://github.com/vishv3010/ShikshaSaathi> (the README runs it in under 5 minutes, no key needed).
+**Vishv Patel · CG AI Build assignment · November 2026** · Live: <https://shiksha-saathi-ruddy.vercel.app> · Code, data and docs: <https://github.com/vishv3010/ShikshaSaathi> (the README runs it in under 5 minutes, no key needed).
 
 Bhavnaben, a CRC with 20 schools, asks on her phone in Gujarati, English or Hindi, *"Which schools need attention this month, and what will you do about it?"* She gets the schools to visit first, why each one is flagged, and one action for each, in under two minutes. **Every number comes from code; the AI only words the answer, and a checker rejects any AI text with a number the data does not hold.**
 
