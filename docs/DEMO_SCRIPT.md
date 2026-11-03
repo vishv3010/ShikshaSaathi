@@ -3,7 +3,7 @@
 The brief asks for three real conversations, one with missing data. This script shows four short ones plus the number checker. Record with Loom (free, up to 5 minutes) or OBS.
 
 **Before recording**
-- Gemini on: the page footer says **AI: on**. (On the live link, open it once a minute before, to wake the free server.)
+- Use the live link: <https://shiksha-saathi-ruddy.vercel.app>. Tap **For reviewers** at the bottom: it should say **AI: on**. Open the link once before recording, so the first answer is quick.
 - Phone view: on a laptop, Chrome → right-click → **Inspect** → phone icon (device toolbar) → a phone such as *Pixel 7*. Or record your real phone screen.
 - Keep this script open on another screen. Speak slowly; short sentences.
 
