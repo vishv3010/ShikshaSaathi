@@ -113,6 +113,8 @@
   .bar { flex: 1; height: 6px; background: var(--soft); border-radius: 99px; overflow: hidden; }
   .bar i { display: block; height: 100%; background: var(--high); border-radius: 99px; }
   .Medium .bar i { background: var(--med); } .Low .bar i { background: var(--low); }
+  .month { margin-bottom: 9px; } .month .bar { height: 4px; margin-top: 3px; background: var(--border); }
+  .month .bar i { background: var(--muted); }
   .a .label { font-size: .8125em; font-weight: 700; color: var(--muted); margin: 6px 0 2px; }
   .last { font-size: .875em; color: var(--muted); }
   .note { background: var(--soft); border-radius: 12px; padding: 12px 14px; margin-top: 12px; }
@@ -422,6 +424,16 @@ function renderText(box, text, lead, t) {
       const d = el("div", "do");
       d.append(el("b", "", t.act), document.createTextNode(line.slice(m[0].length)));
       box.appendChild(d);
+      continue;
+    }
+    const pct = line.match(/^[^:]+: ([\d.]+)% \(\d+\/\d+ /);
+    if (pct) {                                  // a month: the same words, plus a bar
+      const m = el("div", "month", line), bar = el("div", "bar"), fill = el("i");
+      bar.setAttribute("aria-hidden", "true");
+      fill.style.width = pct[1] + "%";
+      bar.appendChild(fill);
+      m.appendChild(bar);
+      box.appendChild(m);
       continue;
     }
     if (/^\d+\.\s/.test(line)) { box.appendChild(el("p", "item", line)); continue; }
