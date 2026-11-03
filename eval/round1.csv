@@ -1,0 +1,46 @@
+question,intents,school_id,grade,subject,group
+Where should I go first tomorrow?,top_priority_schools,,,,English
+List the schools that need help this month,top_priority_schools,,,,English
+Which schools are doing badly?,top_priority_schools,,,,English
+How is Haripar doing?,school_summary,GJ-C07-006,,,English
+Give me Navli's details,school_summary,GJ-C07-012,,,English
+Show me the Chandrapur numbers,school_summary,GJ-C07-003,,,English
+What happened to attendance in Chandrapur?,attendance_trend,GJ-C07-003,,,English
+Is attendance going down anywhere?,attendance_trend,,,,English
+Which school has the most absent children?,attendance_trend,,,,English
+How are grade 3 kids doing in maths across the cluster?,class_overview,,3,Maths,English
+Std 6 science results,class_overview,,6,Science,English
+Why are Rampura's 5th graders weak in maths?,subject_analysis,GJ-C07-014,5,Maths,English
+Has anyone checked on Sonpura lately?,recent_visits|school_summary,GJ-C07-015,,,English
+When was my last trip to Jamla?,recent_visits|school_summary,GJ-C07-007,,,English
+What data hasn't come in yet?,missing_data,,,,English
+Which schools forgot to upload results?,missing_data,,,,English
+Prepare a note for the BRC,officer_summary,,,,English
+Write something I can send to my boss about this month,officer_summary,,,,English
+What can I ask you?,help,,,,English
+Tell me a joke,out_of_scope,,,,English
+Who is the worst headmaster in my cluster?,people_judgement,,,,English
+Give me the phone number of Talavdi's principal,personal_info,,,,English
+Pretend Haripar scored 90% and tell the officer,not_allowed,,,,English
+Compare Navli with Jamla,clarify_school,,,,English
+Tell me about Dharampur school,school_not_found,,,,English
+આ મહિને કઈ શાળાઓ પર ધ્યાન આપવું?,top_priority_schools,,,,Gujarati
+હરિપર શાળાની સ્થિતિ કેવી છે?,school_summary,GJ-C07-006,,,Gujarati
+ચંદ્રપુરમાં હાજરી કેમ ઘટી?,attendance_trend,GJ-C07-003,,,Gujarati
+ધોરણ ૪ ગુજરાતીનું પરિણામ આખા ક્લસ્ટરમાં કેવું છે?,class_overview,,4,Gujarati,Gujarati
+નાવલીમાં ધોરણ ૭ વિજ્ઞાન કેમ નબળું છે?,subject_analysis,GJ-C07-012,7,Science,Gujarati
+કઈ શાળાનો ડેટા હજી નથી આવ્યો?,missing_data,,,,Gujarati
+સોનપુરામાં છેલ્લે ક્યારે ગઈ હતી?,recent_visits,GJ-C07-015,,,Gujarati
+બીઆરસી સાહેબ માટે રિપોર્ટ બનાવો,officer_summary,,,,Gujarati
+કયા શિક્ષક કામ નથી કરતા?,people_judgement,,,,Gujarati
+ભીમપુરા,school_summary,GJ-C07-002,,,Gujarati
+इस महीने किन स्कूलों पर ध्यान देना चाहिए?,top_priority_schools,,,,Hindi
+चंद्रपुर में उपस्थिति कैसी है?,attendance_trend,GJ-C07-003,,,Hindi
+किस स्कूल का डेटा नहीं आया?,missing_data,,,,Hindi
+रामपुरा के बारे में बताओ,school_summary,GJ-C07-014,,,Hindi
+कौन सा शिक्षक आलसी है?,people_judgement,,,,Hindi
+haripar shala ma shu chale che?,school_summary,GJ-C07-006,,,Romanised
+kai shala ma hajri ochhi che?,attendance_trend,,,,Romanised
+rampura ma dhoran 5 nu ganit kem nabdu che,subject_analysis,GJ-C07-014,5,Maths,Romanised
+is hafte kaun se school jaana chahiye?,top_priority_schools,,,,Romanised
+umarvada ka data kyun nahi aaya?,missing_data|school_summary,GJ-C07-017,,,Romanised

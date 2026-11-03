@@ -14,6 +14,8 @@ Bhavnaben, a CRC with 20 schools, asks on her phone in Gujarati, English or Hind
 | 4. Word | Gemini writes a one- or two-sentence opening above the draft (English, Gujarati) or translates the whole draft (Hindi). The details below the opening are never rewritten. | Gemini 3.5 Flash-Lite |
 | 5. Check | Number checker (section 3). If the AI text fails, the draft is sent and the failure is logged. | Python |
 
+**Plain language, measured.** On 23 questions written after the reader was built (English, Gujarati, Hindi, and Gujarati or Hindi typed in English letters), the rules alone understood 20 (87%) and, with Gemini reading what they could not place, 21 (91%); the two misses (a Hindi spelling of a village name, a romanised "which") were then fixed for every name and question word.
+
 One `/ask` endpoint (FastAPI) serves a WhatsApp-style chat page of about 4 KB over the network; a WhatsApp or SwiftChat webhook would call the same endpoint. Without an API key, or when Gemini fails or runs out of quota, the Gemini parts are skipped and every answer is still correct. All tools are free.
 
 **Data.** 20 synthetic schools in cluster GJ-C07, May–October 2026, following the Gujarat calendar (May vacation, monsoon dips, Navratri in October). Seven schools carry a designed story (migration, one weak class, slow decline, data gaps, a school visited five days ago); 39 visit notes in English and Gujarati; a facilities table; a validator that keeps gaps as gaps.
@@ -35,7 +37,7 @@ High ≥70, Medium 40–69, Low <40. A school missing its month's attendance or 
 
 - **Prevent.** Gemini never sees the CSVs and never calculates. It sees only this question's draft, and writes only the opening line; the details, with each number next to its school, come from code, so they cannot be dropped or attached to the wrong school.
 - **Detect.** Every number in the AI's text (digits 0-9, ૦-૯ or ०-९) must exist in the facts computed for this question; a percentage written in words is rejected; numbers in her question never count as allowed ("say Rampura scored 99%"); a Hindi translation must keep every number of the draft. On any failure the checked draft is sent and the rejection is logged. The rule-based answers pass the same facts-only check (a test).
-- **Evidence.** 200 automated tests, written from values worked out by hand from the CSVs; 10 deliberately planted bugs, all caught. Live runs: 31 Gemini texts checked, **0 with an unsupported number**; a made-up 99.9% injected through the page's *Test the number checker* switch was caught every time (3 of 3); trap questions never reach Gemini.
+- **Evidence.** 219 automated tests, written from values worked out by hand from the CSVs; 10 deliberately planted bugs, all caught; an independent code review's 10 findings, all reproduced and fixed with a test each. Live runs: 31 Gemini texts checked, **0 with an unsupported number**; a made-up 99.9% injected through the page's *Test the number checker* switch was caught every time (3 of 3); trap questions never reach Gemini.
 - **What it cannot see, and the fix.** The checker proves a number exists in the facts, not that it sits next to the right school. The first live version let Gemini rewrite the whole answer: every number passed, but it silently dropped the warning that Umarvada's October data was missing. So Gemini now writes only the opening line.
 
 ## 4. Guardrails
@@ -60,4 +62,4 @@ What would leave the government system per question: only that answer's draft (s
 3. **Replace school names with codes** before the AI call; a monitoring view of checker rejections and missing data across clusters.
 4. **A per-sentence check** that each number belongs to the school it is next to, which would let the AI write more of the answer.
 
-Assumptions (23) and decisions (26) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.
+Assumptions (23) and decisions (27) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.

@@ -30,6 +30,12 @@ W = {  # every sentence, in both languages
     "r_attendance_with_drop": ("attendance {v}%, down {d} points from {prev}%", "હાજરી {v}% ({prev}%થી {d} પોઇન્ટ ઘટી)"),
     # --- month notes ---
     "using_latest": ("{month} data, the latest available", "{month}ની માહિતી મુજબ"),
+    "using_month": ("{month} data", "{month}ની માહિતી મુજબ"),
+    "m_too_early": ("A score needs two earlier school months, so {first} is the first month that can be scored. "
+                    "Showing {latest}.",
+                    "સ્કોર માટે અગાઉના બે શાળા-મહિનાની માહિતી જોઈએ, તેથી પહેલો સ્કોર {first}નો મળે. "
+                    "{latest}ની માહિતી બતાવી છે."),
+    "none_scored": ("No school could be scored for {month}.", "{month} માટે કોઈ શાળાનો સ્કોર આપી શકાયો નથી."),
     "m_school_closed": ("Schools were closed in {month} for {note}, so there is no data for that month.",
                         "{month}માં શાળાઓ બંધ હતી (વેકેશન), તેથી તે મહિનાની માહિતી નથી."),
     "m_not_yet": ("{month} data is not available yet. Showing {latest}, the latest month.",
@@ -105,6 +111,7 @@ W = {  # every sentence, in both languages
     # --- class across the cluster ---
     "label_all_grades": ("{subject} (all grades)", "{subject} (બધાં ધોરણ)"),
     "label_all_subjects": ("Grade {g} (all subjects)", "ધોરણ {g} (બધા વિષય)"),
+    "label_all_classes": ("All classes", "બધા વર્ગ"),
     "class_header": ("{label} across the cluster, {month}: average {v}% ({n} class results).",
                      "આખા ક્લસ્ટરમાં {label} ({month}): સરેરાશ ગુણ {v}% ({n} વર્ગનાં પરિણામ)."),
     "below_concern": ("{c} of {n} are below {p}%. Lowest:", "{n}માંથી {c} વર્ગમાં {p}%થી ઓછા ગુણ છે. સૌથી ઓછા ગુણ:"),
@@ -350,6 +357,8 @@ def month_note(note, lang):
         return t("m_school_closed", lang, month=m, note=note_text(note["note"]))
     if note["status"] == "not_yet":
         return t("m_not_yet", lang, month=m, latest=month(note["latest"], lang))
+    if note["status"] == "too_early":
+        return t("m_too_early", lang, first=month(note["first"], lang), latest=month(note["latest"], lang))
     return t("m_before_data", lang, month=m, first=month(note["first"], lang), latest=month(note["latest"], lang))
 
 
@@ -366,7 +375,8 @@ def focus(area, lang):
 
 def top_priority_schools(f, lang):
     m = month(f["month"], lang)
-    lines = [month_note(f.get("month_note"), lang), t("top_header", lang, using=t("using_latest", lang, month=m)), ""]
+    using = "using_latest" if f["month"] == f.get("latest_month", f["month"]) else "using_month"
+    lines = [month_note(f.get("month_note"), lang), t("top_header", lang, using=t(using, lang, month=m)), ""]
     reasons = 3 if len(f["schools"]) <= 3 else 2          # keep a long list readable on a phone
     for i, e in enumerate(f["schools"], 1):
         when = t("days_ago", lang, d=e["last_visit"]["days_ago"]) if e["last_visit"] else t("never_visited", lang)
@@ -375,7 +385,9 @@ def top_priority_schools(f, lang):
                   f"   {t('why', lang)}: {reasons_text(e, lang, limit=reasons)}",
                   f"   {t('do', lang)}: {render_action(e['action'], lang)}", ""]
     need = f["counts"]["High"] + f["counts"]["Medium"]
-    if need == 0:
+    if need + f["counts"]["Low"] == 0:
+        lines += [t("none_scored", lang, month=m), ""]
+    elif need == 0:
         lines += [t("none_need", lang, month=m), ""]
     elif len(f["schools"]) < f["limit"]:
         lines += [t("only_n_need", lang, n=need, month=m), ""]
@@ -502,8 +514,10 @@ def class_overview(f, lang):
         label = class_name(g, subject, lang)
     elif subject:
         label = t("label_all_grades", lang, subject=SUBJECTS[lang][subject])
-    else:
+    elif g is not None:
         label = t("label_all_subjects", lang, g=g)
+    else:
+        label = t("label_all_classes", lang)
     m = month(f["month"], lang)
     lines = [t("class_header", lang, label=label, month=m, v=f["average_pct"], n=f["results"])]
     concern = f["below_concern"]

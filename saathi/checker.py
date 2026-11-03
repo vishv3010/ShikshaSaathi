@@ -21,7 +21,9 @@ from .understand import DIGITS
 
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 LIST_MARKER = re.compile(r"(?m)^[ \t]*(?:[-•*][ \t]*)?\d{1,2}[.)][ \t]+")   # "1. Haripar" numbering
-PERCENT_WORD = re.compile(r"per ?cent|ટકા|प्रतिशत|फ़ीसदी|फीसदी", re.IGNORECASE)
+# "percent" written after a number in words; "percentage" and "ટકાવારી" are ordinary words, not numbers.
+PERCENT_WORD = re.compile(r"\bper ?cents?\b|ટકા(?:નો|ની|નું|ના|માં)?(?![\u0A80-\u0AFF])"
+                          r"|(?:प्रतिशत|फ़ीसदी|फीसदी)(?![\u0900-\u097F])", re.IGNORECASE)
 
 
 def _key(value):

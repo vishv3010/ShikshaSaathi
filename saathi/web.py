@@ -6,6 +6,7 @@ WhatsApp or SwiftChat webhook would make in production.
 
 Run:  .venv/bin/uvicorn saathi.web:app --port 8000      then open http://localhost:8000
 """
+import os
 import time
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
@@ -23,8 +24,13 @@ from .data import load
 
 PAGE = Path(__file__).resolve().parent.parent / "web" / "index.html"
 MAX_QUESTION_CHARS = 500
-RATE_LIMIT = 20       # questions per person per minute: enough for a real conversation,
-RATE_WINDOW = 60      # too few to burn the free Gemini quota from one public link
+RATE_LIMIT = 20       # questions per person per minute: enough for a real conversation
+RATE_WINDOW = 60
+# The per-person limit can be dodged by sending a made-up X-Forwarded-For, so the Gemini quota is
+# protected by a budget for the whole server: past it, answers carry on without AI wording.
+AI_PER_MINUTE = int(os.environ.get("SAATHI_AI_PER_MINUTE", "15"))
+AI_PER_DAY = int(os.environ.get("SAATHI_AI_PER_DAY", "800"))
+SWEEP_EVERY = 200     # requests between clean-ups of the per-person memory
 PAGE_HEADERS = {
     "Cache-Control": "no-cache",
     # Only this page's own inline code runs; nothing is loaded from anywhere else.
@@ -44,6 +50,8 @@ async def lifespan(_app):
 app = FastAPI(title="Shiksha Saathi", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=500)
 _recent = defaultdict(deque)
+_ai_calls = deque()
+_requests_seen = 0
 
 
 class Question(BaseModel):
@@ -59,14 +67,41 @@ def _client(request):
     return forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
 
 
+def _sweep(now):
+    """Forget people with no question in the last window, so the memory cannot grow without end."""
+    for client in [c for c, times in _recent.items() if not times or now - times[-1] > RATE_WINDOW]:
+        del _recent[client]
+
+
 def _too_many(client):
-    now, recent = time.time(), _recent[client]
+    global _requests_seen
+    _requests_seen += 1
+    now = time.time()
+    if _requests_seen % SWEEP_EVERY == 0:
+        _sweep(now)
+    recent = _recent[client]
     while recent and now - recent[0] > RATE_WINDOW:
         recent.popleft()
     if len(recent) >= RATE_LIMIT:
         return True
     recent.append(now)
     return False
+
+
+def _ai_budget_left():
+    """True (and counted) if the server may still use Gemini this minute and this day."""
+    now = time.time()
+    while _ai_calls and now - _ai_calls[0] > 86_400:
+        _ai_calls.popleft()
+    last_minute = 0
+    for t in reversed(_ai_calls):
+        if now - t > 60:
+            break
+        last_minute += 1
+    if len(_ai_calls) >= AI_PER_DAY or last_minute >= AI_PER_MINUTE:
+        return False
+    _ai_calls.append(now)
+    return True
 
 
 @app.get("/")
@@ -90,7 +125,9 @@ def health():
 def answer(body: Question, request: Request):
     if _too_many(_client(request)):
         raise HTTPException(status_code=429, detail="Too many questions in a minute; please wait a little.")
-    r = ask(body.question, lang=body.lang, school_id=body.school_id, test_checker=body.test_checker)
+    ai_on = llm.enabled()
+    use_ai = ai_on and _ai_budget_left()
+    r = ask(body.question, lang=body.lang, school_id=body.school_id, use_llm=use_ai, test_checker=body.test_checker)
     phrase = r["trace"].get("phrase") or {}
     checked = phrase.get("check") or {}
     return {
@@ -100,5 +137,5 @@ def answer(body: Question, request: Request):
                   "rejected": bool(checked) and not phrase.get("ok"),
                   "unsupported": checked.get("unsupported", []), "number_words": checked.get("number_words", []),
                   "problem": phrase.get("problem"), "error": phrase.get("error"),
-                  "test_checker": r["trace"].get("test_checker")},
+                  "ai_paused": ai_on and not use_ai, "test_checker": r["trace"].get("test_checker")},
     }

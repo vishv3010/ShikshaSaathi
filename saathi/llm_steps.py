@@ -124,22 +124,24 @@ def _named_in(text, school, data):
 
 
 def understand_question(text, data):
-    """A Question built from Gemini's JSON after validation, or None (the rules' answer stands)."""
+    """(Question built from Gemini's JSON after validation, or None if the rules' answer stands;
+    token usage of the call, or None if no call was made)."""
     record = {"step": "understand", "question": text}
+    usage = None
     try:
         result = llm.generate(_understand_prompt(text, data), UNDERSTAND_SYSTEM, schema=_schema(data),
-                              max_tokens=300, timeout=12)
+                              max_tokens=300, timeout=8)
+        usage = {k: result[k] for k in ("model", "seconds", "tokens_in", "tokens_out")}
         raw = json.loads(result["text"])
     except (llm.LLMError, ValueError, TypeError) as error:      # failure, or output that is not JSON
-        llm.log_call({**record, "outcome": "error", "error": str(error)})
-        return None
-    record.update(model=result["model"], seconds=result["seconds"], tokens_in=result["tokens_in"],
-                  tokens_out=result["tokens_out"], raw=raw)
+        llm.log_call({**record, **(usage or {}), "outcome": "error", "error": str(error)})
+        return None, usage
+    record.update(**usage, raw=raw)
 
     intent = raw.get("intent")
     if intent not in LLM_INTENTS:
         llm.log_call({**record, "outcome": "rejected", "error": "unknown intent"})
-        return None
+        return None, usage
     schools = {s.school_id: s for s in data.schools.itertuples()}
     claimed = [i for i in raw.get("school_ids") or [] if i in schools]
     school_ids = [i for i in claimed if _named_in(text, schools[i], data)]
@@ -158,7 +160,7 @@ def understand_question(text, data):
         reply_lang=raw.get("reply_lang") if raw.get("reply_lang") in ("en", "gu", "hi") else None)
     q.intent = _settle(q)
     llm.log_call({**record, "outcome": "used", "intent": q.intent, "dropped_schools": dropped})
-    return q
+    return q, usage
 
 
 def _settle(q):
@@ -174,6 +176,8 @@ def _settle(q):
         return "subject_analysis"
     if q.intent == "subject_analysis" and not one:
         return "class_overview" if (q.grade or q.subject) else "top_priority_schools"
+    if q.intent == "subject_analysis" and q.grade is None and q.subject is None:
+        return "school_summary"                    # one school, but no class named
     if q.intent == "school_summary" and not one:
         return "help"
     return q.intent
@@ -187,11 +191,11 @@ def _clean(text):
     return re.sub(r"(?m)^#+\s*", "", text).strip()
 
 
-def _call(step, system, question, kind, facts, draft, lang, max_tokens):
+def _call(step, system, question, kind, facts, draft, lang, max_tokens, timeout):
     record = {"step": step, "question": question, "kind": kind, "lang": lang}
     prompt = f"QUESTION: {question}\nWRITE IN: {LANG_NAMES[lang]}\n\nDRAFT:\n{draft}"
     try:
-        result = llm.generate(prompt, system, max_tokens=max_tokens, timeout=25)
+        result = llm.generate(prompt, system, max_tokens=max_tokens, timeout=timeout)
     except llm.LLMError as error:
         llm.log_call({**record, "outcome": "error", "error": str(error)})
         return record, None, {"ok": False, "error": str(error)}
@@ -208,15 +212,12 @@ def _finish(record, text, usage, verdict, problem=None):
 
 
 def lead(question, kind, facts, draft, lang, tamper=False):
-    """{'ok', 'text', ...}: a checked opening sentence for the draft ('' when the draft already answers)."""
-    record, text, usage = _call("lead", LEAD_SYSTEM, question, kind, facts, draft, lang, max_tokens=300)
+    """{'ok', 'text', ...}: a checked opening sentence to go above the draft."""
+    record, text, usage = _call("lead", LEAD_SYSTEM, question, kind, facts, draft, lang, max_tokens=300, timeout=10)
     if text is None:
         return usage
     if tamper:
-        text, record["tampered"] = f"{'' if text.strip().upper() == 'SAME' else text} {FAKE_FIGURE[lang]}".strip(), True
-    if text.strip().strip(".").upper() == "SAME":
-        llm.log_call({**record, **usage, "outcome": "same"})
-        return {"ok": True, "text": "", **usage}
+        text, record["tampered"] = f"{text} {FAKE_FIGURE[lang]}", True
     verdict = check(text, facts)
     return _finish(record, text, usage, verdict, "too_long" if len(text) > MAX_LEAD_CHARS else None)
 
@@ -224,7 +225,8 @@ def lead(question, kind, facts, draft, lang, tamper=False):
 def translate(question, kind, facts, draft, lang, tamper=False):
     """{'ok', 'text', ...}: the whole draft in a language without templates (Hindi), checked
     for invented numbers and for dropped ones."""
-    record, text, usage = _call("translate", TRANSLATE_SYSTEM, question, kind, facts, draft, lang, max_tokens=2048)
+    record, text, usage = _call("translate", TRANSLATE_SYSTEM, question, kind, facts, draft, lang, max_tokens=2048,
+                                timeout=20)
     if text is None:
         return usage
     if tamper:

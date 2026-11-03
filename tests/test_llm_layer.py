@@ -54,7 +54,7 @@ def test_number_words_after_a_digit_are_fine():
 
 class FakeGemini:
     """Stands in for llm.generate. `phrase(draft)` gives the opening line or the translation
-    (default: "SAME" for an opening, the draft itself for a translation); `understand` is the JSON."""
+    (default: a plain sentence for an opening, the draft itself for a translation); `understand` is the JSON."""
 
     def __init__(self, phrase=None, understand=None, fail=None):
         understand = understand or {"intent": "out_of_scope", "school_ids": [], "lang": "en"}
@@ -69,7 +69,7 @@ class FakeGemini:
             text = json.dumps(self.understand) if isinstance(self.understand, dict) else self.understand
         else:
             draft = prompt.split("DRAFT:\n", 1)[1]
-            text = self.phrase(draft) if self.phrase else ("SAME" if step == "lead" else draft)
+            text = self.phrase(draft) if self.phrase else ("Here is what the records show." if step == "lead" else draft)
         return {"text": text, "model": "fake", "seconds": 0.0, "tokens_in": 100, "tokens_out": 50}
 
 
@@ -93,13 +93,6 @@ def test_checked_opening_goes_above_the_untouched_draft(gemini):
     r = ask("Why is Grade 5 maths low in Rampura?", use_llm=True)
     assert r["mode"] == "llm" and r["trace"]["phrase"]["check"]["ok"]
     assert r["text"] == "Rampura Grade 5 Maths is 36%, the lowest it has been since June.\n\n" + r["draft"]  # bold removed
-
-
-def test_same_adds_nothing(gemini):
-    gemini()                                          # answers SAME
-    r = ask("Which 3 schools need my visit this week?", use_llm=True)
-    assert r["text"] == r["draft"] and r["trace"]["phrase"]["ok"]
-    assert logged()[-1]["outcome"] == "same"
 
 
 @pytest.mark.parametrize("question", ["What was Umarvada's attendance in October?",
@@ -184,7 +177,7 @@ def test_a_school_the_question_never_named_is_dropped(gemini):
 def test_bad_values_from_the_llm_are_dropped(gemini):
     gemini(understand={"intent": "attendance_trend", "school_ids": ["GJ-C07-999"], "grade": 42,
                        "month": "October", "limit": 500, "lang": "xx"})
-    q = ask("haajri batavo", use_llm=True)["question"]
+    q = ask("aa badhu batavo", use_llm=True)["question"]          # the rules cannot place it
     assert (q["school_ids"], q["grade"], q["month"], q["limit"], q["lang"]) == ([], None, None, 10, "en")
 
 
@@ -224,3 +217,24 @@ def test_prompts_carry_the_rules():
     """A formatting slip once left a literal "{rules}" in both prompts; never again."""
     for system in (llm_steps.LEAD_SYSTEM, llm_steps.TRANSLATE_SYSTEM):
         assert llm_steps.COMMON_RULES in system and "{" not in system
+
+
+# --- found by the code review (3 Nov) --------------------------------------------------------
+
+def test_one_school_with_no_class_named_is_a_summary_not_a_crash(gemini):
+    gemini(understand={"intent": "subject_analysis", "school_ids": ["GJ-C07-014"], "lang": "gu"})
+    r = ask("rampura ma bhanatar kevu chhe?", use_llm=True)       # "how is learning in Rampura?"
+    assert r["intent"] == "school_summary" and r["text"]
+
+
+def test_all_classes_have_a_label(gemini):
+    gemini(understand={"intent": "class_overview", "school_ids": [], "lang": "en"})
+    r = ask("kai class nu result ochhu chhe?", use_llm=True)       # "which class has low results?"
+    assert r["intent"] == "class_overview" and r["draft"].startswith("All classes across the cluster")
+    assert "None" not in r["text"]
+
+
+def test_the_reading_call_is_counted_in_the_trace(gemini):
+    gemini(understand={"intent": "top_priority_schools", "school_ids": [], "lang": "gu"})
+    r = ask("aa athvadiye kai 3 shala ni mulakat levi joie?", use_llm=True)
+    assert r["trace"]["understand"]["tokens_in"] == 100          # cost estimates must include it

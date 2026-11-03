@@ -21,6 +21,10 @@ DATA_YEAR = 2026
 
 DIGITS = str.maketrans("૦૧૨૩૪૫૬૭૮૯०१२३४५६७८९", "01234567890123456789")
 DEVANAGARI_TO_GUJARATI = 0x0A80 - 0x0900   # the two Unicode blocks share one layout
+# Spelling-insensitive name key: long and short vowels count as one, and ળ (common in Gujarati names)
+# as ल, the way Hindi writes it. "अंबालिया" and "આંબલિયા" (Ambaliya) give the same key.
+VOWEL_BASE = str.maketrans("આઈઊઐઔળ", "અઇઉએઓલ")
+MIN_SKELETON = 4    # shorter keys ("નવલ" for Navli) could match ordinary words, so they are not used
 
 
 @dataclass
@@ -82,7 +86,8 @@ CHILDREN = [r"\bstudents?\b", r"\bchild(?:ren)?\b", r"\bkids?\b", r"\bpupils?\b"
 # Always a judgement of a person.
 JUDGEMENT = [r"\blazy\b", r"\buseless\b", r"\bblame", r"\bpunish", r"\bfire\b", r"\bsuspend", r"\bincompetent",
              r"\bfault\b", r"\bcareless", r"\bshirk", r"\bnot doing (?:their|his|her) job", r"\bdisciplin",
-             "આળસુ", "નકામ", "દોષ", "સજા", "બેદરકાર", "आलसी", "निकम्म", "दोषी", "सजा", "लापरवाह"]
+             "આળસુ", "નકામ", "દોષ", "સજા", "બેદરકાર", "કામ નથી કર", "आलसी", "निकम्म", "दोषी", "सजा", "लापरवाह",
+             "काम नहीं कर"]
 # A judgement unless the question is about attendance ("worst teacher attendance" is a pattern).
 JUDGEMENT_SOFT = [r"\bbad\b", r"\bworst\b", r"\bresponsible\b", "ખરાબ", "જવાબદાર", "खराब", "जिम्मेदार", "ज़िम्मेदार"]
 PERSONAL = [r"\bnames?\b", r"\bphone", r"\bmobile", r"\bcontact", r"\baddress", r"\bwhatsapp", r"\blist of\b",
@@ -90,13 +95,15 @@ PERSONAL = [r"\bnames?\b", r"\bphone", r"\bmobile", r"\bcontact", r"\baddress", 
             "કોણ છે", "कौन है", "कौन हैं",
             "નામ", "ફોન", "મોબાઇલ", "મોબાઈલ", "સરનામ", "नाम", "फोन", "फ़ोन", "मोबाइल"]
 
-MISSING = [r"\bmissing\b", r"\bgaps?\b", r"\bno data\b", r"\bincomplete\b",
+MISSING = [r"\bmissing\b", r"\bgaps?\b", r"\bno data\b", r"\bincomplete\b", r"\bupload",
+           r"\b(?:hasn'?t|haven'?t|not|never) (?:come|came|arrived)\b(?! (?:down|up|back))",
+           r"\byet to (?:come|arrive|upload|send|report)", r"\bnot (?:in|here) yet\b",
            r"\bnot (?:been )?(?:uploaded|received|reported|submitted|sent)", r"\bhaven'?t (?:uploaded|reported|sent)",
            r"\bdata (?:is |are )?(?:not|missing|pending)", r"\bpending data",
            "ખૂટ", "માહિતી નથી", "ડેટા નથી", "અપલોડ", "મળી નથી", "આવી નથી", "નથી આવી", "નથી આવ્યો", "ગુમ",
            "गायब", "नहीं आया", "नहीं आई", "डेटा नहीं", "अधूरा", "अधूरी"]
 # These name the block officer, so they win even when a school is named.
-OFFICER_STRONG = [r"\bofficer", r"\bbrc\b", r"\bbeo\b", r"\bblock\b", r"\bforward", r"\bsupervisor",
+OFFICER_STRONG = [r"\bofficer", r"\bbrc\b", r"\bbeo\b", r"\bblock\b", r"\bforward", r"\bsupervisor", r"\bboss\b",
                   "અધિકારી", "બીઆરસી", "બી.આર.સી", "अधिकारी"]
 OFFICER = OFFICER_STRONG + [r"\bsummary\b", r"\breport\b", "સારાંશ", "રિપોર્ટ", "सारांश", "रिपोर्ट"]
 RECENT_VISITS = [r"\blast visit", r"\bwhen did i (?:last )?visit", r"\bwhen was .{0,30}visited",
@@ -105,9 +112,13 @@ RECENT_VISITS = [r"\blast visit", r"\bwhen did i (?:last )?visit", r"\bwhen was 
                  r"\bvisited (?:recently|last)", r"\bhow many visits",
                  "છેલ્લી મુલાકાત", "છેલ્લે ક્યારે", "ક્યારે મુલાકાત", "મુલાકાત ક્યારે", "મુલાકાત લીધી",
                  "મુલાકાત નથી", "आखिरी", "आख़िरी", "कब गई", "कब गया", "दौरा कब", "कब दौरा"]
-ATTENDANCE = [r"\battend", r"\babsent", r"\babsence", "હાજરી", "ગેરહાજર", "उपस्थिति", "हाजिरी", "हाज़िरी",
+ATTENDANCE = [r"\battend", r"\babsent", r"\babsence",
+              r"\b(?:hajri|haajri|hajari|haziri|haaziri|hazri|upasthiti|gerhajar|gairhazir)\b",
+              "હાજરી", "ગેરહાજર", "उपस्थिति", "हाजिरी", "हाज़िरी",
               "गैरहाजिर", "अनुपस्थित"]
 PRIORITY = [r"\bwhich (?:\d+ |one |two |three |four |five )?schools?\b", r"\bvisit", r"\battention\b",
+            r"\bwhere (?:should|do|shall) i go\b",
+            r"\b(?:kai|kayi|kaun ?se|kaunsi|kaunsa|konsi|konsa|kon si|kis|kin) (?:shala|school)",
             r"\bpriorit", r"\btop \d", r"\btop\b.{0,10}\bschools?", r"\bfocus\b", r"\bstruggl", r"\bweak",
             r"\bworst\b", r"\bthis week\b", r"\bconcern", r"\burgent", r"\bat risk\b",
             r"\bschools?\b.{0,40}\b(?:need|needs|support|help|first|low|poor|lagging|behind)\b",
@@ -115,7 +126,8 @@ PRIORITY = [r"\bwhich (?:\d+ |one |two |three |four |five )?schools?\b", r"\bvis
             r"જરૂર.{0,30}શાળા", "कौन से स्कूल", "कौनसे स्कूल", "किन स्कूल", "किस स्कूल", "ध्यान", "प्राथमिकता",
             "विज़िट", "विजिट", "दौरा", "कमजोर", "कमज़ोर", r"स्कूल.{0,30}(?:ज़रूरत|जरूरत)"]
 HELP = [r"^(?:hi|hello|hey|namaste|namaskar|good (?:morning|afternoon|evening))\b", r"\bhelp\b",
-        r"\bwhat can you\b", r"\bhow do i use\b", r"\bwho are you\b",
+        r"\bwhat can you\b", r"\bwhat (?:can|should) i ask\b", r"\bhow (?:can|do) you help\b",
+        r"\bhow do i use\b", r"\bwho are you\b",
         "નમસ્તે", "નમસ્કાર", "મદદ", "કેમ છો", "શું કરી શક", "नमस्ते", "नमस्कार", "मदद", "क्या कर सक"]
 
 SUBJECTS = {
@@ -173,6 +185,9 @@ NOT_A_NAME = {
     "model", "data", "maths", "math", "science", "gujarati", "english", "hindi", "grade", "class", "visits",
     "missing", "schools", "school", "children", "students", "teachers", "teacher", "trend", "priority",
     "results", "result", "scores", "score", "month", "week", "today", "list", "everything", "them",
+    # question words and determiners in Gujarati or Hindi typed in English letters ("konsi school")
+    "konsi", "konsa", "kaunsi", "kaunsa", "kaunse", "kaun", "kis", "kin", "kai", "kayi", "kaya", "kya",
+    "badhi", "badha", "mari", "mara", "mere", "meri", "sabhi", "koi", "koni", "aapni",
 }
 NOT_A_NAME_CAPITALISED = {w.capitalize() for w in NOT_A_NAME} | {
     "Std", "Standard", "Mathematics", "EVS", "My", "Block", "Diwali", "Navratri", "Monsoon", "June", "July",
@@ -184,6 +199,11 @@ NOT_A_NAME_CAPITALISED = {w.capitalize() for w in NOT_A_NAME} | {
 # a place name; otherwise "ઓછી હાજરીવાળી શાળાઓ" ("schools with low attendance") would look like one.
 PLACE_ENDINGS = ("પુર", "પુરા", "નગર", "ગામ", "વાડા", "વાડી", "પરા", "ગઢ", "પાર", "પર", "સર", "પાદર", "ઓદ")
 GU_ENDINGS = ("ની", "નો", "ના", "નું", "માં", "થી", "ને")
+
+
+def skeleton(word):
+    """Consonant key of a Gujarati-script word: vowel signs and nasal marks dropped, vowels merged."""
+    return "".join(ch for ch in word.translate(VOWEL_BASE) if not unicodedata.category(ch).startswith("M"))
 
 
 def _school_keys(data):
@@ -213,6 +233,14 @@ def find_schools(text, data):
         if re.search(rf"\b{re.escape(village)}", norm) or any(g in native for g in gu_names if len(g) >= 3):
             found.append(school_id)
             matched_words.add(village)
+
+    # Other spellings in Gujarati or Hindi script: "अंबालिया" -> આંબલિયા (Ambaliya).
+    if not found:
+        keys_by_skeleton = {skeleton(g): school_id for school_id, _, names in keys for g in names
+                            if len(skeleton(g)) >= MIN_SKELETON}
+        for word in re.findall(r"[\u0A80-\u0AFF]+", native):
+            if skeleton(word) in keys_by_skeleton:
+                found.append(keys_by_skeleton[skeleton(word)])
 
     # Typos in English letters: "Rampur" -> Rampura, "Chandrpur" -> Chandrapur.
     for word in sorted(set(re.findall(r"[a-z]{5,}", norm))):
@@ -257,8 +285,9 @@ def _unknown_school_name(text, norm, native, villages):
 
 def find_grade(norm):
     patterns = [r"\b(?:grade|class|std\.?|standard|dhoran|dhoranu|kaksha)\s*(\d{1,2})\b",
-                r"\b(\d{1,2})\s*(?:st|nd|rd|th)\s*(?:grade|class|std|standard)\b",
-                r"\b([1-8])(?:st|nd|rd|th)\b(?!\s*(?:of\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))",
+                # an ordinal is a grade only next to a class word or a subject: "2nd week" is not Grade 2
+                r"\b(\d{1,2})\s*(?:st|nd|rd|th)[\s-]*(?:grade|graders?|class|std|standard)\b",
+                r"\b([1-8])(?:st|nd|rd|th)\s+(?:maths?|mathematics|gujarati|evs|science)\b",
                 r"(?:ધોરણ|ધો\.?)\s*(\d{1,2})", r"(\d{1,2})\s*(?:મા|માં|મું|મી)?\s*ધોરણ",
                 r"(?:कक्षा|क्लास)\s*(\d{1,2})", r"(\d{1,2})\s*(?:वीं|वी)"]
     for p in patterns:
@@ -282,12 +311,25 @@ def find_subject(norm):
     return min(hits)[1] if hits else None
 
 
+def _native_word_in(word, text):
+    """A Gujarati or Hindi word as a whole word. Case endings may follow ("ઓક્ટોબરની"), but not a vowel
+    sign, which would make it a different word ("જૂની" = old, "જૂનાગઢ" = Junagadh, not "જૂન" = June)."""
+    for m in re.finditer(re.escape(word), text):
+        before, after = text[m.start() - 1:m.start()], text[m.end():m.end() + 1]
+        if before and unicodedata.category(before)[0] in "LM":
+            continue
+        if after and unicodedata.category(after)[0] == "M":
+            continue
+        return True
+    return False
+
+
 def _month_in(norm):
     if _any(norm, MAY):
         return 5
     for month, words in MONTH_WORDS.items():
         for word in words:
-            if re.search(rf"\b{word}\b", norm) if word.isascii() else word in norm:
+            if re.search(rf"\b{word}\b", norm) if word.isascii() else _native_word_in(word, norm):
                 return month
     return None
 

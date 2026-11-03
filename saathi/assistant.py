@@ -24,7 +24,7 @@ from . import analytics, llm, llm_steps, reply, understand
 from .actions import render_action
 from .data import AS_OF, ASSESSED_GRADES, load, subjects_for
 from .lang import LANGS
-from .scoring import LONG_UNVISITED_DAYS, RECENT_VISIT_DAYS
+from .scoring import LONG_UNVISITED_DAYS, MIN_PREVIOUS_MONTHS, RECENT_VISIT_DAYS
 
 SUGGESTION_CUTOFF = 0.6   # how close an unknown name must be to suggest a school ("Rampur school" -> Rampura)
 SCORE_SCALE = 100         # priority scores are out of 100
@@ -36,8 +36,9 @@ DATA_KINDS = {"top_priority_schools", "school_summary", "subject_analysis", "cla
               "missing_data", "recent_visits", "officer_summary"}
 
 
-def month_note(data, month):
-    """None when the asked month can be answered; otherwise why it cannot (closed, not yet, before the data)."""
+def month_note(data, month, scored=False):
+    """None when the asked month can be answered; otherwise why it cannot (closed, not yet, before the
+    data, or, for a score, too early: a score needs MIN_PREVIOUS_MONTHS earlier school months)."""
     if month is None:
         return None
     calendar = {r.month: r for r in data.calendar.itertuples()}
@@ -45,6 +46,9 @@ def month_note(data, month):
     if month in calendar and calendar[month].school_open != "yes":
         return {"month": month, "status": "school_closed", "note": calendar[month].note, "latest": latest}
     if month in data.open_months and month <= latest:
+        if scored and len(data.previous_months(month)) < MIN_PREVIOUS_MONTHS:
+            first = next(m for m in data.open_months if len(data.previous_months(m)) >= MIN_PREVIOUS_MONTHS)
+            return {"month": month, "status": "too_early", "first": first, "latest": latest}
         return None
     if month > latest:
         return {"month": month, "status": "not_yet", "latest": latest}
@@ -89,13 +93,13 @@ def _add_action_text(value):
 def _compute(q, data):
     intent = q.intent
     sid = q.school_ids[0] if len(q.school_ids) == 1 else None
-    note = month_note(data, q.month)
+    note = month_note(data, q.month, scored=intent in ("top_priority_schools", "school_summary"))
     usable_month = q.month if q.month and not note else None
 
     if intent == "top_priority_schools":
         facts = analytics.priority_list(data, q.limit, usable_month)
         facts["rules"] = {"long_unvisited_days": LONG_UNVISITED_DAYS, "recent_visit_days": RECENT_VISIT_DAYS}
-        return intent, {**facts, "month_note": note}
+        return intent, {**facts, "latest_month": data.latest_month, "month_note": note}
 
     if intent == "school_summary":
         return intent, {**analytics.school_summary(data, sid, usable_month), "month_note": note}
@@ -142,6 +146,8 @@ def _compute(q, data):
 
 
 def _subject(q, data, sid):
+    if q.grade is None and q.subject is None:      # e.g. Gemini read "how is Rampura doing in studies?"
+        return "school_summary", analytics.school_summary(data, sid)
     profile = analytics.school_profile(data, sid)
     if q.grade is None:
         grades = [g for g in profile["grades"] if q.subject in subjects_for(g)]
@@ -202,7 +208,9 @@ def ask(text, lang=None, school_id=None, data=None, use_llm=None, test_checker=F
 
     q = understand.parse(text, data, school_id=school_id)
     if use_llm and q.intent == "out_of_scope" and text.strip():
-        better = llm_steps.understand_question(text, data)
+        better, usage = llm_steps.understand_question(text, data)
+        if usage:
+            trace["understand"] = usage
         if better:
             q, trace["understood_by"] = better, "llm"
 

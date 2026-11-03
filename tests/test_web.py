@@ -30,7 +30,8 @@ def test_ask(client):
     r = client.post("/ask", json={"question": "Which 3 schools need my visit this week?"}).json()
     assert r["intent"] == "top_priority_schools" and "78/100" in r["text"]
     assert r["check"] == {"ai_used": False, "ai_tried": False, "rejected": False, "unsupported": [],
-                          "number_words": [], "problem": None, "error": None, "test_checker": None}
+                          "number_words": [], "problem": None, "error": None, "ai_paused": False,
+                          "test_checker": None}
     assert [o["label"] for o in r["options"]] == ["Haripar", "Chandrapur", "Manekpur"]
     assert "facts" not in r                                                    # only what the page shows
 
@@ -59,3 +60,21 @@ def test_rate_limit(client, monkeypatch):
 def test_checker_test_needs_the_llm(client):
     r = client.post("/ask", json={"question": "Which 3 schools need my visit this week?", "test_checker": True}).json()
     assert r["check"]["test_checker"] is False                                 # LLM off: nothing to tamper with
+
+
+def test_ai_budget_for_the_whole_server(client, monkeypatch):
+    """A made-up X-Forwarded-For dodges the per-person limit, but not the server's Gemini budget."""
+    monkeypatch.setattr(web, "_ai_calls", web.deque())
+    monkeypatch.setattr(web, "AI_PER_MINUTE", 2)
+    monkeypatch.setattr(web.llm, "enabled", lambda: True)
+    monkeypatch.setattr(web, "ask", lambda *a, **k: {"text": "ok", "lang": "en", "intent": "help", "options": [],
+                                                      "mode": "rules", "trace": {}})
+    paused = [client.post("/ask", json={"question": "hi"}, headers={"X-Forwarded-For": f"10.0.0.{i}"})
+              .json()["check"]["ai_paused"] for i in range(3)]
+    assert paused == [False, False, True]
+
+
+def test_forgotten_clients_are_swept(client, monkeypatch):
+    monkeypatch.setattr(web, "_recent", web.defaultdict(web.deque, {"1.2.3.4": web.deque([0.0])}))
+    web._sweep(now=1000.0)
+    assert "1.2.3.4" not in web._recent

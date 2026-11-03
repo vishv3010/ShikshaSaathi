@@ -6,9 +6,10 @@
 <meta name="theme-color" content="#075e54">
 <title>Shiksha Saathi</title>
 <style>
+  /* Every text colour meets WCAG AA (4.5:1) on its background, in light and dark mode. */
   :root {
     --bar: #075e54; --bar-text: #fff; --bg: #ece5dd; --me: #dcf8c6; --bot: #fff; --text: #111b21;
-    --muted: #54656f; --chip: #fff; --chip-border: #c9d3d8; --ok: #1f7a4d; --warn: #9a5b00; --bad: #b3261e;
+    --muted: #54656f; --chip: #fff; --chip-border: #c9d3d8; --ok: #17643f; --warn: #7d4a00; --bad: #b3261e;
     --input: #fff;
   }
   @media (prefers-color-scheme: dark) {
@@ -162,6 +163,7 @@ function describe(check) {
     return ["⚠ AI text rejected by the number checker (" + why + "). Checked answer shown.", "bad"];
   }
   if (check.ai_used) return ["✓ AI wording · every number checked against the records", "ok"];
+  if (check.ai_paused) return ["AI paused (many questions right now) · checked answer shown", "warn"];
   if (check.error) return ["AI unavailable (" + check.error + ") · checked answer shown", "warn"];
   return ["✓ Checked answer from the records", "ok"];
 }
@@ -175,7 +177,7 @@ async function askServer(question, schoolId, shown) {
   const typing = addMessage("bot", "…");
   typing.querySelector(".bubble").classList.add("typing");
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 35000);
+  const timer = setTimeout(() => controller.abort(), 45000);   // longer than the server's worst case
   try {
     const res = await fetch("/ask", {
       method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal,

@@ -146,3 +146,23 @@ def test_reply_language_request_is_not_a_subject():
 def test_language_and_digits():
     assert [detect_language(t) for t in ["Which school?", "કઈ શાળા?", "कौन सा स्कूल?"]] == ["en", "gu", "hi"]
     assert normalize("ધોરણ ૫ और कक्षा ७") == "ધોરણ 5 और कक्षा 7"
+
+
+# --- found by the held-out question set (eval/round2.csv, 3 Nov) ------------------------------
+
+@pytest.mark.parametrize("question, school_id", [
+    ("अंबालिया का पूरा हाल बताओ", "GJ-C07-019"),     # Hindi spells Ambaliya differently from "આંબલિયા"
+    ("पीपलिया स्कूल", "GJ-C07-013"),                 # ल in Hindi, ળ in Gujarati (પીપળીયા)
+    ("આંબલીયા શાળા", "GJ-C07-019"),                  # a long ી where the data has a short િ
+])
+def test_school_names_in_other_spellings(question, school_id):
+    assert parse(question, D).school_ids == [school_id]
+
+
+def test_short_names_are_not_matched_loosely():
+    assert parse("નવલું પુસ્તક", D).school_ids == []     # "a new book", not Navli
+
+
+def test_romanised_question_words_are_not_school_names():
+    q = parse("konsi school ko pehle dekhna chahiye?", D)
+    assert (q.intent, q.unknown_school) == ("top_priority_schools", None)

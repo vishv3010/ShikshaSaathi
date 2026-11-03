@@ -193,3 +193,40 @@ def test_every_answer_renders_cleanly(lang):
             english = [w for w in re.findall(r"[A-Za-z]{4,}", text) if w not in question]
             assert not english, (question, english)
         json.dumps(r, allow_nan=False, ensure_ascii=False)
+
+
+# --- found by the code review (3 Nov) --------------------------------------------------------
+
+@pytest.mark.parametrize("question", ["Which 3 schools needed a visit in July?", "Tell me about Rampura in June"])
+def test_a_month_too_early_to_score_says_so(question):
+    r = ask(question)
+    assert r["text"].startswith("A score needs two earlier school months, so August is the first month")
+    assert "find out why July data is missing" not in r["text"]
+
+
+def test_an_earlier_month_is_not_called_the_latest():
+    r = ask("Which 3 schools needed a visit in August?")
+    assert "Schools to visit first (August data):" in r["text"] and "latest available" not in r["text"]
+
+
+@pytest.mark.parametrize("question, month", [
+    ("Rampura ni જૂની હાજરી બતાવો", None),         # "old", not June
+    ("જૂનાગઢ જિલ્લાની શાળાઓ", None),               # Junagadh
+    ("जूनियर कक्षा का परिणाम", None),               # junior
+    ("જૂનમાં ચંદ્રપુરની હાજરી", "2026-06"),          # June with a case ending
+])
+def test_month_names_are_whole_words(question, month):
+    assert ask(question)["question"]["month"] == month
+
+
+@pytest.mark.parametrize("question", ["Which schools need my visit in the 2nd week of November?",
+                                      "Tell me about Rampura in the 1st week"])
+def test_ordinals_that_are_not_grades(question):
+    assert ask(question)["question"]["grade"] is None
+
+
+def test_words_about_percentages_are_not_made_up_numbers():
+    from saathi.checker import check
+    assert check("The percentage of children below basic is high at Rampura.", {}).ok
+    assert check("ટકાવારી ઘટી છે.", {}).ok
+    assert not check("હાજરી નવ્વાણું ટકા છે.", {}).ok                # ninety-nine percent, in words

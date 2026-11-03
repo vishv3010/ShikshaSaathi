@@ -54,18 +54,20 @@ def main():
         r = ask(question)
         seconds = time.time() - start
         p = r["trace"].get("phrase", {})
+        u = r["trace"].get("understand") or {}          # Gemini reading a question the rules could not place
         status = r["mode"]
         if p and not p.get("ok"):
             status += " (rejected: " + str(p.get("check", {}).get("unsupported") or p.get("error")) + ")"
             totals["rejected" if "check" in p else "errors"] += 1
         totals[r["mode"]] += 1
-        if p.get("tokens_in"):
+        if p.get("tokens_in") or u.get("tokens_in"):
             phrased += 1
-            totals["tokens_in"] += p["tokens_in"]
-            totals["tokens_out"] += p["tokens_out"]
+            totals["tokens_in"] += p.get("tokens_in", 0) + u.get("tokens_in", 0)
+            totals["tokens_out"] += p.get("tokens_out", 0) + u.get("tokens_out", 0)
         totals["seconds"] += seconds
         print(f"### {question}\n[{r['intent']} | {r['lang']} | understood by {r['trace']['understood_by']} | "
-              f"{status} | {seconds:.1f}s | tokens {p.get('tokens_in', 0)} in / {p.get('tokens_out', 0)} out]")
+              f"{status} | {seconds:.1f}s | tokens {p.get('tokens_in', 0) + u.get('tokens_in', 0)} in / "
+              f"{p.get('tokens_out', 0) + u.get('tokens_out', 0)} out]")
         if not args.quiet:
             print(r["text"])
         print()
@@ -74,7 +76,7 @@ def main():
     print(f"answers: {n} | Gemini wording used: {totals['llm']} | template: {totals['rules']} "
           f"(of which checker rejections: {totals['rejected']}, LLM errors: {totals['errors']})")
     if phrased:
-        print(f"phrase step, average per answer: {totals['tokens_in'] / phrased:.0f} tokens in, "
+        print(f"Gemini, average per answer that used it (all calls): {totals['tokens_in'] / phrased:.0f} tokens in, "
               f"{totals['tokens_out'] / phrased:.0f} tokens out | average time {totals['seconds'] / n:.1f}s")
 
 

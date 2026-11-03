@@ -17,6 +17,7 @@ Merged on 2 Nov from two plans: our own (built with Claude Code after research) 
 | Gemini layer + number checker | Done (3 Nov): `llm.py`, `llm_steps.py`, `checker.py`; rules read first (D-024), Gemini writes the opening line or the Hindi translation (D-025); 189 tests, 10 of 10 planted bugs caught; live: 12 demo questions, 0 rejections, 1.4 s average |
 | FastAPI + chat page | Done (3 Nov): `saathi/web.py`, `web/index.html` (about 4 KB over the network); checked in headless Chrome at phone width (390 px), no console errors; 200 tests |
 | Guardrails, full test run, deploy | Guardrails and full test run done. Deploy prepared (3 Nov): `render.yaml` + `docs/DEPLOY.md`; the start command was checked locally. **Needs Vishv:** a Render account (about 10 minutes) and a fresh Gemini key. |
+| Improvements after review | Done (3 Nov): independent code review (10 findings, all reproduced and fixed with tests); understanding measured on unseen questions (`eval/`, D-027): held-out round 2 rules 87%, with Gemini 91%, then general fixes; page colours meet WCAG AA; 219 tests, 10 of 10 planted bugs caught |
 | Solution note, demo video, submit | Solution note drafted (3 Nov): `docs/SOLUTION_NOTE.md` → `docs/Solution_Note.pdf` (2 pages, built by `scripts/build_note.py`); cost uses measured tokens and Google's published price. Waiting for Vishv's review; add the live link after deploy. Demo video and submission to do. Deadline Wed 4 Nov 2026, 11:59 PM. The repo is private: make it public or give the reviewers access before submitting. |
 
 ## 1. Architecture

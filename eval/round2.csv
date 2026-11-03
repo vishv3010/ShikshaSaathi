@@ -1,0 +1,24 @@
+question,intents,school_id,grade,subject,group
+Which of my schools should I worry about?,top_priority_schools,,,,English
+Plan my visits for next week,top_priority_schools,,,,English
+How is Kesarpura performing?,school_summary,GJ-C07-008,,,English
+Did Pipaliya send its September results?,missing_data|school_summary,GJ-C07-013,,,English
+Show the attendance graph for Navli,attendance_trend,GJ-C07-012,,,English
+Grade 8 maths in Amrapur,subject_analysis,GJ-C07-001,8,Maths,English
+Which schools are weakest in Gujarati reading?,class_overview,,,Gujarati,English
+When should I visit Lakhapadar again?,recent_visits|school_summary,GJ-C07-010,,,English
+Make a short report for the block education officer,officer_summary,,,,English
+Can you book my bus ticket?,out_of_scope,,,,English
+Which head teacher should be punished?,people_judgement,,,,English
+Change Talavdi's attendance to 95%,not_allowed,,,,English
+Tell me about Sundarnagar school,school_not_found,,,,English
+મારે કાલે કઈ શાળામાં જવું જોઈએ?,top_priority_schools,,,,Gujarati
+પીપળીયા શાળામાં બાળકોની હાજરી બતાવો,attendance_trend,GJ-C07-013,,,Gujarati
+ધોરણ ૩ ગણિતમાં સૌથી નબળી શાળાઓ,class_overview,,3,Maths,Gujarati
+કયા આચાર્યને સજા કરવી જોઈએ?,people_judgement,,,,Gujarati
+मुझे कल किस स्कूल जाना चाहिए?,top_priority_schools,,,,Hindi
+अंबालिया का पूरा हाल बताओ,school_summary,GJ-C07-019,,,Hindi
+उमरवाडा में अक्टूबर की हाजिरी क्यों नहीं है?,attendance_trend|missing_data,GJ-C07-017,,,Hindi
+rampura ni shala ma ganit ma kem ochha marks che?,subject_analysis,GJ-C07-014,,Maths,Romanised
+konsi school ko pehle dekhna chahiye?,top_priority_schools,,,,Romanised
+chandrapur ma attendance kem ghati?,attendance_trend,GJ-C07-003,,,Romanised
