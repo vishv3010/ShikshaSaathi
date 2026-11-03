@@ -23,7 +23,7 @@ W = {  # every sentence, in both languages
                      "માહિતી પરથી ચોક્કસ કારણ કહી શકાય નહીં; મુલાકાત વખતે તપાસ કરો."),
     "more": ("+{n} more", "+{n} વધુ"),
     # --- reasons a school is flagged ---
-    "r_learning_level": ("average score {v}%", "સરેરાશ ગુણ {v}%"),
+    "r_learning_level": ("average marks {v}%", "સરેરાશ ગુણ {v}%"),
     "r_below_basic": ("{v}% of children below basic level", "{v}% બાળકો પાયાના સ્તરથી નીચે"),
     "r_student_attendance": ("attendance {v}%", "હાજરી {v}%"),
     "r_attendance_drop": ("attendance down {v} points from {prev}%", "હાજરી {prev}%થી {v} પોઇન્ટ ઘટી"),
@@ -61,6 +61,14 @@ W = {  # every sentence, in both languages
     "long_unvisited": ("Not visited for over {n} days: {list}", "{n} દિવસથી વધુ સમયથી મુલાકાત લીધી નથી: {list}"),
     "ask_more": ('Ask "{q}" for details.', 'વિગત માટે પૂછો: "{q}"'),
     "q_about": ("Tell me about {name}", "{name} વિશે જણાવો"),
+    # --- the visit plan as cards on the page (plain words, the same terms as the home screen) ---
+    "cards_title": ("Visit these schools first", "પહેલાં આ શાળાઓની મુલાકાત લો"),
+    "cards_sub": ("Based on {month} {year} data · score out of 100, a higher score means the school needs help sooner",
+                  "{month} {year}ની માહિતીના આધારે · 100માંથી સ્કોર, વધુ સ્કોર એટલે શાળાને વહેલી મદદની જરૂર"),
+    "lbl_High": ("Needs help first", "પહેલાં મદદની જરૂર"),
+    "lbl_Medium": ("Keep an eye on", "ધ્યાન રાખો"),
+    "lbl_Low": ("Doing fine", "બરાબર ચાલે છે"),
+    "also_keep": ("Also keep in mind", "આ પણ ધ્યાનમાં રાખો"),
     "q_attendance": ("Show attendance for {name}", "{name}ની હાજરી બતાવો"),
     "q_gaps": ("Which data is missing for {name}?", "{name}ની કઈ માહિતી ખૂટે છે?"),
     # --- school summary ---
@@ -443,21 +451,27 @@ def top_priority_schools(f, lang):
     return lines, options
 
 
+def sentence(text):
+    """'average marks 38%' -> 'Average marks 38%' for a list item (Gujarati has no capitals)."""
+    return text[:1].upper() + text[1:]
+
+
 def priority_cards(f, lang):
     """The same visit plan as structured cards for the chat page. Every number on a card is read from
     the facts the code computed; cards never pass through the LLM (D-013)."""
     return {
         "note": month_note(f.get("month_note"), lang),
-        "title": _list_title(f, lang),
+        "title": t("cards_title", lang),
+        "subtitle": t("cards_sub", lang, month=month(f["month"], lang), year=f["month"][:4]),
         "schools": [{"school_id": e["school_id"], "name": short(e, lang), "priority": e["priority"],
-                     "priority_label": t("priority", lang, p=prio(e["priority"], lang)),
+                     "priority_label": t(f"lbl_{e['priority']}", lang),
                      "score": e["score"], "score_scale": f.get("score_scale", 100),
-                     "reasons": reason_parts(e, lang, limit=3), "action": render_action(e["action"], lang),
-                     "last_visit": _last_visit(e, lang)} for e in f["schools"]],
+                     "reasons": [sentence(r) for r in reason_parts(e, lang, limit=3)],
+                     "action": render_action(e["action"], lang), "last_visit": _last_visit(e, lang)}
+                    for e in f["schools"]],
         "status": _list_status(f, lang),
-        "also_title": t("also", lang),
+        "also_title": t("also_keep", lang),
         "also": _also_lines(f, lang),
-        "footer": t("higher_score", lang),
     }
 
 

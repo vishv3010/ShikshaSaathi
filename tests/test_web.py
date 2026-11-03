@@ -123,3 +123,14 @@ def test_visit_plan_cards_carry_only_numbers_from_the_facts(lang):
     assert [(s["priority"], s["score"]) for s in cards["schools"]] == [("High", 78), ("High", 75), ("Medium", 66)]
     assert check(json.dumps(cards, ensure_ascii=False), r["facts"]).ok
     assert ask("Why is Grade 5 maths low in Rampura?")["cards"] is None      # other answers stay text
+
+
+def test_home_screen_tiles_are_understood_in_every_language():
+    import json
+    import re
+    from saathi.assistant import ask
+    page = (web.PAGE).read_text(encoding="utf-8")
+    tiles = json.loads(re.search(r'<script type="application/json" id="starters">(.*?)</script>', page, re.S).group(1))["tiles"]
+    for lang in ("en", "gu", "hi"):
+        assert [ask(q)["intent"] for q in tiles[lang]] == [
+            "top_priority_schools", "class_overview", "missing_data", "officer_summary"], lang

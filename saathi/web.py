@@ -125,7 +125,11 @@ def health():
 def overview():
     """The first screen's "this month at a glance": computed by the same code as every answer."""
     o = analytics.officer_summary(load())
-    names = lambda items: [{"school_id": b["school_id"], "en": reply.short(b, "en"), "gu": reply.short(b, "gu")}
+    names = lambda items: [{"school_id": b["school_id"], "en": reply.short(b, "en"), "gu": reply.short(b, "gu"),
+                            "priority": b["priority"],
+                            # the main reason in a few words, from the same facts as every answer
+                            "why_en": reply.sentence(reply.reason_parts(b, "en", 1)[0]) if b["reasons"] else "",
+                            "why_gu": reply.reason_parts(b, "gu", 1)[0] if b["reasons"] else ""}
                            for b in items]
     a = o["cluster_attendance"]
     return {"month": o["month"], "schools_total": o["schools_total"], "counts": o["counts"],

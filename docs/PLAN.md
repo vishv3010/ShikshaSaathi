@@ -20,6 +20,7 @@ Merged on 2 Nov from two plans: our own (built with Claude Code after research) 
 | Improvements after review | Done (3 Nov): independent code review (10 findings, all reproduced and fixed with tests); understanding measured on unseen questions (`eval/`, D-027): held-out round 2 rules 87%, with Gemini 91%, then general fixes; page colours meet WCAG AA; Gujarati and Hindi typed in English letters are answered in that language; 225 tests, 10 of 10 planted bugs caught |
 | Realism and ease-of-use pass | Done (3 Nov, D-028): data checked against the real Gujarat calendar, holidays and RTE teacher norms (scores unchanged); page in her language with reviewer tools folded away; brief's format gaps closed |
 | First-impression redesign | Done (3 Nov, D-029): month-at-a-glance card, visit plan as cards (numbers from facts, tested), every answer laid out for scanning, centered layout; 230 tests |
+| Calm, modern redesign | Done (3 Nov, D-030): plain-language copy (ux-copy skill), home screen with this week's schools, counts and question tiles; 231 tests |
 | Solution note, demo video, submit | Solution note drafted (3 Nov): `docs/SOLUTION_NOTE.md` → `docs/Solution_Note.pdf` (2 pages, built by `scripts/build_note.py`); cost uses measured tokens and Google's published price. Waiting for Vishv's review; add the live link after deploy. Demo video and submission to do. Deadline Wed 4 Nov 2026, 11:59 PM. The repo is private: make it public or give the reviewers access before submitting. |
 
 ## 1. Architecture
