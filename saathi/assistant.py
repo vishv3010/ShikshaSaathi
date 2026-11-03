@@ -190,10 +190,11 @@ def reply_language(q, lang=None, llm_on=False):
     return "en"
 
 
-def ask(text, lang=None, school_id=None, data=None, use_llm=None):
+def ask(text, lang=None, school_id=None, data=None, use_llm=None, test_checker=False):
     """Answer one question. `lang` forces 'en', 'gu' or 'hi'; `school_id` pins the school
     (sent back by the chat page when she taps an option); `use_llm` overrides the
-    GEMINI_API_KEY / SAATHI_LLM setting."""
+    GEMINI_API_KEY / SAATHI_LLM setting; `test_checker` (demo only) adds a made-up figure
+    to Gemini's text to show the number checker rejecting it."""
     data = data or load()
     use_llm = llm.enabled() if use_llm is None else use_llm
     text = text or ""
@@ -211,13 +212,15 @@ def ask(text, lang=None, school_id=None, data=None, use_llm=None):
     draft, options = reply.render(kind, facts, draft_lang)
 
     answer, mode = draft, "rules"
+    if test_checker:
+        trace["test_checker"] = use_llm and (out_lang not in LANGS or kind in DATA_KINDS)
     if use_llm and out_lang not in LANGS:                  # Hindi: Gemini translates the whole draft
-        worded = llm_steps.translate(text, kind, facts, draft, out_lang)
+        worded = llm_steps.translate(text, kind, facts, draft, out_lang, tamper=test_checker)
         trace["phrase"] = {k: v for k, v in worded.items() if k != "text"}
         if worded["ok"]:
             answer, mode = worded["text"], "llm"
-    elif use_llm and needs_opening(kind, facts):           # English, Gujarati: a checked opening line
-        worded = llm_steps.lead(text, kind, facts, draft, out_lang)
+    elif use_llm and (needs_opening(kind, facts) or (test_checker and kind in DATA_KINDS)):
+        worded = llm_steps.lead(text, kind, facts, draft, out_lang, tamper=test_checker)   # English, Gujarati
         trace["phrase"] = {k: v for k, v in worded.items() if k != "text"}
         if worded["ok"] and worded["text"]:
             answer, mode = f"{worded['text']}\n\n{draft}", "llm"

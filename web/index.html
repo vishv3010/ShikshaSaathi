@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="gu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>Shiksha Saathi</title>
+<style>
+  :root {
+    --bar: #075e54; --bar-text: #fff; --bg: #ece5dd; --me: #dcf8c6; --bot: #fff; --text: #111b21;
+    --muted: #54656f; --chip: #fff; --chip-border: #c9d3d8; --ok: #1f7a4d; --warn: #9a5b00; --bad: #b3261e;
+    --input: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bar: #1f2c33; --bg: #0b141a; --me: #005c4b; --bot: #202c33; --text: #e9edef; --muted: #8696a0;
+      --chip: #202c33; --chip-border: #3b4a54; --ok: #6fd3a0; --warn: #f3b562; --bad: #ff8a80; --input: #2a3942;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex; flex-direction: column; height: 100dvh; background: var(--bg); color: var(--text);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Gujarati", "Noto Sans Devanagari", sans-serif;
+  }
+  header { background: var(--bar); color: var(--bar-text); padding: 10px 16px; display: flex; gap: 12px; align-items: center; }
+  header h1 { font-size: 18px; margin: 0; line-height: 1.2; }
+  header p { margin: 2px 0 0; font-size: 12.5px; opacity: .85; }
+  header .titles { flex: 1; min-width: 0; }
+  select {
+    font: inherit; font-size: 14px; color: var(--text); background: var(--input); border: 0; border-radius: 8px;
+    padding: 6px 8px; min-height: 36px;
+  }
+  main { flex: 1; overflow-y: auto; padding: 12px 12px 4px; }
+  .msg { display: flex; flex-direction: column; margin: 6px 0; }
+  .msg.me { align-items: flex-end; }
+  .bubble {
+    max-width: min(88%, 640px); padding: 8px 11px; border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere;
+    background: var(--bot); box-shadow: 0 1px 1px rgba(0,0,0,.12);
+  }
+  .me .bubble { background: var(--me); }
+  .meta { font-size: 12px; color: var(--muted); margin: 3px 4px 0; max-width: min(88%, 640px); }
+  .meta.ok { color: var(--ok); } .meta.warn { color: var(--warn); } .meta.bad { color: var(--bad); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; max-width: 100%; }
+  .chip {
+    font: inherit; font-size: 14px; color: var(--text); background: var(--chip); border: 1px solid var(--chip-border);
+    border-radius: 18px; padding: 7px 12px; min-height: 36px; cursor: pointer; text-align: left;
+  }
+  .chip:active { transform: scale(.98); }
+  .typing { color: var(--muted); font-style: italic; }
+  footer { padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: var(--bg); }
+  form { display: flex; gap: 8px; align-items: flex-end; }
+  textarea {
+    flex: 1; font: inherit; color: var(--text); background: var(--input); border: 0; border-radius: 22px;
+    padding: 10px 14px; resize: none; max-height: 120px; min-height: 44px;
+  }
+  button.send {
+    width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--bar); color: #fff; font-size: 20px;
+    cursor: pointer; flex: none;
+  }
+  button.send:disabled { opacity: .5; }
+  .tools { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+  .tools label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  :focus-visible { outline: 3px solid #25d366; outline-offset: 2px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<header>
+  <div class="titles">
+    <h1>શિક્ષા સાથી · Shiksha Saathi</h1>
+    <p id="sub">Cluster GJ-C07 · 20 schools · synthetic data</p>
+  </div>
+  <label class="sr" for="lang">Reply language</label>
+  <select id="lang" title="Reply language">
+    <option value="">Auto</option>
+    <option value="gu">ગુજરાતી</option>
+    <option value="en">English</option>
+    <option value="hi">हिंदी</option>
+  </select>
+</header>
+
+<main id="chat" aria-live="polite"></main>
+
+<footer>
+  <form id="form">
+    <label class="sr" for="q">Your question</label>
+    <textarea id="q" rows="1" maxlength="500" placeholder="પ્રશ્ન લખો… / Ask a question…" autocomplete="off"></textarea>
+    <button class="send" id="send" type="submit" aria-label="Send">➤</button>
+  </form>
+  <div class="tools">
+    <label title="Adds a made-up figure (99.9%) to the AI's text, to show the number checker catching it">
+      <input type="checkbox" id="test"> Test the number checker
+    </label>
+    <span id="status"></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const chat = document.getElementById("chat"), form = document.getElementById("form"), box = document.getElementById("q");
+const send = document.getElementById("send"), langSel = document.getElementById("lang"), test = document.getElementById("test");
+const statusEl = document.getElementById("status");
+
+// Starter questions: the brief's examples, the missing-data case, and one per language.
+const STARTERS = [
+  "Which 3 schools need my visit this week?",
+  "આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?",
+  "Why is Grade 5 Maths low in Rampura?",
+  "What was Umarvada's attendance in October?",
+  "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?",
+  "Summary for my block officer",
+];
+const WELCOME = "નમસ્તે! Ask about your 20 schools in Gujarati, English or Hindi.\n" +
+  "Every number comes from the school records; the AI only words the answer.";
+
+try { langSel.value = localStorage.getItem("saathi-lang") || ""; } catch (e) { /* storage blocked: use Auto */ }
+langSel.addEventListener("change", () => { try { localStorage.setItem("saathi-lang", langSel.value); } catch (e) {} });
+
+function scrollDown() { chat.scrollTop = chat.scrollHeight; }
+// A long answer opens at its first line (the direct answer), not at its end.
+function showStart(wrap) { chat.scrollTop = Math.max(0, wrap.offsetTop - chat.offsetTop - 8); }
+
+function addMessage(who, text, metaText, metaClass) {
+  const wrap = document.createElement("div");
+  wrap.className = "msg " + who;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;          // text only: nothing from the server is ever treated as HTML
+  wrap.appendChild(bubble);
+  if (metaText) {
+    const meta = document.createElement("div");
+    meta.className = "meta " + (metaClass || "");
+    meta.textContent = metaText;
+    // A warning (AI text rejected, AI unavailable) goes above the answer, where it is seen first.
+    if (metaClass === "bad" || metaClass === "warn") wrap.insertBefore(meta, bubble); else wrap.appendChild(meta);
+  }
+  chat.appendChild(wrap);
+  scrollDown();
+  return wrap;
+}
+
+function addChips(wrap, options) {
+  if (!options || !options.length) return;
+  const row = document.createElement("div");
+  row.className = "chips";
+  for (const o of options) {
+    const chip = document.createElement("button");
+    chip.type = "button"; chip.className = "chip"; chip.textContent = o.label;
+    chip.addEventListener("click", () => askServer(o.question, o.school_id, o.shown || o.label));
+    row.appendChild(chip);
+  }
+  wrap.appendChild(row);
+  scrollDown();
+}
+
+// The line under each answer says honestly how it was produced.
+function describe(check) {
+  if (check.rejected) {
+    const found = (check.unsupported || []).concat(check.number_words || []).join(", ");
+    const why = found ? "it had " + found + ", which is not in the records" : (check.problem || "it failed the check");
+    return ["⚠ AI text rejected by the number checker (" + why + "). Checked answer shown.", "bad"];
+  }
+  if (check.ai_used) return ["✓ AI wording · every number checked against the records", "ok"];
+  if (check.error) return ["AI unavailable (" + check.error + ") · checked answer shown", "warn"];
+  return ["✓ Checked answer from the records", "ok"];
+}
+
+let busy = false;
+async function askServer(question, schoolId, shown) {
+  question = (question || "").trim();
+  if (!question || busy) return;
+  busy = true; send.disabled = true;
+  addMessage("me", shown || question);
+  const typing = addMessage("bot", "…");
+  typing.querySelector(".bubble").classList.add("typing");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 35000);
+  try {
+    const res = await fetch("/ask", {
+      method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal,
+      body: JSON.stringify({ question, lang: langSel.value || null, school_id: schoolId || null, test_checker: test.checked }),
+    });
+    typing.remove();
+    if (res.status === 429) { retry("Too many questions in a minute. Please wait a little and try again.", question, schoolId, shown); return; }
+    if (!res.ok) { retry("Sorry, that did not work (" + res.status + "). Please try again.", question, schoolId, shown); return; }
+    const r = await res.json();
+    let [meta, cls] = describe(r.check || {});
+    if (test.checked && r.check && r.check.test_checker === false) { meta = "Number-checker test needs the AI; this answer did not use it. " + meta; cls = "warn"; }
+    const wrap = addMessage("bot", r.text, meta, cls);
+    addChips(wrap, r.options);
+    showStart(wrap);
+  } catch (e) {
+    typing.remove();
+    retry("No connection to the server. Check the network and tap Retry.", question, schoolId, shown);
+  } finally {
+    clearTimeout(timer); busy = false; send.disabled = false;
+  }
+}
+
+function retry(message, question, schoolId, shown) {
+  addChips(addMessage("bot", message, "", "warn"), [{ label: "↻ Retry", question, school_id: schoolId, shown: shown || question }]);
+}
+
+form.addEventListener("submit", (e) => { e.preventDefault(); const q = box.value; box.value = ""; grow(); askServer(q); });
+box.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
+function grow() { box.style.height = "auto"; box.style.height = Math.min(box.scrollHeight, 120) + "px"; }
+box.addEventListener("input", grow);
+
+addChips(addMessage("bot", WELCOME), STARTERS.map((q) => ({ label: q, question: q })));
+
+// A shared link can carry a question: /?q=Which+3+schools+need+my+visit&lang=gu asks it on opening.
+const params = new URLSearchParams(location.search);
+if (["en", "gu", "hi"].includes(params.get("lang"))) langSel.value = params.get("lang");
+if (params.get("test") === "1") test.checked = true;     // demo link: show the number checker at work
+if (params.get("q")) askServer(params.get("q").slice(0, 500));
+
+fetch("/health").then((r) => r.json()).then((h) => {
+  statusEl.textContent = h.llm ? "AI: on" : "AI: off (rules only)";
+  const month = new Date(h.latest_month + "-01T00:00:00").toLocaleString("en-IN", { month: "short", year: "numeric" });
+  document.getElementById("sub").textContent = "Cluster GJ-C07 · " + h.schools + " schools · synthetic data up to " + month;
+}).catch(() => { statusEl.textContent = "offline?"; });
+</script>
+</body>
+</html>

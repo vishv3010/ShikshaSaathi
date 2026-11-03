@@ -69,7 +69,10 @@ Translate the DRAFT answer into the requested language. Start with one short sen
 Keep every line, every school, every number and every action. Write school names in the script of the language.
 Rules:
 """ + COMMON_RULES
-MAX_LEAD_CHARS = 300   # a longer "opening" is not an opening; the draft alone is sent
+MAX_LEAD_CHARS = 400   # a longer "opening" is not an opening; the draft alone is sent
+# Demo switch ("test the number checker"): a made-up figure is added to Gemini's text before the
+# check, to show on screen that the checker catches it. 99.9 appears nowhere in the data.
+FAKE_FIGURE = {"en": "Last year this was 99.9%.", "gu": "ગયા વર્ષે આ 99.9% હતું.", "hi": "पिछले साल यह 99.9% था।"}
 
 
 # --- understand ---------------------------------------------------------------------------
@@ -204,11 +207,13 @@ def _finish(record, text, usage, verdict, problem=None):
             **({"problem": problem} if problem else {}), **usage}
 
 
-def lead(question, kind, facts, draft, lang):
+def lead(question, kind, facts, draft, lang, tamper=False):
     """{'ok', 'text', ...}: a checked opening sentence for the draft ('' when the draft already answers)."""
     record, text, usage = _call("lead", LEAD_SYSTEM, question, kind, facts, draft, lang, max_tokens=300)
     if text is None:
         return usage
+    if tamper:
+        text, record["tampered"] = f"{'' if text.strip().upper() == 'SAME' else text} {FAKE_FIGURE[lang]}".strip(), True
     if text.strip().strip(".").upper() == "SAME":
         llm.log_call({**record, **usage, "outcome": "same"})
         return {"ok": True, "text": "", **usage}
@@ -216,12 +221,14 @@ def lead(question, kind, facts, draft, lang):
     return _finish(record, text, usage, verdict, "too_long" if len(text) > MAX_LEAD_CHARS else None)
 
 
-def translate(question, kind, facts, draft, lang):
+def translate(question, kind, facts, draft, lang, tamper=False):
     """{'ok', 'text', ...}: the whole draft in a language without templates (Hindi), checked
     for invented numbers and for dropped ones."""
     record, text, usage = _call("translate", TRANSLATE_SYSTEM, question, kind, facts, draft, lang, max_tokens=2048)
     if text is None:
         return usage
+    if tamper:
+        text, record["tampered"] = f"{text}\n{FAKE_FIGURE[lang]}", True
     verdict = check(text, facts)
     dropped = sorted(set(numbers_in(draft)) - set(numbers_in(text)))
     return _finish(record, text, usage, verdict, f"dropped numbers {dropped}" if dropped else None)
