@@ -82,24 +82,42 @@ def test_forgotten_clients_are_swept(client, monkeypatch):
     assert "1.2.3.4" not in web._recent
 
 
-def test_every_suggested_question_on_the_page_is_understood():
-    """The starter chips are the first thing a CRC taps; each must lead to the intended answer."""
+def _page_words():
+    """The questions and labels the page shows (the JSON block in web/index.html)."""
     import json
     import re
-    from saathi.assistant import ask
     page = (web.PAGE).read_text(encoding="utf-8")
-    starters = json.loads(re.search(r'<script type="application/json" id="starters">(.*?)</script>', page, re.S).group(1))
-    expected = ["top_priority_schools", "subject_analysis", "attendance_trend", "missing_data", "officer_summary"]
+    return json.loads(re.search(r'<script type="application/json" id="starters">(.*?)</script>', page, re.S).group(1))
+
+
+def test_every_suggested_question_on_the_page_is_understood():
+    """The visit button and the "Try asking" examples are the first things a CRC taps; each must lead to
+    the intended answer, in every language."""
+    from saathi.assistant import ask
+    words = _page_words()
     for lang in ("en", "gu", "hi"):
-        assert [ask(q)["intent"] for q in starters[lang]] == expected, lang
-    assert [ask(q)["intent"] for q in starters["auto"]] == [
-        "top_priority_schools", "top_priority_schools", "subject_analysis", "attendance_trend", "subject_analysis",
-        "officer_summary"]
+        assert ask(words["visit"][lang])["intent"] == "top_priority_schools", lang
+        assert [ask(q)["intent"] for q in words["examples"][lang]] == [
+            "subject_analysis", "attendance_trend", "school_summary"], lang
+    # Auto (the reviewer's first view) shows the demo's questions, one of them in Hindi
+    assert [ask(q)["intent"] for q in words["examples"]["auto"]] == [
+        "subject_analysis", "attendance_trend", "subject_analysis"]
+
+
+def test_home_screen_labels_match_the_visit_plan_cards():
+    """The priority labels on the home screen are the same words as on the cards the server sends."""
+    from saathi import reply
+    tags = _page_words()["tags"]
+    for lang in ("en", "gu"):
+        assert tags[lang] == {p: reply.t("lbl_" + p, lang) for p in ("High", "Medium", "Low")}, lang
+    assert set(tags["hi"]) == {"High", "Medium", "Low"}
 
 
 def test_reviewer_tools_are_folded_away(client):
+    import re
     page = client.get("/").text
-    assert '<details class="review" id="review">' in page and "For reviewers" in page
+    tag = re.search(r'<details class="review" id="review"[^>]*>', page).group(0)
+    assert " open" not in tag and "For reviewers" in page                     # closed until a reviewer opens it
 
 
 def test_overview_gives_the_months_numbers(client):
@@ -126,11 +144,8 @@ def test_visit_plan_cards_carry_only_numbers_from_the_facts(lang):
 
 
 def test_home_screen_tiles_are_understood_in_every_language():
-    import json
-    import re
     from saathi.assistant import ask
-    page = (web.PAGE).read_text(encoding="utf-8")
-    tiles = json.loads(re.search(r'<script type="application/json" id="starters">(.*?)</script>', page, re.S).group(1))["tiles"]
+    tiles = _page_words()["tiles"]
     for lang in ("en", "gu", "hi"):
         assert [ask(q)["intent"] for q in tiles[lang]] == [
-            "top_priority_schools", "class_overview", "missing_data", "officer_summary"], lang
+            "attendance_trend", "class_overview", "missing_data", "officer_summary"], lang

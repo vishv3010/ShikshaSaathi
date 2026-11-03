@@ -1,128 +1,140 @@
 <!doctype html>
-<html lang="gu">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f7f9">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
 <title>Shiksha Saathi</title>
 <style>
-  /* Calm and simple: neutral surfaces, one teal accent, colour only where it carries meaning.
-     Every text colour meets WCAG AA (4.5:1) on its background, in light and dark mode. */
+  /* One teal accent, colour only for meaning, AA contrast; em sizes so Gujarati/Hindi can be 6% larger (D-031). */
   :root {
-    --bg: #f6f7f9; --surface: #ffffff; --text: #111827; --muted: #5b6472; --border: #e5e7eb; --soft: #f1f3f5;
-    --accent: #0f766e; --accent-ink: #ffffff; --accent-soft: #e6f4f1; --accent-text: #0b5e57;
+    --bg: #f6f7f9; --surface: #fff; --text: #111827; --muted: #5b6472; --border: #e5e7eb; --line: #838c9a; --soft: #f1f3f5;
+    --accent: #0f766e; --accent-ink: #fff; --accent-soft: #e6f4f1; --accent-text: #0b5e57;
     --high: #dc2626; --high-text: #b42318; --high-soft: #fdecea;
     --med: #d97706; --med-text: #8a4b00; --med-soft: #fff4e0;
     --low: #059669; --low-text: #04704f; --low-soft: #e7f6ef;
     --do-bg: #ecf7f4; --do-edge: #0f766e; --do-text: #0b3d38; --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+    --s: 1;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0b0f14; --surface: #151b23; --text: #e6e9ee; --muted: #9aa4b2; --border: #26303c; --soft: #1b232d;
+      --bg: #0b0f14; --surface: #151b23; --text: #e6e9ee; --muted: #9aa4b2; --border: #26303c; --line: #64707f; --soft: #1b232d;
       --accent: #2dd4bf; --accent-ink: #062b27; --accent-soft: #0f2e2b; --accent-text: #7ee8db;
       --high: #f87171; --high-text: #fca5a5; --high-soft: #3a1717; --med: #fbbf24; --med-text: #fcd34d; --med-soft: #3a2a0c;
       --low: #34d399; --low-text: #6ee7b7; --low-soft: #0f2f24; --do-bg: #10261f; --do-edge: #2dd4bf; --do-text: #d5f5ee;
       --shadow: none;
     }
   }
+  :lang(gu), :lang(hi) { --s: 1.0625; }
+  :lang(en) { --s: 1; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
-  body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased;
-         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Gujarati", "Noto Sans Devanagari", sans-serif; }
+  body { background: var(--bg); color: var(--text);
+         font: 1rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Gujarati", "Noto Sans Devanagari", sans-serif; }
+  button, select, textarea { font: inherit; color: inherit; }
   .app { display: flex; flex-direction: column; height: 100dvh; max-width: 720px; margin: 0 auto; }
-  header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg); }
+  header { display: flex; align-items: center; gap: 10px; padding: 10px 16px; }
   .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); color: var(--accent-ink);
           display: grid; place-items: center; flex: none; }
-  .brand { flex: 1; min-width: 0; line-height: 1.2; }
-  .brand b { display: block; font-size: 17px; }
-  .brand span { font-size: 12.5px; color: var(--muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .langs { display: flex; background: var(--soft); border-radius: 999px; padding: 3px; flex: none; }
-  .langs button { font: inherit; font-size: 13px; border: 0; background: none; color: var(--muted); padding: 5px 9px;
-                  border-radius: 999px; cursor: pointer; min-height: 30px; }
-  .langs button[aria-pressed="true"] { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: var(--shadow); }
-  main { flex: 1; overflow-y: auto; padding: 4px 16px 16px; }
-  h2 { font-size: 24px; line-height: 1.25; margin: 10px 0 2px; font-weight: 700; letter-spacing: -.01em; }
-  .lede { color: var(--muted); margin: 0 0 16px; }
+  .brand { flex: 1; min-width: 0; line-height: 1.25; }
+  .brand h1 { font-size: 17px; margin: 0; }
+  .brand span { font-size: 13px; color: var(--muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pick { position: relative; flex: none; display: flex; align-items: center; color: var(--muted); }
+  .pick svg { position: absolute; pointer-events: none; } .pick svg:first-child { left: 12px; } .pick svg:last-child { right: 11px; }
+  .pick select { appearance: none; -webkit-appearance: none; field-sizing: content; font-size: 14px; font-weight: 600; height: 44px;
+                 padding: 0 30px 0 34px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); cursor: pointer; }
+  @media (max-width: 359px) { .logo { display: none; } }
+  main { flex: 1; overflow-y: auto; padding: 0 16px 24px; }
+  #home, .q, .a { font-size: calc(1rem * var(--s)); }
+  .hello { font-size: 1.5em; line-height: 1.25; margin: .35em 0 .1em; }
+  .lede { color: var(--muted); margin: 0 0 1em; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: var(--shadow); }
-  .overline { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-text); margin: 0; }
-  .hero h3 { font-size: 19px; margin: 4px 0 10px; }
-  .row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px solid var(--border);
-         width: 100%; text-align: left; background: none; border-left: 0; border-right: 0; border-bottom: 0;
-         font: inherit; color: inherit; cursor: pointer; }
-  .row:first-of-type { border-top: 0; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--high); margin-top: 7px; flex: none; }
-  .dot.Medium { background: var(--med); } .dot.Low { background: var(--low); }
-  .row b { display: block; } .row small { color: var(--muted); font-size: 14px; }
-  .btn { font: inherit; font-weight: 600; display: block; width: 100%; margin-top: 12px; padding: 12px 16px; border: 0;
-         border-radius: 12px; background: var(--accent); color: var(--accent-ink); cursor: pointer; min-height: 48px; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
-  .stat { padding: 12px 10px; }
-  .stat b { display: block; font-size: 26px; line-height: 1.1; }
-  .stat span { font-size: 13px; color: var(--muted); }
-  .stat.high b { color: var(--high-text); } .stat.med b { color: var(--med-text); }
-  .section { font-size: 14px; font-weight: 600; color: var(--muted); margin: 18px 0 8px; }
+  .overline { font-size: .8125em; font-weight: 700; color: var(--accent-text); margin: 0; }
+  .overline:lang(en) { text-transform: uppercase; letter-spacing: .08em; }
+  .hero h3 { font-size: 1.1875em; line-height: 1.3; margin: .2em 0 .4em; }
+  .row, .ex { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-top: 1px solid var(--border);
+              background: none; text-align: left; cursor: pointer; }
+  .row { margin: 0 -16px; width: calc(100% + 32px); padding: 12px 16px; }
+  .row:first-of-type, .ex:first-child { border-top: 0; }
+  .row:active, .ex:active { background: var(--soft); }
+  .grow { flex: 1; min-width: 0; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 4px 8px; flex-wrap: wrap; }
+  .row small { display: block; color: var(--muted); font-size: .875em; margin-top: 2px; }
+  .chev { color: var(--muted); flex: none; display: flex; }
+  .num { width: 26px; height: 26px; border-radius: 8px; background: var(--soft); display: grid; place-items: center;
+         font-size: .8125em; font-weight: 700; flex: none; }
+  .tag { font-size: .8125em; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: var(--high-soft);
+         color: var(--high-text); white-space: nowrap; }
+  .tag.Medium { background: var(--med-soft); color: var(--med-text); } .tag.Low { background: var(--low-soft); color: var(--low-text); }
+  .btn { font-weight: 600; display: block; width: 100%; margin-top: 12px; padding: 12px 16px; border: 0; border-radius: 12px;
+         background: var(--accent); color: var(--accent-ink); cursor: pointer; min-height: 48px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 12px; padding: 0; box-shadow: none; }
+  .stats div { padding: 12px; } .stats div + div { border-left: 1px solid var(--border); }
+  .stats b { display: block; font-size: 1.625em; line-height: 1.1; }
+  .stats span { display: block; font-size: .875em; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+  .stats .high { color: var(--high-text); } .stats .med { color: var(--med-text); }
+  .wait { min-height: 420px; } .skel { height: 14px; border-radius: 7px; background: var(--soft); margin: 14px 0; }
+  .skel:nth-child(odd) { width: 60%; }
+  .section { font-size: .875em; font-weight: 600; color: var(--muted); margin: 22px 0 8px; }
   .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tile { font: inherit; color: var(--text); text-align: left; cursor: pointer; display: flex; flex-direction: column;
-          gap: 8px; min-height: 92px; }
-  .tile .ico { width: 32px; height: 32px; border-radius: 9px; background: var(--accent-soft); color: var(--accent-text);
-               display: grid; place-items: center; }
-  .tile span { font-weight: 600; font-size: 15px; line-height: 1.3; }
-  .trust { font-size: 13px; color: var(--muted); text-align: center; margin: 18px 0 4px; }
-  .thread { margin-top: 18px; }
-  .q { display: flex; justify-content: flex-end; margin: 18px 0 10px; }
-  .q span { background: var(--accent); color: var(--accent-ink); padding: 9px 14px; border-radius: 18px 18px 4px 18px;
+  .tile { text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 10px; min-height: 96px; }
+  .ico { width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-text);
+         display: grid; place-items: center; }
+  .tile b { font-weight: 600; font-size: .9375em; line-height: 1.3; }
+  .list { padding: 0; overflow: hidden; }
+  .ex { min-height: 52px; padding: 12px 16px; } .ex span:first-child { flex: 1; }
+  .trust { font-size: .8125em; color: var(--muted); text-align: center; margin: 22px 0 4px; }
+  .q { display: flex; justify-content: flex-end; margin: 28px 0 12px; }
+  .q span { background: var(--accent); color: var(--accent-ink); padding: 10px 14px; border-radius: 18px 18px 4px 18px;
             max-width: 85%; white-space: pre-wrap; overflow-wrap: anywhere; }
   .a { overflow-wrap: anywhere; }
   .a p { margin: 0 0 8px; }
-  .lead { font-size: 17px; font-weight: 600; margin-bottom: 12px !important; }
-  .sub { color: var(--muted); font-size: 14px; }
-  .headline { font-weight: 600; }
-  .subhead { font-weight: 600; margin-top: 12px !important; }
-  .item { font-weight: 600; margin-top: 12px !important; }
+  .a .lead { font-size: 1.0625em; margin-bottom: 14px; }
+  .sub { color: var(--muted); font-size: .875em; }
+  .headline, .subhead, .item { font-weight: 600; }
+  .a .subhead, .a .item { margin-top: 14px; }
   .indent { padding-left: 14px; }
-  .a ul { margin: 0 0 10px; padding-left: 20px; } .a li { margin: 3px 0; }
+  .a ul { margin: 0 0 10px; padding-left: 20px; } .a li { margin: 4px 0; }
   .do { background: var(--do-bg); border-left: 3px solid var(--do-edge); color: var(--do-text); border-radius: 10px;
         padding: 10px 12px; margin: 10px 0; }
-  .do b { display: block; font-size: 13px; margin-bottom: 2px; }
+  .do b { display: block; font-size: .8125em; margin-bottom: 2px; }
   .school { margin: 12px 0; }
   .school-head { display: flex; align-items: center; gap: 10px; }
-  .num { width: 26px; height: 26px; border-radius: 8px; background: var(--soft); display: grid; place-items: center;
-         font-size: 13px; font-weight: 700; flex: none; }
-  .school-name { font-size: 18px; font-weight: 700; flex: 1; min-width: 0; }
-  .tag { font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--high-soft); color: var(--high-text);
-         white-space: nowrap; }
-  .Medium .tag { background: var(--med-soft); color: var(--med-text); } .Low .tag { background: var(--low-soft); color: var(--low-text); }
-  .meter { display: flex; align-items: center; gap: 10px; margin: 10px 0 8px; font-size: 13px; color: var(--muted); }
+  .school h3 { font-size: 1.125em; flex: 1; min-width: 0; margin: 0; }
+  .meter { display: flex; align-items: center; gap: 10px; margin: 10px 0 8px; font-size: .8125em; color: var(--muted); }
   .bar { flex: 1; height: 6px; background: var(--soft); border-radius: 99px; overflow: hidden; }
   .bar i { display: block; height: 100%; background: var(--high); border-radius: 99px; }
   .Medium .bar i { background: var(--med); } .Low .bar i { background: var(--low); }
-  .label { font-size: 13px; font-weight: 600; color: var(--muted); margin: 6px 0 2px; }
-  .last { font-size: 13.5px; color: var(--muted); }
+  .a .label { font-size: .8125em; font-weight: 600; color: var(--muted); margin: 6px 0 2px; }
+  .last { font-size: .875em; color: var(--muted); }
   .note { background: var(--soft); border-radius: 12px; padding: 12px 14px; margin-top: 12px; }
   .note b { display: block; margin-bottom: 4px; }
-  .meta { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
+  .a .meta, .meta { font-size: .8125em; color: var(--muted); margin: 10px 0 0; }
   .meta.warn { color: var(--med-text); } .meta.bad { color: var(--high-text); }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
-  .chip { font: inherit; font-size: 14px; color: var(--text); background: var(--surface); border: 1px solid var(--border);
-          border-radius: 999px; padding: 7px 14px; min-height: 38px; cursor: pointer; text-align: left; }
+  .chip { font-size: .875em; background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+          padding: 8px 16px; min-height: 44px; cursor: pointer; text-align: left; }
   .chip.ghost { color: var(--muted); }
-  .dots { display: inline-flex; gap: 5px; padding: 10px 0; }
+  .loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .875em; padding: 6px 0; }
+  .dots { display: inline-flex; gap: 5px; }
   .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite ease-in-out; }
   .dots i:nth-child(2) { animation-delay: .2s; } .dots i:nth-child(3) { animation-delay: .4s; }
   @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .dots i { animation: none; opacity: .6; } }
-  button:active { transform: scale(.985); }
-  footer { padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--border); }
+  .btn:active, .tile:active, .chip:active, .send:active { transform: scale(.985); }
+  footer { padding: 10px 16px calc(8px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--border); }
   form { display: flex; gap: 8px; align-items: flex-end; }
-  textarea { flex: 1; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border);
-             border-radius: 14px; padding: 11px 14px; resize: none; max-height: 120px; min-height: 46px; }
-  .send { width: 46px; height: 46px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink);
+  textarea { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px;
+             resize: none; max-height: 120px; min-height: 48px; }
+  textarea::placeholder { color: var(--muted); opacity: 1; }
+  .send { width: 48px; height: 48px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink);
           cursor: pointer; flex: none; display: grid; place-items: center; }
   .send:disabled { opacity: .5; }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  details.review { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
-  details.review summary { cursor: pointer; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  details.review { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  details.review summary { cursor: pointer; padding: 3px 0; }
   details.review .rv { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding-top: 4px; }
 </style>
 </head>
@@ -132,30 +144,34 @@
   <div class="logo" aria-hidden="true">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
   </div>
-  <div class="brand"><b>Shiksha Saathi</b><span id="sub">શિક્ષા સાથી</span></div>
-  <div class="langs" role="group" aria-label="Reply language" id="langs">
-    <button type="button" data-lang="">Auto</button>
-    <button type="button" data-lang="gu">ગુ</button>
-    <button type="button" data-lang="en">EN</button>
-    <button type="button" data-lang="hi">हि</button>
+  <div class="brand"><h1 lang="en">Shiksha Saathi</h1><span id="sub"></span></div>
+  <div class="pick">
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <select id="pick" aria-label="Reply language">
+      <option value="">Auto</option>
+      <option value="gu" lang="gu">ગુજરાતી</option>
+      <option value="en" lang="en">English</option>
+      <option value="hi" lang="hi">हिन्दी</option>
+    </select>
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
   </div>
 </header>
 
-<main id="chat" aria-live="polite">
+<main id="chat">
   <section id="home"></section>
-  <section class="thread" id="thread"></section>
+  <section class="thread" id="thread" role="log" aria-live="polite"></section>
 </main>
 
 <footer>
   <form id="form">
-    <label class="sr" for="q">Your question</label>
+    <label class="sr" for="q" id="qlabel">Your question</label>
     <textarea id="q" rows="1" maxlength="500" autocomplete="off"></textarea>
     <button class="send" id="send" type="submit" aria-label="Send">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
     </button>
   </form>
-  <!-- Tools for reviewers, folded away so they do not distract a CRC; ?test=1 or ?review=1 opens them. -->
-  <details class="review" id="review">
+  <!-- Reviewer tools, folded away; ?test=1 or ?review=1 opens them. -->
+  <details class="review" id="review" lang="en">
     <summary>For reviewers</summary>
     <div class="rv">
       <label title="Adds a made-up figure (99.9%) to the AI's text, to show the number checker catching it">
@@ -167,25 +183,29 @@
 </footer>
 </div>
 
-<!-- Suggested questions in each language (a test checks that every one is understood). -->
+<!-- Questions and labels per language (tests check them against the server). -->
 <script type="application/json" id="starters">
 {
-  "auto": ["Which 3 schools need my visit this week?", "આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?",
-           "Why is Grade 5 Maths low in Rampura?", "What was Umarvada's attendance in October?",
-           "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?", "Summary for my block officer"],
-  "en": ["Which 3 schools need my visit this week?", "Why is Grade 5 Maths low in Rampura?",
-         "What was Umarvada's attendance in October?", "Which schools have missing data?", "Summary for my block officer"],
-  "gu": ["આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?", "રામપુરામાં ધોરણ 5 ગણિત કેમ ઓછું છે?",
-         "ઉમરવાડાની ઑક્ટોબરની હાજરી બતાવો", "કઈ શાળાઓની માહિતી ખૂટે છે?", "બ્લોક અધિકારી માટે સારાંશ"],
-  "hi": ["इस हफ्ते किन 3 स्कूलों का दौरा करना चाहिए?", "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?",
-         "उमरवाडा की अक्टूबर की हाजिरी बताओ", "किस स्कूल का डेटा नहीं आया?", "ब्लॉक अधिकारी के लिए सारांश बनाओ"],
+  "visit": {"en": "Which 3 schools need my visit this week?", "gu": "આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?",
+            "hi": "इस हफ्ते किन 3 स्कूलों का दौरा करना चाहिए?"},
   "tiles": {
-    "en": ["Which 3 schools need my visit this week?", "Why is Grade 5 Maths low?", "Which schools have missing data?",
+    "en": ["How is attendance in my schools?", "Why is Grade 5 Maths low?", "Which schools have missing data?",
            "Summary for my block officer"],
-    "gu": ["આ અઠવાડિયે કઈ 3 શાળાઓની મુલાકાત લેવી?", "ધોરણ 5 ગણિત કેમ નબળું છે?", "કઈ શાળાઓની માહિતી ખૂટે છે?",
-           "બ્લોક અધિકારી માટે સારાંશ"],
-    "hi": ["इस हफ्ते किन 3 स्कूलों का दौरा करना चाहिए?", "कक्षा 5 गणित कमज़ोर क्यों है?", "किस स्कूल का डेटा नहीं आया?",
+    "gu": ["મારી શાળાઓમાં હાજરી કેવી છે?", "ધોરણ 5 ગણિત કેમ નબળું છે?", "કઈ શાળાઓની માહિતી ખૂટે છે?", "બ્લોક અધિકારી માટે સારાંશ"],
+    "hi": ["मेरे स्कूलों में हाजिरी कैसी है?", "कक्षा 5 गणित कमज़ोर क्यों है?", "किस स्कूल का डेटा नहीं आया?",
            "ब्लॉक अधिकारी के लिए सारांश बनाओ"]
+  },
+  "examples": {
+    "auto": ["Why is Grade 5 Maths low in Rampura?", "What was Umarvada's attendance in October?",
+             "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?"],
+    "en": ["Why is Grade 5 Maths low in Rampura?", "What was Umarvada's attendance in October?", "Tell me about Chandrapur"],
+    "gu": ["રામપુરામાં ધોરણ 5 ગણિત કેમ ઓછું છે?", "ઉમરવાડાની ઑક્ટોબરની હાજરી બતાવો", "ચંદ્રપુર વિશે જણાવો"],
+    "hi": ["पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?", "उमरवाडा की अक्टूबर की हाजिरी बताओ", "चंद्रपुर के बारे में बताओ"]
+  },
+  "tags": {
+    "en": {"High": "Needs help first", "Medium": "Keep an eye on", "Low": "Doing fine"},
+    "gu": {"High": "પહેલાં મદદની જરૂર", "Medium": "ધ્યાન રાખો", "Low": "બરાબર ચાલે છે"},
+    "hi": {"High": "पहले मदद चाहिए", "Medium": "नज़र रखें", "Low": "ठीक चल रहा है"}
   }
 }
 </script>
@@ -194,26 +214,26 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 const chat = $("chat"), home = $("home"), thread = $("thread"), form = $("form"), box = $("q"), send = $("send");
-const test = $("test"), statusEl = $("status"), review = $("review");
+const test = $("test"), statusEl = $("status"), review = $("review"), pick = $("pick");
 const Q = JSON.parse($("starters").textContent);
-let lang = "";            // "" = Auto: replies follow the language of the question
+let lang = "";            // "" = Auto: reply in the question's language
 
-// All words on the page, in plain language (see docs/DECISIONS.md D-030).
+// All words on the page (D-030, D-031).
 const UI = {
   en: {
     locale: "en-IN", hello: "Namaste 🙏", lede: (n, m) => "Here's how your " + n + " schools are doing in " + m + ".",
     week: "This week", heroTitle: (n) => "Visit these " + n + " schools first", heroBtn: "See the visit plan",
-    stats: ["need help first", "to watch", "data missing"], askAbout: "Ask about",
-    tiles: ["This week's visits", "A weak class", "Missing data", "Note for my officer"],
+    stats: ["need help first", "to keep an eye on", "waiting for data"], askAbout: "Ask about", tryAsking: "Try asking",
+    tiles: ["Attendance", "A weak class", "Missing data", "Note for my officer"],
     trust: "Every number comes from the school records (synthetic demo data).", placeholder: "Ask in Gujarati, English or Hindi…",
-    sub: (n, m) => n + " schools · " + m,
+    sub: (n, m) => n + " schools · " + m, pickLabel: "Reply language", qLabel: "Your question", sendLabel: "Send",
+    loading: "Checking your school records…",
     act: "What to do", why: "Why", last: "Last visited", copy: "Copy", copied: "Copied",
     aiUsed: "Written with AI · every number checked against school records", checked: "From your school records",
     rejectedNum: (x) => "The AI wrote a number (" + x + ") that isn't in the records, so its text was removed. This answer comes straight from the records.",
     rejectedOther: "The AI's text didn't pass our check, so this answer comes straight from the records.",
     unavailable: "AI is unavailable right now, so this answer comes straight from the records.",
     paused: "Lots of questions right now, so this answer comes straight from the records.",
-    testNeedsAi: "The number-checker test needs the AI, which is off right now.",
     tooMany: "That's a lot of questions in one minute. Please wait a moment and try again.",
     failed: (c) => "Something went wrong on our side (" + c + "). Please try again.",
     offline: "Can't reach the server. Check your internet and tap Try again.", retry: "Try again",
@@ -222,17 +242,17 @@ const UI = {
   gu: {
     locale: "gu-IN", hello: "નમસ્તે 🙏", lede: (n, m) => m + "માં તમારી " + n + " શાળાઓની સ્થિતિ.",
     week: "આ અઠવાડિયે", heroTitle: (n) => "પહેલાં આ " + n + " શાળાઓની મુલાકાત લો", heroBtn: "મુલાકાતની યોજના જુઓ",
-    stats: ["પહેલાં મદદની જરૂર", "ધ્યાન રાખવા જેવી", "માહિતી ખૂટે છે"], askAbout: "આ વિશે પૂછો",
-    tiles: ["આ અઠવાડિયાની મુલાકાતો", "નબળો વર્ગ", "ખૂટતી માહિતી", "અધિકારી માટે નોંધ"],
+    stats: ["પહેલાં મદદની જરૂર", "ધ્યાન રાખવા જેવી", "માહિતી આવવાની બાકી"], askAbout: "આ વિશે પૂછો", tryAsking: "આવું પૂછી જુઓ",
+    tiles: ["હાજરી", "નબળો વર્ગ", "ખૂટતી માહિતી", "અધિકારી માટે નોંધ"],
     trust: "દરેક આંકડો શાળાના રેકોર્ડમાંથી આવે છે (ડેમો માટે કાલ્પનિક માહિતી).", placeholder: "ગુજરાતી, અંગ્રેજી કે હિન્દીમાં પૂછો…",
-    sub: (n, m) => n + " શાળાઓ · " + m,
+    sub: (n, m) => n + " શાળાઓ · " + m, pickLabel: "જવાબની ભાષા", qLabel: "તમારો પ્રશ્ન", sendLabel: "મોકલો",
+    loading: "શાળાના રેકોર્ડ જોઈ રહ્યા છીએ…",
     act: "શું કરવું", why: "કારણ", last: "છેલ્લી મુલાકાત", copy: "નકલ કરો", copied: "નકલ થઈ ગઈ",
     aiUsed: "AIની મદદથી લખ્યું · દરેક આંકડો રેકોર્ડ સાથે ચકાસ્યો", checked: "શાળાના રેકોર્ડમાંથી",
     rejectedNum: (x) => "AIએ એવો આંકડો (" + x + ") લખ્યો જે રેકોર્ડમાં નથી, તેથી તેનું લખાણ કાઢી નાખ્યું. આ જવાબ સીધો રેકોર્ડમાંથી છે.",
     rejectedOther: "AIનું લખાણ ચકાસણીમાં પાસ ન થયું, તેથી આ જવાબ સીધો રેકોર્ડમાંથી છે.",
     unavailable: "AI હમણાં ઉપલબ્ધ નથી, તેથી આ જવાબ સીધો રેકોર્ડમાંથી છે.",
     paused: "હમણાં ઘણા પ્રશ્નો છે, તેથી આ જવાબ સીધો રેકોર્ડમાંથી છે.",
-    testNeedsAi: "આંકડા-ચકાસણીની કસોટી માટે AI જોઈએ, જે હમણાં બંધ છે.",
     tooMany: "એક મિનિટમાં ઘણા પ્રશ્નો થયા. થોડી વાર રાહ જોઈને ફરી પૂછો.",
     failed: (c) => "અમારી બાજુ કંઈક ખોટું થયું (" + c + "). ફરી પ્રયાસ કરો.",
     offline: "સર્વર સુધી પહોંચી શકાતું નથી. ઇન્ટરનેટ તપાસીને ‘ફરી પ્રયાસ કરો’ દબાવો.", retry: "ફરી પ્રયાસ કરો",
@@ -241,95 +261,105 @@ const UI = {
   hi: {
     locale: "hi-IN", hello: "नमस्ते 🙏", lede: (n, m) => m + " में आपके " + n + " स्कूलों का हाल।",
     week: "इस हफ्ते", heroTitle: (n) => "पहले इन " + n + " स्कूलों का दौरा करें", heroBtn: "दौरे की योजना देखें",
-    stats: ["पहले मदद चाहिए", "नज़र रखें", "डेटा अधूरा"], askAbout: "इनके बारे में पूछें",
-    tiles: ["इस हफ्ते के दौरे", "कमज़ोर कक्षा", "अधूरा डेटा", "अधिकारी के लिए नोट"],
+    stats: ["पहले मदद चाहिए", "नज़र रखें", "डेटा आना बाकी"], askAbout: "इनके बारे में पूछें", tryAsking: "ऐसे पूछकर देखें",
+    tiles: ["हाजिरी", "कमज़ोर कक्षा", "अधूरा डेटा", "अधिकारी के लिए नोट"],
     trust: "हर आंकड़ा स्कूल के रिकॉर्ड से आता है (डेमो के लिए काल्पनिक डेटा)।", placeholder: "गुजराती, अंग्रेज़ी या हिंदी में पूछें…",
-    sub: (n, m) => n + " स्कूल · " + m,
+    sub: (n, m) => n + " स्कूल · " + m, pickLabel: "जवाब की भाषा", qLabel: "आपका सवाल", sendLabel: "भेजें",
+    loading: "स्कूल के रिकॉर्ड देख रहे हैं…",
     act: "क्या करें", why: "कारण", last: "पिछला दौरा", copy: "कॉपी करें", copied: "कॉपी हो गया",
     aiUsed: "AI की मदद से लिखा · हर आंकड़ा रिकॉर्ड से जाँचा", checked: "स्कूल के रिकॉर्ड से",
     rejectedNum: (x) => "AI ने ऐसा आंकड़ा (" + x + ") लिखा जो रिकॉर्ड में नहीं है, इसलिए उसका लिखा हटा दिया। यह जवाब सीधे रिकॉर्ड से है।",
     rejectedOther: "AI का लिखा जाँच में पास नहीं हुआ, इसलिए यह जवाब सीधे रिकॉर्ड से है।",
     unavailable: "AI अभी उपलब्ध नहीं है, इसलिए यह जवाब सीधे रिकॉर्ड से है।",
     paused: "अभी बहुत सवाल हैं, इसलिए यह जवाब सीधे रिकॉर्ड से है।",
-    testNeedsAi: "आंकड़ा-जाँच की परीक्षा के लिए AI चाहिए, जो अभी बंद है।",
     tooMany: "एक मिनट में बहुत सवाल हो गए। थोड़ा रुककर फिर पूछें।",
     failed: (c) => "हमारी तरफ़ कुछ गड़बड़ हुई (" + c + ")। फिर कोशिश करें।",
     offline: "सर्वर तक नहीं पहुँच पा रहे। इंटरनेट जाँचकर ‘फिर कोशिश करें’ दबाएँ।", retry: "फिर कोशिश करें",
     switched: "ठीक है, अब जवाब हिंदी में आएँगे।",
   },
 };
-const AUTO_SWITCHED = "જવાબ તમારા પ્રશ્નની ભાષામાં આવશે. / Replies follow the language you ask in.";
-const ICONS = [   // simple line icons, drawn inline (no files to download)
-  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>',
-  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17l-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/></svg>',
-  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
-  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>',
-];
+// Inline line icons, no downloads.
+const ICONS = ['<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/>',
+  '<path d="M22 17l-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/>', '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+  '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>'];
+const CHEV = '<path d="M9 6l6 6-6 6"/>';
 
 const scriptOf = (text) => /[઀-૿]/.test(text) ? "gu" : /[ऀ-ॿ]/.test(text) ? "hi" : "en";
-const ui = (fallback) => UI[lang] || UI[fallback] || UI.en;
-const homeLang = () => lang || "en";           // the home screen: the chosen language, English for Auto
+const uiKey = (fallback) => UI[lang] ? lang : UI[fallback] ? fallback : "en";
+const ui = (fallback) => UI[uiKey(fallback)];
+const homeLang = () => lang || "en";           // home: chosen language, English for Auto
 
-// Small DOM helper. Text is always inserted as text, never as HTML.
+// DOM helpers: text goes in as text, never as HTML.
 function el(tag, cls, text) {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
   if (text !== undefined && text !== null) n.textContent = text;
   return n;
 }
+function icon(paths, cls) {                    // static icons above only
+  const s = el("span", cls);
+  s.innerHTML = '<svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+                'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + paths + "</svg>";
+  return s;
+}
 function monthName(ym, t, style) { return new Date(ym + "-01T00:00:00").toLocaleString(t.locale, { month: style, year: "numeric" }); }
 
-// ---------- home: the block officer's question, answered before she types ----------
-let overview = null, health = null;
+// ---------- home: answered before she types ----------
+let overview = null, health = null;            // overview: null loading, false failed
 function renderHome() {
-  const t = UI[homeLang()], key = homeLang(), nameKey = key === "gu" ? "gu" : "en";
-  home.replaceChildren();
-  home.appendChild(el("h2", "", t.hello));
-  if (!overview) { home.appendChild(el("p", "lede", t.trust)); renderTiles(t, key); return; }
-  const month = monthName(overview.month, t, "long");
-  home.appendChild(el("p", "lede", t.lede(overview.schools_total, month)));
-
-  const hero = el("div", "card hero");
-  hero.append(el("p", "overline", t.week), el("h3", "", t.heroTitle(overview.visit_first.length)));
-  overview.visit_first.forEach((s) => {
-    const row = el("button", "row");
-    row.type = "button";
-    const text = el("div");
-    text.append(el("b", "", s[nameKey]));
-    const why = nameKey === "gu" ? s.why_gu : s.why_en;
-    if (why && key !== "hi") text.appendChild(el("small", "", why));
-    row.append(el("span", "dot " + s.priority), text);
-    row.addEventListener("click", () => askServer(aboutQuestion(s[nameKey], key), s.school_id, s[nameKey]));
-    hero.appendChild(row);
-  });
-  const go = el("button", "btn", t.heroBtn);
-  go.type = "button";
-  go.addEventListener("click", () => askServer(Q.tiles[key][0], null, t.heroBtn));
-  hero.appendChild(go);
-  home.appendChild(hero);
-
-  const stats = el("div", "stats");
-  [[overview.counts.High, "high"], [overview.counts.Medium, "med"], [overview.counts.not_enough_data, ""]].forEach(([n, cls], i) => {
-    const s = el("div", "card stat " + cls);
-    s.append(el("b", "", String(n)), el("span", "", t.stats[i]));
-    stats.appendChild(s);
-  });
-  home.appendChild(stats);
-  renderTiles(t, key);
-}
-function renderTiles(t, key) {
-  home.appendChild(el("p", "section", t.askAbout));
+  const key = homeLang(), t = UI[key], nameKey = key === "gu" ? "gu" : "en";
+  home.replaceChildren(el("h2", "hello", t.hello));
+  if (overview) {
+    home.appendChild(el("p", "lede", t.lede(overview.schools_total, monthName(overview.month, t, "long"))));
+    const hero = el("div", "card hero");
+    hero.append(el("p", "overline", t.week), el("h3", "", t.heroTitle(overview.visit_first.length)));
+    overview.visit_first.forEach((s, i) => {
+      const row = el("button", "row"), text = el("span", "grow"), top = el("span", "top");
+      row.type = "button";
+      top.append(el("b", "", s[nameKey]), el("span", "tag " + s.priority, Q.tags[key][s.priority]));
+      text.appendChild(top);
+      const why = nameKey === "gu" ? s.why_gu : s.why_en;
+      if (why && key !== "hi") text.appendChild(el("small", "", why));
+      row.append(el("span", "num", String(i + 1)), text, icon(CHEV, "chev"));
+      row.addEventListener("click", () => askServer(aboutQuestion(s[nameKey], key), s.school_id, s[nameKey]));
+      hero.appendChild(row);
+    });
+    const go = el("button", "btn", t.heroBtn);
+    go.type = "button";
+    go.addEventListener("click", () => askServer(Q.visit[key], null, t.heroBtn));
+    hero.appendChild(go);
+    const stats = el("div", "card stats");
+    [[overview.counts.High, "high"], [overview.counts.Medium, "med"], [overview.counts.not_enough_data, ""]].forEach(([n, cls], i) => {
+      const s = el("div");
+      s.append(el("b", cls, String(n)), el("span", "", t.stats[i]));
+      stats.appendChild(s);
+    });
+    home.append(hero, stats);
+  } else if (overview === null) {               // hold the space, so nothing jumps
+    const wait = el("div", "card wait");
+    wait.setAttribute("aria-hidden", "true");
+    wait.innerHTML = '<p class="skel"></p>'.repeat(6);
+    home.appendChild(wait);
+  }
+  home.appendChild(el("h2", "section", t.askAbout));
   const tiles = el("div", "tiles");
   Q.tiles[key].forEach((question, i) => {
-    const tile = el("button", "card tile"), ico = el("span", "ico");
+    const tile = el("button", "card tile");
     tile.type = "button";
-    ico.innerHTML = ICONS[i];               // our own static icon, not text from the server
-    tile.append(ico, el("span", "", t.tiles[i]));
+    tile.append(icon(ICONS[i], "ico"), el("b", "", t.tiles[i]));
     tile.addEventListener("click", () => askServer(question, null, t.tiles[i]));
     tiles.appendChild(tile);
   });
-  home.appendChild(tiles);
-  home.appendChild(el("p", "trust", t.trust));
+  home.append(tiles, el("h2", "section", t.tryAsking));
+  const list = el("div", "card list");
+  Q.examples[lang || "auto"].forEach((question) => {
+    const b = el("button", "ex");
+    b.type = "button"; b.lang = scriptOf(question);
+    b.append(el("span", "", question), icon(CHEV, "chev"));
+    b.addEventListener("click", () => askServer(question));
+    list.appendChild(b);
+  });
+  home.append(list, el("p", "trust", t.trust));
 }
 function aboutQuestion(name, key) { return key === "gu" ? name + " વિશે જણાવો" : key === "hi" ? name + " के बारे में बताओ" : "Tell me about " + name; }
 
@@ -341,8 +371,9 @@ function renderCards(box, c, lead, t) {
   box.appendChild(el("p", "sub", c.subtitle));
   c.schools.forEach((s, i) => {
     const card = el("div", "card school " + s.priority), head = el("div", "school-head");
-    head.append(el("span", "num", String(i + 1)), el("span", "school-name", s.name), el("span", "tag", s.priority_label));
+    head.append(el("span", "num", String(i + 1)), el("h3", "", s.name), el("span", "tag " + s.priority, s.priority_label));
     const meter = el("div", "meter"), bar = el("div", "bar"), fill = el("i");
+    bar.setAttribute("aria-hidden", "true");     // the score is also written next to it
     fill.style.width = Math.max(0, Math.min(100, (100 * s.score) / s.score_scale)) + "%";
     bar.appendChild(fill);
     meter.append(bar, el("span", "", s.score + "/" + s.score_scale));
@@ -362,9 +393,9 @@ function renderCards(box, c, lead, t) {
     box.appendChild(note);
   }
 }
-// Every other answer keeps the text WhatsApp would show, laid out to scan: headline, bullets, the action highlighted.
+// Other answers: the WhatsApp text, laid out to scan.
 const ACTION = /^(Do|શું કરવું|करें|क्या करें)\s*:\s*/;
-function renderText(box, text, lead) {
+function renderText(box, text, lead, t) {
   let list = null, first = true;
   for (const raw of text.split("\n")) {
     const line = raw.trimEnd();
@@ -375,11 +406,12 @@ function renderText(box, text, lead) {
       continue;
     }
     list = null;
-    if (first) { box.appendChild(el("p", lead && line === lead ? "lead" : "headline", line)); first = false; continue; }
+    if (lead && line === lead) { box.appendChild(el("p", "lead", line)); continue; }      // the AI's line, then the title
+    if (first) { box.appendChild(el("p", "headline", line)); first = false; continue; }
     const m = line.match(ACTION);
-    if (m) {
+    if (m) {                                    // the same label as on the visit-plan cards
       const d = el("div", "do");
-      d.append(el("b", "", m[1]), document.createTextNode(line.slice(m[0].length)));
+      d.append(el("b", "", t.act), document.createTextNode(line.slice(m[0].length)));
       box.appendChild(d);
       continue;
     }
@@ -417,10 +449,14 @@ async function askServer(question, schoolId, shown) {
   question = (question || "").trim();
   if (!question || busy) return;
   busy = true; send.disabled = true;
-  const t = ui(scriptOf(question));
-  const q = el("div", "q"); q.appendChild(el("span", "", shown || question)); thread.appendChild(q);
-  const answer = el("div", "a"), dots = el("span", "dots");
-  dots.append(el("i"), el("i"), el("i")); answer.appendChild(dots); thread.appendChild(answer);
+  const tk = uiKey(scriptOf(question)), t = UI[tk];
+  const q = el("div", "q"); q.lang = scriptOf(shown || question); q.appendChild(el("span", "", shown || question)); thread.appendChild(q);
+  const answer = el("div", "a"), wait = el("div", "loading"), dots = el("span", "dots");
+  answer.lang = tk;
+  answer.setAttribute("aria-busy", "true");
+  dots.append(el("i"), el("i"), el("i"));
+  wait.append(dots, el("span", "", t.loading));
+  answer.appendChild(wait); thread.appendChild(answer);
   chat.scrollTop = q.offsetTop - chat.offsetTop - 8;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 45000);   // longer than the server's worst case
@@ -432,13 +468,15 @@ async function askServer(question, schoolId, shown) {
     answer.replaceChildren();
     if (res.status === 429) return retry(answer, t.tooMany, t, question, schoolId, shown);
     if (!res.ok) return retry(answer, t.failed(res.status), t, question, schoolId, shown);
-    const r = await res.json(), tr = ui(r.lang);
+    const r = await res.json(), rk = uiKey(r.lang), tr = UI[rk];
+    answer.lang = r.lang;
     let [meta, cls] = describe(r.check || {}, tr);
-    if (test.checked && r.check && r.check.test_checker === false) { meta = tr.testNeedsAi + " " + meta; cls = "warn"; }
-    if (cls) answer.appendChild(el("p", "meta " + cls, meta));      // warnings first, where they are seen
-    if (r.cards) renderCards(answer, r.cards, r.lead, UI[r.lang] || tr); else renderText(answer, r.text, r.lead);
-    if (!cls) answer.appendChild(el("p", "meta", "✓ " + meta));
-    const row = el("div", "actions"), copy = el("button", "chip ghost", tr.copy);
+    if (test.checked && r.check && r.check.test_checker === false) { meta = "(Number-checker test: the AI is off.) " + meta; cls = "warn"; }
+    const metaEl = el("p", "meta " + cls, (cls ? "" : "✓ ") + meta), row = el("div", "actions"), copy = el("button", "chip ghost", tr.copy);
+    metaEl.lang = row.lang = rk;
+    if (cls) answer.appendChild(metaEl);                         // warnings first, where they are seen
+    if (r.cards) renderCards(answer, r.cards, r.lead, UI[r.lang] || tr); else renderText(answer, r.text, r.lead, UI[r.lang] || tr);
+    if (!cls) answer.appendChild(metaEl);
     copy.type = "button";
     copy.addEventListener("click", () => {      // the plain text, ready to forward on WhatsApp
       if (navigator.clipboard) navigator.clipboard.writeText(r.text).then(() => { copy.textContent = "✓ " + tr.copied; }, () => {});
@@ -451,6 +489,7 @@ async function askServer(question, schoolId, shown) {
     retry(answer, t.offline, t, question, schoolId, shown);
   } finally {
     clearTimeout(timer); busy = false; send.disabled = false;
+    answer.removeAttribute("aria-busy");
     chat.scrollTop = q.offsetTop - chat.offsetTop - 8;          // the question on top, its answer below
   }
 }
@@ -463,30 +502,40 @@ function retry(answer, message, t, question, schoolId, shown) {
 function setLang(value, announce) {
   lang = value;
   try { localStorage.setItem("saathi-lang", value); } catch (e) { /* storage blocked */ }
-  document.querySelectorAll("#langs button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === value)));
-  const t = UI[lang];
-  box.placeholder = (t || UI.en).placeholder;
-  if (health) $("sub").textContent = UI[homeLang()].sub(health.schools, monthName(health.latest_month, UI[homeLang()], "short"));
+  pick.value = value;
+  const key = homeLang(), h = UI[key];
+  document.documentElement.lang = key;          // screen readers read the page in its own language
+  pick.setAttribute("aria-label", h.pickLabel);
+  $("qlabel").textContent = h.qLabel;
+  send.setAttribute("aria-label", h.sendLabel);
+  box.placeholder = h.placeholder;
+  if (health) $("sub").textContent = h.sub(health.schools, monthName(health.latest_month, h, "short"));
   renderHome();
-  if (announce && thread.childElementCount) thread.appendChild(el("p", "meta", t ? t.switched : AUTO_SWITCHED));
+  if (!announce || !thread.childElementCount) return;
+  const note = el("p", "meta");
+  if (UI[lang]) note.textContent = UI[lang].switched;
+  else { const gu = el("span", "", "જવાબ તમારા પ્રશ્નની ભાષામાં આવશે."); gu.lang = "gu"; note.append(gu, " / Replies follow the language you ask in."); }
+  thread.appendChild(note);
 }
-document.querySelectorAll("#langs button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang, true)));
+pick.addEventListener("change", () => setLang(pick.value, true));
 
 form.addEventListener("submit", (e) => { e.preventDefault(); const v = box.value; box.value = ""; grow(); askServer(v); });
 box.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
 function grow() { box.style.height = "auto"; box.style.height = Math.min(box.scrollHeight, 120) + "px"; }
 box.addEventListener("input", grow);
 
-// A shared link can carry a question: /?q=...&lang=gu asks it on opening; &test=1 shows the number checker at work.
+// /?q=...&lang=gu asks a question on opening; &test=1 ticks the checker test.
 const params = new URLSearchParams(location.search);
 let saved = "";
 try { saved = localStorage.getItem("saathi-lang") || ""; } catch (e) { /* storage blocked */ }
-setLang(["en", "gu", "hi"].includes(params.get("lang")) ? params.get("lang") : saved, false);
+const LANGS = ["", "en", "gu", "hi"];
+setLang(LANGS.includes(params.get("lang")) ? params.get("lang") : LANGS.includes(saved) ? saved : "", false);
 if (params.get("test") === "1") { test.checked = true; review.open = true; }
 if (params.get("review") === "1") review.open = true;
 
 Promise.all([
-  fetch("/overview").then((r) => r.json()).then((o) => { overview = o; }).catch(() => {}),
+  fetch("/overview").then((r) => r.ok ? r.json() : Promise.reject(r.status)).then((o) => { overview = o; })
+    .catch(() => { overview = false; }),
   fetch("/health").then((r) => r.json()).then((h) => { health = h; statusEl.textContent = h.llm ? "AI: on" : "AI: off (rules only)"; })
     .catch(() => { statusEl.textContent = "offline?"; }),
 ]).then(() => {
