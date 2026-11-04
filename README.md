@@ -85,7 +85,7 @@ Expected values in the tests were worked out from the CSVs by hand, not copied f
 
 | Path | What it is |
 |---|---|
-| `data/` | six synthetic CSVs: schools, calendar, attendance, assessments, visits (English and Gujarati notes), facilities |
+| `data/` | seven synthetic CSVs: schools, calendar, holidays, attendance, assessments, visits (English and Gujarati notes), facilities |
 | `saathi/` | `scoring.py` priority score · `actions.py` one action per school · `analytics.py` facts per question · `understand.py` reads the question · `reply.py` English/Gujarati templates · `llm.py`, `llm_steps.py` Gemini · `checker.py` number checker · `assistant.py` the pipeline · `web.py` server |
 | `web/index.html` | the chat page: one file, about 4 KB over the network, no external libraries |
 | `scripts/` | data generator and validator, bug-planting check, live Gemini run |
