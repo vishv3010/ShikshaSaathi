@@ -42,3 +42,5 @@ Vishv works from two laptops: `git pull` before starting, commit and push before
 - Windows: run subprocesses with `encoding="utf-8"` and `PYTHONUTF8=1`; output holds Gujarati.
 - Git Bash curl garbles Gujarati arguments; send Gujarati requests from a Python script.
 - Vercel does not redeploy on push; run `npx vercel deploy --prod`.
+- Deploy ECONNRESET mid-build: run `vercel inspect <url> --wait` before redeploying.
+- Windows deploys serve CRLF files; strip CR before comparing the live page to the commit.
