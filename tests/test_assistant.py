@@ -39,14 +39,23 @@ def test_a_score_is_never_shown_without_its_name(lang, name):
 def test_why_is_a_class_low():
     r = ask("Why is Grade 5 maths low in Rampura?")
     assert r["text"].startswith("Rampura, Grade 5 Maths, October: average 36%, 47% of children below basic.")
-    assert "June 45% → July 43% → August 41% → September 39% → October 36% (down 9 points since June)" in r["text"]
-    assert "48.6% (19 schools); this class is 12.6 points below it" in r["text"]
+    assert "June 45% → July 43% → August 41% → September 39% → October 36% (lower than in June)" in r["text"]
+    assert "48.6% (19 schools); this class, at 36%, is below it" in r["text"]
     assert "cannot show the exact cause" in r["text"]                       # no invented cause
+
+
+@pytest.mark.parametrize("lang, word", [("en", "points"), ("gu", "પોઇન્ટ")])
+def test_changes_are_said_as_before_and_after_never_in_points(lang, word):
+    """"Down 15.9 points" makes her subtract; every change is said as "from 80.8% to 64.9%" instead (D-035)."""
+    for question in QUESTIONS + ["Show attendance trend for Chandrapur", "Why is Gujarati low in grade 4 at Navli?"]:
+        assert word not in ask(question, lang=lang)["text"], question
+    if lang == "gu":
+        assert "80.8%થી ઘટીને 64.9%" in ask("Show attendance trend", lang="gu")["text"]
 
 
 def test_false_premise_is_corrected_by_the_data():
     r = ask("Why is Gujarati low in grade 4 at Navli?")                     # it is 71%, cluster 58.4%
-    assert "71%" in r["text"] and "12.6 points above it" in r["text"]
+    assert "58.4% (" in r["text"] and "this class, at 71%, is above it" in r["text"]
     assert "No urgent concern" in r["text"]
 
 
@@ -117,7 +126,7 @@ def test_no_personal_names_in_any_answer():
 def test_officer_summary():
     r = ask("Give me a summary for my block officer")
     assert "Priority: 3 High, 4 Medium, 12 Low; 1 with not enough data." in r["text"]
-    assert "Chandrapur (need for help 75/100): attendance 64.9%, down 15.9 points from 80.8%" in r["text"]
+    assert "Chandrapur (need for help 75/100): attendance fell from 80.8% to 64.9%" in r["text"]
     assert "Cluster attendance: 81% (19 of 20 schools reported)." in r["text"]
     assert "Plan this week: visit Haripar, Chandrapur and Manekpur." in r["text"]
 

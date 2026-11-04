@@ -28,8 +28,9 @@ W = {  # every sentence, in both languages
     "r_learning_level": ("average marks {v}%", "સરેરાશ ગુણ {v}%"),
     "r_below_basic": ("{v}% of children below basic level", "{v}% બાળકો પાયાના સ્તરથી નીચે"),
     "r_student_attendance": ("attendance {v}%", "હાજરી {v}%"),
-    "r_attendance_drop": ("attendance down {v} points from {prev}%", "હાજરી {prev}%થી {v} પોઇન્ટ ઘટી"),
-    "r_attendance_with_drop": ("attendance {v}%, down {d} points from {prev}%", "હાજરી {v}% ({prev}%થી {d} પોઇન્ટ ઘટી)"),
+    # A change is said as before and after, never in "points": she should not have to subtract (D-035).
+    "r_attendance_drop": ("attendance fell from {prev}% to {now}%", "હાજરી {prev}%થી ઘટીને {now}%"),
+    "r_attendance_with_drop": ("attendance fell from {prev}% to {v}%", "હાજરી {prev}%થી ઘટીને {v}%"),
     # --- month notes ---
     "using_latest": ("{month} data, the latest available", "{month}ની માહિતી મુજબ"),
     "using_month": ("{month} data", "{month}ની માહિતી મુજબ"),
@@ -101,13 +102,13 @@ W = {  # every sentence, in both languages
     "latest_is_old": ("This is the latest result; {missing} has not arrived.",
                       "આ છેલ્લું પરિણામ છે; {missing}નું પરિણામ આવ્યું નથી."),
     "trend": ("Trend: {list}", "વલણ: {list}"),
-    "change_down": ("down {v} points since {m}", "{m}થી {v} પોઇન્ટનો ઘટાડો"),
-    "change_up": ("up {v} points since {m}", "{m}થી {v} પોઇન્ટનો વધારો"),
+    "change_down": ("lower than in {m}", "{m} કરતાં ઓછું"),
+    "change_up": ("higher than in {m}", "{m} કરતાં વધુ"),
     "change_none": ("no change since {m}", "{m}થી કોઈ ફેરફાર નથી"),
     "same_class": ("Same class, other subjects: {list}", "આ જ ધોરણના બીજા વિષયો: {list}"),
     "cluster_avg": ("Cluster average for {cls}: {v}% ({n} schools){cmp}", "{cls}ની ક્લસ્ટર સરેરાશ: {v}% ({n} શાળા){cmp}"),
-    "cmp_below": ("; this class is {d} points below it", "; આ વર્ગ તેનાથી {d} પોઇન્ટ નીચે છે"),
-    "cmp_above": ("; this class is {d} points above it", "; આ વર્ગ તેનાથી {d} પોઇન્ટ ઉપર છે"),
+    "cmp_below": ("; this class, at {v}%, is below it", "; આ વર્ગ {v}% સાથે તેનાથી નીચે છે"),
+    "cmp_above": ("; this class, at {v}%, is above it", "; આ વર્ગ {v}% સાથે તેનાથી ઉપર છે"),
     "cmp_same": ("; this class is at the average", "; આ વર્ગ સરેરાશ જેટલો જ છે"),
     "visit_notes": ("Visit notes:", "મુલાકાતની નોંધ:"),
     "na_grade_not_assessed": ("Only Grades {grades} are assessed in this data, so there are no Grade {g} results.",
@@ -137,10 +138,10 @@ W = {  # every sentence, in both languages
     "att_month": ("{month}: {s} / {t}", "{month}: {s} / {t}"),
     "att_closed": ("{month}: school closed for {note}", "{month}: શાળા બંધ (વેકેશન)"),
     "att_missing": ("{month}: no record", "{month}: માહિતી આવી નથી"),
-    "att_lower": ("{month} is {v} points below the previous {k} months ({prev}%).",
-                  "{month}ની હાજરી અગાઉના {k} મહિના ({prev}%) કરતાં {v} પોઇન્ટ ઓછી છે."),
-    "att_higher": ("{month} is {v} points above the previous {k} months ({prev}%).",
-                   "{month}ની હાજરી અગાઉના {k} મહિના ({prev}%) કરતાં {v} પોઇન્ટ વધુ છે."),
+    "att_lower": ("{month} ({now}%) is lower than the previous {k} months ({prev}%).",
+                  "{month}ની હાજરી ({now}%) અગાઉના {k} મહિના ({prev}%) કરતાં ઓછી છે."),
+    "att_higher": ("{month} ({now}%) is higher than the previous {k} months ({prev}%).",
+                   "{month}ની હાજરી ({now}%) અગાઉના {k} મહિના ({prev}%) કરતાં વધુ છે."),
     "att_same": ("{month} is the same as the previous {k} months ({prev}%).",
                  "{month}ની હાજરી અગાઉના {k} મહિના જેટલી જ છે ({prev}%)."),
     "att_cluster_line": ("Cluster, {month}: {v}% ({r} of {t} schools reported).",
@@ -155,7 +156,7 @@ W = {  # every sentence, in both languages
                            "ક્લસ્ટરની હાજરી (માહિતી આપનાર શાળાઓની સરેરાશ):"),
     "att_cluster_month": ("{month}: {v}% ({r}/{t} schools)", "{month}: {v}% ({r}/{t} શાળા)"),
     "att_drops": ("Biggest falls in {month}:", "{month}માં સૌથી વધુ ઘટાડો:"),
-    "att_drop_row": ("{name}: down {v} points to {s}%", "{name}: {v} પોઇન્ટ ઘટીને {s}%"),
+    "att_drop_row": ("{name}: fell from {prev}% to {s}%", "{name}: {prev}%થી ઘટીને {s}%"),
     "att_teacher_low": ("Teacher attendance below {p}%: {list}. This can be leave, training or official duty; "
                         "worth a conversation with the head teacher.",
                         "શિક્ષકોની હાજરી {p}%થી ઓછી: {list}. રજા, તાલીમ કે સરકારી ફરજને કારણે હોઈ શકે; "
@@ -313,7 +314,8 @@ def reason_parts(entry, lang, limit=3):
             parts.append(t("r_attendance_with_drop", lang, v=ind[name]["value"], d=drop["value"],
                            prev=drop["previous_avg"]))
         else:
-            parts.append(t(f"r_{name}", lang, v=ind[name]["value"], prev=ind[name].get("previous_avg")))
+            parts.append(t(f"r_{name}", lang, v=ind[name]["value"], prev=ind[name].get("previous_avg"),
+                           now=ind["student_attendance"]["value"]))
     return parts
 
 
@@ -557,7 +559,8 @@ def subject_analysis(f, lang):
         lines.append("• " + t("same_class", lang, list=", ".join(others)))
     c = f["cluster_average"]
     d = c["difference"]
-    cmp = "" if d is None else t("cmp_below" if d < 0 else "cmp_above" if d > 0 else "cmp_same", lang, d=abs(d))
+    cmp = "" if d is None else t("cmp_below" if d < 0 else "cmp_above" if d > 0 else "cmp_same", lang,
+                                 v=latest["avg_score_pct"])
     lines.append("• " + t("cluster_avg", lang, cls=cls, v=c["avg_score_pct"], n=c["schools"], cmp=cmp))
     facilities = facilities_text(f["context"], lang)
     if facilities:
@@ -619,7 +622,7 @@ def attendance_trend(f, lang):
     m = month(f["month"], lang)
     if f["biggest_drops"]:
         lines.append(t("att_drops", lang, month=m))
-        lines += ["• " + t("att_drop_row", lang, name=short(d, lang), v=d["value"], s=d["student_attendance_pct"])
+        lines += ["• " + t("att_drop_row", lang, name=short(d, lang), prev=d["previous_avg"], s=d["student_attendance_pct"])
                   for d in f["biggest_drops"]]
     low = f["low_teacher_attendance"]
     if low["schools"]:
@@ -662,7 +665,8 @@ def _attendance_school(f, lang):
         m = month(f["latest_month"], lang)
         k = change["months_compared"]
         key = "att_lower" if change["change"] < 0 else "att_higher" if change["change"] > 0 else "att_same"
-        lines.append(t(key, lang, month=m, v=abs(change["change"]), k=k, prev=change["previous_avg"]))
+        now = next(r for r in f["months"] if r["month"] == f["latest_month"])["student_attendance_pct"]
+        lines.append(t(key, lang, month=m, now=now, k=k, prev=change["previous_avg"]))
     c = next(r for r in f["cluster_months"] if r["month"] == f["latest_month"])
     lines.append(t("att_cluster_line", lang, month=month(c["month"], lang), v=c["student_attendance_pct"],
                    r=c["schools_reporting"], t=c["schools_total"]))
