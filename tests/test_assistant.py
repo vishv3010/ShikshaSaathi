@@ -21,8 +21,19 @@ def test_brief_question_same_facts_in_both_languages():
     assert [s["school_id"] for s in en["facts"]["schools"]] == ["GJ-C07-006", "GJ-C07-003", "GJ-C07-011"]
     for text in (en["text"], gu["text"]):
         assert "78/100" in text and "75/100" in text and "66/100" in text
-    assert "Ambaliya (High, 71) was visited 5 days ago" in en["text"]      # moved down, not hidden
+    assert "Ambaliya (High, need for help 71) was visited 5 days ago" in en["text"]   # moved down, not hidden
     assert "Sonpura (130 days)" in en["text"]                               # not visited for 90+ days
+
+
+@pytest.mark.parametrize("lang, name", [("en", "need for help"), ("gu", "મદદની જરૂર")])
+def test_a_score_is_never_shown_without_its_name(lang, name):
+    """A bare "78/100" reads like good marks in a school; every score says it is the need for help (D-034)."""
+    for question in ("Which 3 schools need my visit this week?", "Tell me about Chandrapur", "Summary for my block officer"):
+        r = ask(question, lang=lang)
+        shown = r["text"].count("/100")
+        assert shown and shown == len(re.findall(re.escape(name) + r" \d+/100", r["text"])), question
+    cards = ask("Which 3 schools need my visit this week?", lang=lang)["cards"]
+    assert name in cards["subtitle"].lower() and "·" not in cards["subtitle"]
 
 
 def test_why_is_a_class_low():
@@ -106,7 +117,7 @@ def test_no_personal_names_in_any_answer():
 def test_officer_summary():
     r = ask("Give me a summary for my block officer")
     assert "Priority: 3 High, 4 Medium, 12 Low; 1 with not enough data." in r["text"]
-    assert "Chandrapur (75): attendance 64.9%, down 15.9 points from 80.8%" in r["text"]
+    assert "Chandrapur (need for help 75/100): attendance 64.9%, down 15.9 points from 80.8%" in r["text"]
     assert "Cluster attendance: 81% (19 of 20 schools reported)." in r["text"]
     assert "Plan this week: visit Haripar, Chandrapur and Manekpur." in r["text"]
 

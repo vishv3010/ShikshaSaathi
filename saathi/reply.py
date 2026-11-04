@@ -16,9 +16,11 @@ W = {  # every sentence, in both languages
     "days": ("{d} days", "{d} દિવસ"),
     "never_visited": ("no visit recorded", "કોઈ મુલાકાત નોંધાઈ નથી"),
     "no_data": ("no data", "માહિતી નથી"),
-    "score": ("score {s}/100", "સ્કોર {s}/100"),
+    # The score is always named "need for help": a bare "78/100" reads like good marks (D-034).
+    "score": ("need for help {s}/100", "મદદની જરૂર {s}/100"),
     "priority": ("{p} priority", "{p} પ્રાથમિકતા"),
-    "higher_score": ("Higher score = needs support sooner.", "સ્કોર જેટલો વધુ, તેટલી વહેલી મદદની જરૂર."),
+    "higher_score": ("Need for help: the higher the number, the sooner the school needs support.",
+                     "મદદની જરૂર: આંકડો જેટલો વધુ, તેટલી શાળાને વહેલી મદદની જરૂર."),
     "cause_caveat": ("The data cannot show the exact cause; check this on your visit.",
                      "માહિતી પરથી ચોક્કસ કારણ કહી શકાય નહીં; મુલાકાત વખતે તપાસ કરો."),
     "more": ("+{n} more", "+{n} વધુ"),
@@ -51,8 +53,10 @@ W = {  # every sentence, in both languages
     "none_need": ("No school needs extra support in {month}: all scored schools are Low priority.",
                   "{month}માં કોઈ શાળાને વધારાની મદદની જરૂર નથી: બધી શાળાઓ ઓછી પ્રાથમિકતામાં છે."),
     "also": ("Also:", "આ પણ જુઓ:"),
-    "moved_down": ("{name} ({p}, {s}) was visited {d} days ago, so it is lower on this list. Follow up by phone.",
-                   "{name} ({p}, {s}): {d} દિવસ પહેલાં જ મુલાકાત લીધી છે, તેથી યાદીમાં નીચે રાખી છે. ફોન પર ફોલો-અપ કરો."),
+    "moved_down": ("{name} ({p}, need for help {s}) was visited {d} days ago, so it is lower on this list. "
+                   "Follow up by phone.",
+                   "{name} ({p}, મદદની જરૂર {s}): {d} દિવસ પહેલાં જ મુલાકાત લીધી છે, તેથી યાદીમાં નીચે રાખી છે. "
+                   "ફોન પર ફોલો-અપ કરો."),
     "watch_class": ("{name}: Low priority overall, but {cls} is {v}%. Worth a short visit.",
                     "{name}: એકંદરે ઓછી પ્રાથમિકતા, પણ {cls}માં {v}% છે. ટૂંકી મુલાકાત લેવી યોગ્ય રહેશે."),
     "watch_other": ("{name}: Low priority overall, but: {action}", "{name}: એકંદરે ઓછી પ્રાથમિકતા, પણ: {action}"),
@@ -63,8 +67,8 @@ W = {  # every sentence, in both languages
     "q_about": ("Tell me about {name}", "{name} વિશે જણાવો"),
     # --- the visit plan as cards on the page (plain words, the same terms as the home screen) ---
     "cards_title": ("Visit these schools first", "પહેલાં આ શાળાઓની મુલાકાત લો"),
-    "cards_sub": ("Based on {month} {year} data · score out of 100, a higher score means the school needs help sooner",
-                  "{month} {year}ની માહિતીના આધારે · 100માંથી સ્કોર, વધુ સ્કોર એટલે શાળાને વહેલી મદદની જરૂર"),
+    "cards_sub": ("{month} {year} data. Need for help is out of 100: the higher it is, the sooner the school needs help.",
+                  "{month} {year}ની માહિતી. મદદની જરૂર 100માંથી: આંકડો જેટલો વધુ, તેટલી શાળાને વહેલી મદદની જરૂર."),
     "lbl_High": ("Needs help first", "પહેલાં મદદની જરૂર"),
     "lbl_Medium": ("Keep an eye on", "ધ્યાન રાખો"),
     "lbl_Low": ("Doing fine", "બરાબર ચાલે છે"),
@@ -75,7 +79,7 @@ W = {  # every sentence, in both languages
     "type_primary": ("primary school", "પ્રાથમિક શાળા"),
     "type_upper_primary": ("upper primary school", "ઉચ્ચ પ્રાથમિક શાળા"),
     "summary_header": ("{name} ({type}, {n} children), {month}", "{name} ({type}, {n} બાળકો), {month}"),
-    "priority_line": ("Priority: {p}, score {s}/100", "પ્રાથમિકતા: {p}, સ્કોર {s}/100"),
+    "priority_line": ("Priority: {p}, need for help {s}/100", "પ્રાથમિકતા: {p}, મદદની જરૂર {s}/100"),
     "attendance_line": ("Attendance {v}% (previous {k} months: {prev}%); teachers {t}",
                         "બાળકોની હાજરી {v}% (અગાઉના {k} મહિનાની સરેરાશ {prev}%); શિક્ષકોની હાજરી {t}"),
     "learning_line": ("Learning: average {v}%, {b}% below basic ({r} of {e} class results)",
@@ -191,7 +195,7 @@ W = {  # every sentence, in both languages
     "off_header": ("Cluster update, {month} {year} ({t} schools)", "ક્લસ્ટર અહેવાલ, {month} {year} ({t} શાળા)"),
     "off_counts": ("Priority: {h} High, {m} Medium, {l} Low; {n} with not enough data.",
                    "પ્રાથમિકતા: {h} ઉચ્ચ, {m} મધ્યમ, {l} ઓછી; {n} શાળાની પૂરતી માહિતી નથી."),
-    "off_school": ("{name} ({s}): {reason}", "{name} ({s}): {reason}"),
+    "off_school": ("{name} (need for help {s}/100): {reason}", "{name} (મદદની જરૂર {s}/100): {reason}"),
     "off_medium": ("Medium: {list}", "મધ્યમ: {list}"),
     "off_attendance": ("Cluster attendance: {v}% ({r} of {t} schools reported).",
                        "ક્લસ્ટર હાજરી: {v}% ({t}માંથી {r} શાળાની માહિતી)."),
@@ -402,9 +406,14 @@ def _list_status(f, lang):
     return None
 
 
-def _also_lines(f, lang):
-    """What the score alone would hide: recently visited, one weak class, missing data, not visited for long."""
+def _missing_lines(f, lang):
     m = month(f["month"], lang)
+    return [t("not_enough_line", lang, name=short(e, lang), month=m, action=render_action(e["action"], lang))
+            for e in f["not_enough_data"]]
+
+
+def _also_lines(f, lang, missing=True):
+    """What the score alone would hide: recently visited, one weak class, missing data, not visited for long."""
     also = [t("moved_down", lang, name=short(e, lang), p=prio(e["priority"], lang), s=e["score"],
               d=e["last_visit"]["days_ago"]) for e in f["moved_down"]]
     for e in f["watch"]:
@@ -414,8 +423,8 @@ def _also_lines(f, lang):
                           cls=class_name(weakest["grade"], weakest["subject"], lang)))
         else:
             also.append(t("watch_other", lang, name=short(e, lang), action=render_action(e["action"], lang)))
-    also += [t("not_enough_line", lang, name=short(e, lang), month=m, action=render_action(e["action"], lang))
-             for e in f["not_enough_data"]]
+    if missing:
+        also += _missing_lines(f, lang)
     if f["long_unvisited"]:
         longest_first = sorted(f["long_unvisited"], key=lambda e: -(e["last_visit"]["days_ago"] if e["last_visit"]
                                                                      else float("inf")))
@@ -470,8 +479,10 @@ def priority_cards(f, lang):
                      "action": render_action(e["action"], lang), "last_visit": _last_visit(e, lang)}
                     for e in f["schools"]],
         "status": _list_status(f, lang),
+        # Missing data stays in view on the page; the other notes fold under "Also keep in mind" (D-034).
+        "missing": _missing_lines(f, lang),
         "also_title": t("also_keep", lang),
-        "also": _also_lines(f, lang),
+        "also": _also_lines(f, lang, missing=False),
     }
 
 
