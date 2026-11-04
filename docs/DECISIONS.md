@@ -290,3 +290,20 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
   - Captions light up word by word as they are spoken, using Kokoro's own word times, and the explainer's beats land on the words that name them (the phone on "phone", the counters on their numbers).
   - The phone pushes in slowly, and conversations slide in like the next screen on a phone.
 - **Open:** Vishv's own voice can replace the AI voice later. The script stays in one file, and the scenes re-time themselves to the new audio.
+
+### D-037 · "Which schools are in my cluster?" gets its own answer, and need-words keep the visit plan — Accepted (4 Nov, Vishv)
+
+- **Problem (Vishv, on the live site):** "Give me all school name in the cluster" got the general help reply. The app had no answer for the plainest question a coordinator can ask. A probe of 20 everyday questions found 6 not answered at all ("list all schools", "how many schools", "rank all schools", the same in Gujarati and Hindi) and 5 given the visit plan instead ("which schools are in my cluster?", "which school is doing best?", "which schools are primary?", "Medium priority schools", "which schools did I visit this month?").
+- **Choice:**
+  - A new answer: all 20 schools in one short message, grouped by need with each school's need for help (Needs help first, Keep an eye on, Doing fine, Waiting for data), highest first. It is grouped by type instead when the question asks about primary and upper primary. It answers "doing best" without ranking any school best or worst (D-007).
+  - The visits answer now names the schools visited in the last 30 days, not just a count.
+- **How it is read:**
+  - Strong words ("list", "names", "all schools", "how many", "rank", the question word said twice as in कौन-कौन or કઈ-કઈ, "schools I look after") and weak ones ("doing well", "primary schools", "Medium priority") mean the list.
+  - Any word about need ("need", "help", "visit", "worry", "madad"…) keeps the visit plan, so "List the schools that need help" and "Which primary schools need help?" are unchanged.
+  - Gemini knows the new answer too, for phrasings the rules cannot place.
+- **Checked:**
+  - 284 tests, 38 of them new, with expected values worked out by hand: 10 primary and 10 upper primary from `schools.csv`; five visits on or after 3 October at four schools from `visits.csv`.
+  - Two new planted bugs (the list switched off; need-words no longer vetoing it).
+  - A probe of 28 everyday phrasings, all routed as intended, and both question sets at 100% with rules alone (round 2 was the held-out set; its earlier 87% stays the honest unseen figure).
+  - "Which of my schools should I worry about?", a round-2 miss since 3 Nov, is now read as the visit plan via a general word ("worry"), not a special case.
+

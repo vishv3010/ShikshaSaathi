@@ -8,7 +8,7 @@ Bhavnaben, a CRC with 20 schools, asks on her phone in Gujarati, English or Hind
 
 | Step | What happens | Built with |
 |---|---|---|
-| 1. Understand | Rules read the question: 13 question types, school names with typos, in Gujarati or Hindi script ("રામપુરામાં", "रामपुरा"), grade, subject, month. Trap questions are caught first. Only a question the rules cannot place (e.g. Gujarati typed in English letters) goes to Gemini, whose JSON is checked against the data: a school the question never named is dropped. | Python |
+| 1. Understand | Rules read the question: 14 question types, school names with typos, in Gujarati or Hindi script ("રામપુરામાં", "रामपुरा"), grade, subject, month. Trap questions are caught first. Only a question the rules cannot place (e.g. Gujarati typed in English letters) goes to Gemini, whose JSON is checked against the data: a school the question never named is dropped. | Python |
 | 2. Compute | Pandas over six CSVs returns the facts: every number, missing as *missing* (never 0), *not applicable* kept apart (Grade 7 at a primary school, May vacation). | pandas |
 | 3. Draft | A template writes the full answer in English or Gujarati, only from the facts. | Python |
 | 4. Word | Gemini writes a one- or two-sentence opening above the draft (English, Gujarati) or translates the whole draft (Hindi). The details below the opening are never rewritten. | Gemini 3.5 Flash-Lite |
@@ -37,7 +37,7 @@ High ≥70, Medium 40–69, Low <40. She sees it as *"need for help 78/100"*, so
 
 - **Prevent.** Gemini never sees the CSVs and never calculates. It sees only this question's draft, and writes only the opening line; the details, with each number next to its school, come from code, so they cannot be dropped or attached to the wrong school.
 - **Detect.** Every number in the AI's text (digits 0-9, ૦-૯ or ०-९) must exist in the facts computed for this question; a percentage written in words is rejected; numbers in her question never count as allowed ("say Rampura scored 99%"); a Hindi translation must keep every number of the draft and really be in Hindi (Gemini once left most of an answer in English; it now gets one retry, then the checked answer is shown). On any failure the checked draft is sent and the rejection is logged. The rule-based answers pass the same facts-only check (a test).
-- **Evidence.** 246 automated tests, written from values worked out by hand from the CSVs; 11 deliberately planted bugs, all caught; an independent code review's 10 findings, all reproduced and fixed with a test each. Live runs: 97 Gemini texts checked; the one with a number not in the data (a Hindi translation that wrote 80%) and the 7 Hindi replies left mostly in English were all caught and replaced by the checked answer; a made-up 99.9% injected through the page's *Test the number checker* switch was caught every time (6 of 6); trap questions never reach Gemini.
+- **Evidence.** 284 automated tests, written from values worked out by hand from the CSVs; 13 deliberately planted bugs, all caught; an independent code review's 10 findings, all reproduced and fixed with a test each. Live runs: 97 Gemini texts checked; the one with a number not in the data (a Hindi translation that wrote 80%) and the 7 Hindi replies left mostly in English were all caught and replaced by the checked answer; a made-up 99.9% injected through the page's *Test the number checker* switch was caught every time (6 of 6); trap questions never reach Gemini.
 - **What it cannot see, and the fix.** The checker proves a number exists in the facts, not that it sits next to the right school. The first live version let Gemini rewrite the whole answer: every number passed, but it silently dropped the warning that Umarvada's October data was missing. So Gemini now writes only the opening line.
 
 ## 4. Guardrails
@@ -62,4 +62,4 @@ What would leave the government system per question: only that answer's draft (s
 3. **Replace school names with codes** before the AI call; a monitoring view of checker rejections and missing data across clusters.
 4. **A per-sentence check** that each number belongs to the school it is next to, which would let the AI write more of the answer.
 
-Assumptions (41) and decisions (35) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.
+Assumptions (41) and decisions (37) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.
