@@ -74,8 +74,8 @@ Synthetic data for one cluster of 20 schools, May-October 2026, as CSV files in 
 .venv/bin/pip install -r requirements-dev.txt
 bash scripts/check_all.sh                          # everything below in one go, plus a fresh-copy start
 .venv/bin/python scripts/validate_data.py          # the dataset: IDs, ranges, gaps kept as gaps
-.venv/bin/python -m pytest -q                      # 234 tests; never calls Gemini
-.venv/bin/python scripts/check_tests_catch_bugs.py # plants 10 known bugs and confirms the tests catch each
+.venv/bin/python -m pytest -q                      # 284 tests; never calls Gemini
+.venv/bin/python scripts/check_tests_catch_bugs.py # plants 13 known bugs and confirms the tests catch each
 .venv/bin/python scripts/eval_understanding.py eval/round2.csv   # how well new phrasings are understood
 .venv/bin/python scripts/try_llm.py                # optional: the demo questions against live Gemini
 ```
@@ -88,7 +88,7 @@ Expected values in the tests were worked out from the CSVs by hand, not copied f
 |---|---|
 | `data/` | seven synthetic CSVs: schools, calendar, holidays, attendance, assessments, visits (English and Gujarati notes), facilities |
 | `saathi/` | `scoring.py` priority score · `actions.py` one action per school · `analytics.py` facts per question · `understand.py` reads the question · `reply.py` English/Gujarati templates · `llm.py`, `llm_steps.py` Gemini · `checker.py` number checker · `assistant.py` the pipeline · `web.py` server |
-| `web/index.html` | the chat page: one file, about 4 KB over the network, no external libraries |
+| `web/index.html` | the chat page: one file, about 13 KB over the network, no external libraries |
 | `scripts/` | data generator and validator, bug-planting check, live Gemini run |
 | `docs/` | plan, decisions, assumptions, dataset notes, research, AI usage log |
 
