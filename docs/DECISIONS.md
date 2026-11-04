@@ -273,3 +273,15 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
   - The old test's stand-in is now a real Hindi-dominant text. New tests: a reply left in English is tried twice and rejected, a good second try is used, and a planted bug (the check switched off) is caught.
 - **Rejected:** writing Hindi templates by hand. Hindi is the brief's bonus, and Gemini with this check covers it; Gujarati and English stay template-first.
 - **Measured live (4 Nov, after the change):** 97 real Gemini texts in the call log: 1 wrote a number not in the data (80%, a Hindi retry), and 7 Hindi replies were left mostly in English. The checks caught all 8, and the checked answer was shown each time. Most Hindi answers translate on the first try ("haripur", Rampura, the visit plan, Umarvada, Hindi in English letters: 96–100% Devanagari). The long cluster-attendance answer came back in Hindi in only 2 of 5 askings, even with the retry told what went wrong; the other 3 fell back honestly to English. A stronger model or line-by-line translation would be the next step; not done, since Hindi is the bonus.
+
+### D-036 · The demo video: real takes of the live app inside a motion-graphics explainer, with an AI voice for now — Accepted (4 Nov, Vishv)
+
+- **Choice:** the brief asks for "3 real conversations, including one where the data is missing", so every conversation is a real recording of the live site with Gemini on: the Gujarati visit plan, Rampura's "why" and Umarvada's missing data, plus the number checker, Hindi and a refused question. They sit inside an explainer (the problem, how an answer is made, the evidence) in the app's own look: the blackboard, one square per school, chalk notes.
+- **How:**
+  - Remotion 4.0.540, with Remotion's official agent skills from GitHub (`remotion-dev/skills`). It is free for an individual.
+  - A small headless-Chrome recorder drives the live site at phone size. It records each tap and the typing as they happen, and notes where things are on screen, so zooms and outlines land on the real element.
+  - The narration is generated with Kokoro, an open-source voice (Apache-2.0) that runs on the laptop, with no account and no cost. Each line is pinned to the moment it describes. English notes translate the Gujarati and Hindi on screen.
+  - The video is 3 min 30 s, 1920 × 1080.
+- **Every claim in the narration** comes from facts checked on 4 Nov (counts, numbers, behaviour). Gemini's lines in the takes are its real output.
+- **Kept outside the repo:** the video's source (`../ShikshaSaathi-video`, with its own git history) is not part of the submission; only the uploaded video is.
+- **Open:** Vishv's own voice can replace the AI voice later. The script stays in one file, and the scenes re-time themselves to the new audio.

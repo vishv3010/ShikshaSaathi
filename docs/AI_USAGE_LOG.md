@@ -9,7 +9,7 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 - **ChatGPT** wrote a second development plan, compared with Claude Code's and merged.
 - **Gemini 3.5 Flash-Lite, inside the product**, writes a one-line opening for each answer, Hindi translations, and reads questions typed in English letters. It never computes a number; a checker rejects any number it writes that is not in the data.
 - **Vishv decided**: what to build first, every design choice that changed the answers, the Gujarati wording, and the assumptions emailed to the reviewer.
-- **Where the AI was wrong**: 47 times, listed at the end with how each was caught.
+- **Where the AI was wrong**: 51 times, listed at the end with how each was caught.
 
 ## Tools
 
@@ -18,6 +18,7 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 - **Claude app** (phone, then linked to the PC; Claude Opus 5.5): the UI polish pass, reading the live site through Firecrawl.
 - **ChatGPT**: generated a second development plan from the brief, used as a comparison against the Claude Code plan.
 - **Gemini API** (gemini-3.5-flash-lite, free tier): inside the product, for the opening line, Hindi, and reading questions the rules cannot place.
+- **Remotion** (with Remotion's official agent skills from GitHub) and **Kokoro** (an open-source voice that runs on the laptop): the demo video, built by Claude Code around real recordings of the live app (D-036).
 
 ## Log
 
@@ -51,6 +52,7 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 | 4 Nov | Claude Code (frontend-design and dataviz skills) | Reviewed Vishv's six UI points against the rendered page and recommended a fix for each (D-034); renamed the score "need for help" in replies, rebuilt the page light-only with one square per school, folds for later lists, one-line month rows and trend columns. Measured every colour pair, ran the dataviz colour-blindness validator, wrote 4 tests (8 cases) that run the page's own patterns over real replies, planted 4 bugs in the page to check those tests, and took screenshots at 320 to 1280 px in three languages. | Gave the six points (light only, "Auto", too much to read, AI-looking, the score misread as marks, charts) and the go-ahead. |
 | 4 Nov | Claude Code | Rephrased every change in replies as before and after instead of "points" (7 phrases, English and Gujarati) and added a check that a Hindi reply is really in Hindi, with one retry and an honest fallback (D-035). Corrected the old Hindi test, added tests and an 11th planted bug, and re-ran every check (246 tests, 11 of 11 planted bugs caught). | Found "points" confusing on the live page and hit the half-English Hindi reply himself; gave the go-ahead for both fixes and the redeploy. |
 | 4 Nov | Claude Code + Gemini API | Full test before the final deploy: every project check (validator, 246 tests, understanding, 11 planted bugs, a fresh clone, 12 demo questions on live Gemini); a self-written headless-Chrome driver tapped every button in all four language settings, switched languages, opened folds, typed a question and simulated a lost connection (123 of 123 checks, no JavaScript errors); 26 more questions through real Gemini, read one by one; then told the Hindi retry what went wrong, and measured it. | Asked for a full test, including whether the AI answers properly, before deploying. |
+| 4 Nov | Claude Code (Remotion skills) + Kokoro | Made the demo video (D-036): set up Remotion 4.0.540 and its official skills, wrote a headless-Chrome recorder and recorded 7 real takes of the live site, wrote the narration from facts checked that day, generated it with Kokoro, built 11 scenes with zooms, outlines and translated notes, then checked it: 42 still frames, every narration line against the audio in the rendered file (none cut), and loudness. | Asked for an "all out" video with an AI voice for now; looked at example reels for the style. |
 
 ## Where AI output was wrong or uncertain
 
@@ -103,3 +105,7 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 | 4 Nov | The Hindi test written on 3 Nov used one Hindi sentence followed by the English draft as its stand-in for "a full translation", so it accepted the very failure Gemini later produced live. | Found when the live check showed that failure; the stand-in is now a Hindi-dominant text, and new tests cover the half translation (D-035). |
 | 4 Nov | Gemini, asked for the Hindi cluster-attendance answer, left it mostly in English on both tries in 2 of 5 askings, even after being told what went wrong (a third retry was translated but wrote a figure not in the data). | The new script check rejected every one, and the page showed the checked English answer with the honest note; recorded in D-035 as a known limit of the free model. |
 | 4 Nov | Gemini, on a Hindi retry, translated the whole answer but wrote an attendance figure (80%) that is not in the data. | The number checker rejected it, the first real (not planted) catch in 97 live texts; the checked answer was shown. |
+| 4 Nov | Claude Code's video recorder sent the browser `}})()` with doubled braces in two places, so switching language and typing a question both failed. | The first full take stopped with a JavaScript error; the error report was made to show the browser's own message, which named the syntax error. |
+| 4 Nov | The recorder cut off the still ending of every take: a screen that does not change sends no frames, so each video stopped at its last change (Umarvada's at 6 s instead of 18 s). | Seen because the recorder's marks ran past the end of the videos; the endings were restored by holding the last frame, which is exactly what the screen showed. |
+| 4 Nov | The video's zooms cropped wide elements, so on the Gujarati card the narration said "out of a hundred" while 78/100 was off screen. | Found on the 42 still frames checked before rendering; a zoom now never goes past what keeps the whole marked element in view. |
+| 4 Nov | The first narration for the visit plan talked about Gemini's opening line after the cards, while the screen shows it before them. | Found when each line was pinned to its moment in the recording; the lines were put in the screen's order. |
