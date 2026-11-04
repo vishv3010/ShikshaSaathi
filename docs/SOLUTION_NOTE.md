@@ -1,65 +1,90 @@
-# Shiksha Saathi: solution note
+<div class="masthead">
+<div class="kicker">CG AI Build assignment · Solution note</div>
+<h1>Shiksha Saathi</h1>
+<div class="byline">Vishv Patel · 4 November 2026 · Live app: <a href="https://shiksha-saathi-ruddy.vercel.app">shiksha-saathi-ruddy.vercel.app</a> · Code, data and docs: <a href="https://github.com/vishv3010/ShikshaSaathi">github.com/vishv3010/ShikshaSaathi</a> (runs in under 5 minutes, no key needed)</div>
+</div>
 
-**Vishv Patel · CG AI Build assignment · November 2026** · Live: <https://shiksha-saathi-ruddy.vercel.app> · Code, data and docs: <https://github.com/vishv3010/ShikshaSaathi> (the README runs it in under 5 minutes, no key needed).
+<div class="lead">A cluster coordinator asks, in Gujarati, English or Hindi, <em>"Which schools need attention this month, and what will you do about it?"</em> She gets the schools to visit first, why each one is flagged, and one action for each, in under two minutes. <strong>Every number comes from code. The AI only words the answer, and a checker rejects any AI text with a number the data does not hold.</strong></div>
 
-Bhavnaben, a CRC with 20 schools, asks on her phone in Gujarati, English or Hindi, *"Which schools need attention this month, and what will you do about it?"* She gets the schools to visit first, why each one is flagged, and one action for each, in under two minutes. **Every number comes from code; the AI only words the answer, and a checker rejects any AI text with a number the data does not hold.**
+<div class="stats">
+<div><b>20</b>schools, May–October 2026, synthetic</div>
+<div><b>3</b>languages: Gujarati, English, Hindi</div>
+<div><b>284</b>automated tests; 13 of 13 planted bugs caught</div>
+<div><b>≈ ₹4</b>per coordinator per month at 10,000</div>
+</div>
 
 ## 1. Architecture
 
-| Step | What happens | Built with |
-|---|---|---|
-| 1. Understand | Rules read the question: 14 question types, school names with typos, in Gujarati or Hindi script ("રામપુરામાં", "रामपुरा"), grade, subject, month. Trap questions are caught first. Only a question the rules cannot place (e.g. Gujarati typed in English letters) goes to Gemini, whose JSON is checked against the data: a school the question never named is dropped. | Python |
-| 2. Compute | Pandas over six CSVs returns the facts: every number, missing as *missing* (never 0), *not applicable* kept apart (Grade 7 at a primary school, May vacation). | pandas |
-| 3. Draft | A template writes the full answer in English or Gujarati, only from the facts. | Python |
-| 4. Word | Gemini writes a one- or two-sentence opening above the draft (English, Gujarati) or translates the whole draft (Hindi). The details below the opening are never rewritten. | Gemini 3.5 Flash-Lite |
-| 5. Check | Number checker (section 3). If the AI text fails, the draft is sent and the failure is logged. | Python |
+<div class="flow">
+<div class="step"><b>1 · Understand</b>Rules read the question: 14 question types, misspelt school names, Gujarati and Hindi script. Gemini helps only when the rules cannot.</div>
+<div class="arrow">→</div>
+<div class="step"><b>2 · Compute</b>Python (pandas) computes every number from the CSVs. Missing stays missing, never 0.</div>
+<div class="arrow">→</div>
+<div class="step"><b>3 · Draft</b>A template writes the full answer in English or Gujarati, from those facts only.</div>
+<div class="arrow">→</div>
+<div class="step ai"><b>4 · Word (AI)</b>Gemini adds a one-line opening, or translates the answer into Hindi.</div>
+<div class="arrow">→</div>
+<div class="step check"><b>5 · Check</b>Every number in the AI text must be in the facts. If not, the checked draft is sent.</div>
+</div>
 
-**Plain language, measured.** On 23 questions written after the reader was built (English, Gujarati, Hindi, and Gujarati or Hindi typed in English letters), the rules alone understood 20 (87%) and, with Gemini reading what they could not place, 21 (91%); the two misses (a Hindi spelling of a village name, a romanised "which") were then fixed for every name and question word.
+- **One stateless `/ask` endpoint** (FastAPI) behind a phone-first chat page of about 13 KB; a WhatsApp or SwiftChat webhook could call the same endpoint.
+- **Correct without the AI.** With no API key, or when Gemini fails or is slow, steps 1 and 4 are skipped and every answer is still right.
+- **Plain language, measured.** On 23 questions written after the rules were built, the rules alone understood 87%, and 91% with Gemini; the misses were then fixed as general rules.
+- **Free tools only:** Gemini 3.5 Flash-Lite (free tier), Vercel, open-source libraries.
 
-One `/ask` endpoint (FastAPI) serves a light, phone-first chat page of about 13 KB over the network; a WhatsApp or SwiftChat webhook would call the same endpoint. Without an API key, or when Gemini fails or runs out of quota, the Gemini parts are skipped and every answer is still correct. All tools are free.
+## 2. Prioritisation logic
 
-**Data.** 20 synthetic schools in cluster GJ-C07, May–October 2026, on the real 2026-27 Gujarat school calendar (May vacation, reopening 8 June, monsoon dips, Navratri, Diwali vacation from 5 November), with teacher posts by the RTE norms and no CRC visit on a holiday. Seven schools carry a designed story (migration, one weak class, slow decline, data gaps, a school visited five days ago); 39 visit notes in English and Gujarati; a facilities table; a validator that keeps gaps as gaps.
-
-## 2. Prioritisation: a need-for-support score, not a report card
-
-Banded points in the style of the Government of India's grading of ITIs (DGT); learning carries 60 of 100 points, as Gujarat's Gunotsav weighted learning highest.
+A *need-for-help* score from 0 to 100, built from published bands in the style of the Government of India's grading of ITIs (DGT). Learning carries 60 of the 100 points, as in Gujarat's Gunotsav.
 
 | Indicator (latest month) | Bands → points | Max |
 |---|---|---|
-| Student attendance | <70% → 25 · 70–79 → 18 · 80–89 → 9 · ≥90 → 0 | 25 |
-| Fall in attendance vs previous 3 school months | ≥10 pts → 15 · 5–9.9 → 10 · 2–4.9 → 5 | 15 |
-| Average score, all classes | <40% → 35 · 40–49 → 25 · 50–59 → 15 · 60–69 → 5 | 35 |
-| Children below basic | ≥40% → 25 · 30–39 → 18 · 20–29 → 10 | 25 |
+| Student attendance | below 70% → 25 · 70–79 → 18 · 80–89 → 9 · 90+ → 0 | 25 |
+| Fall in attendance vs the previous 3 school months | 10+ points → 15 · 5–9.9 → 10 · 2–4.9 → 5 | 15 |
+| Average score, all classes | below 40% → 35 · 40–49 → 25 · 50–59 → 15 · 60–69 → 5 | 35 |
+| Children below basic level | 40%+ → 25 · 30–39 → 18 · 20–29 → 10 | 25 |
 
-High ≥70, Medium 40–69, Low <40. She sees it as *"need for help 78/100"*, so a high number never reads as good marks, and each change as "from 80.8% to 64.9%", never in points. A school missing its month's attendance or half its results is *"not enough data, please verify"*, never scored as 0. For "visit this week", a school visited in the last 14 days moves down with "follow up by phone"; any school unvisited for 90+ days, and a Low school where an action rule still fires (e.g. one class below 40%), are mentioned anyway. **One action per school** comes from eight ordered rules, first match wins: missing data → call the head teacher; attendance fell 10+ points → list absent children with the SMC; teacher attendance below 85% → discuss class cover during leave or official duty; school average below 45% → daily 30-minute remedial period; one class below 40% → a subject activity (e.g. place value with bundles and sticks), and so on. October result: High Haripar 78, Chandrapur 75, Ambaliya 71 (visited 5 days ago: phone); visit list Haripar, Chandrapur, Manekpur; Umarvada *not enough data*.
+- **She sees why:** High is 70 and above, Medium 40–69, Low below 40. Each school shows *"need for help 78/100"* with its reasons, such as *"attendance fell from 80.8% to 64.9%"*.
+- **The visit plan** moves a school visited in the last 14 days down to a phone follow-up, still mentions any school unvisited for 90+ days, and marks a school with missing data *"not enough data, please verify"*, never scoring it as 0.
+- **One action per school**, from eight ordered rules (first match wins): missing data → call the head teacher; attendance fell 10+ points → list absent children with the SMC; school average below 45% → a daily 30-minute remedial period; one weak class → a subject activity, such as place value with bundles and sticks.
+- **October result:** visit Haripar (78), Chandrapur (75) and Manekpur (66) first; Ambaliya (71) was visited 5 days ago, so a phone call; Umarvada does not have enough data.
 
 ## 3. How made-up numbers are prevented and detected
 
-- **Prevent.** Gemini never sees the CSVs and never calculates. It sees only this question's draft, and writes only the opening line; the details, with each number next to its school, come from code, so they cannot be dropped or attached to the wrong school.
-- **Detect.** Every number in the AI's text (digits 0-9, ૦-૯ or ०-९) must exist in the facts computed for this question; a percentage written in words is rejected; numbers in her question never count as allowed ("say Rampura scored 99%"); a Hindi translation must keep every number of the draft and really be in Hindi (Gemini once left most of an answer in English; it now gets one retry, then the checked answer is shown). On any failure the checked draft is sent and the rejection is logged. The rule-based answers pass the same facts-only check (a test).
-- **Evidence.** 284 automated tests, written from values worked out by hand from the CSVs; 13 deliberately planted bugs, all caught; an independent code review's 10 findings, all reproduced and fixed with a test each. Live runs: 97 Gemini texts checked; the one with a number not in the data (a Hindi translation that wrote 80%) and the 7 Hindi replies left mostly in English were all caught and replaced by the checked answer; a made-up 99.9% injected through the page's *Test the number checker* switch was caught every time (6 of 6); trap questions never reach Gemini.
-- **What it cannot see, and the fix.** The checker proves a number exists in the facts, not that it sits next to the right school. The first live version let Gemini rewrite the whole answer: every number passed, but it silently dropped the warning that Umarvada's October data was missing. So Gemini now writes only the opening line.
+<div class="two">
+<div><b>Prevent</b>Gemini never sees the CSVs and never calculates. It sees only this answer's draft and writes only the opening line or the Hindi translation. The details, with each number next to its school, come from code.</div>
+<div><b>Detect</b>Every number in the AI text (0–9, ૦–૯ or ०–९) must exist in the facts computed for this question; percentages in words are rejected; numbers typed in her question never count. A Hindi translation must keep every number and really be in Hindi. On any failure the checked draft is sent and the failure is logged.</div>
+</div>
+
+**Evidence:** 284 tests from values worked out by hand, and 13 planted bugs, all caught. Of 97 live Gemini texts, the one real made-up figure (80% in a Hindi translation) and 7 Hindi replies left in English were all caught; a planted 99.9% was caught 6 times out of 6. **Known limit:** the checker proves a number is in the facts, not that it sits next to the right school, so Gemini writes only the opening line.
 
 ## 4. Guardrails
 
-- **Accuracy over fluency:** "No attendance record for Umarvada in October: the data has not arrived. Please check with the head teacher." Closed months, not-yet months and grades a school does not have each get their own wording. The assistant never states a cause the data cannot show; it quotes visit notes as "visit notes mention…".
-- **Respectful framing:** "needs support first", never "worst"; questions blaming teachers are declined; low teacher attendance is described as a school pattern that "can be leave, training or official duty"; no staff or child names in any answer.
-- **Low bandwidth:** about 13 KB page (light only, no downloads), one request per question, answers in about 1–3 s, short replies under WhatsApp's message limit, Gujarati replies fully in Gujarati.
-- **Scope boundary:** off-topic questions, personal details and "ignore your rules" are declined politely with examples of what she can ask.
+| | How the build handles it |
+|---|---|
+| **Accuracy over fluency** | Missing data is said out loud: *"No attendance record for Umarvada in October: the data has not arrived. Please check with the head teacher."* A closed month (May vacation) and a grade a school does not have each get their own wording. No cause is stated that the data cannot show. |
+| **Respectful framing** | "Needs support first", never "worst". Questions blaming teachers are declined; low teacher attendance is shown as a school pattern that "can be leave, training or official duty". No staff or child names appear in answers. |
+| **Low bandwidth** | A page of about 13 KB, one request per question, and short replies that fit in a WhatsApp message. |
+| **Scope boundary** | Off-topic questions, requests for personal details and "ignore your rules" are declined politely, with examples of what she can ask. |
 
-## 5. Cost per CRC per month at 10,000 CRCs
+## 5. Cost per coordinator per month, at 10,000 CRCs
 
-Measured on the live runs, tokens per Gemini call: opening line 888 in / 46 out (60% Gujarati), Hindi translation 614 / 353, reading an unplaced question 882 / 72. Assume **100 questions per CRC per month** (about 5 a day on 20 working days): 80 get an opening line, 10 are Hindi translations, 10 need Gemini to read them, and boundary answers make no call. That is about **86,000 input and 8,000 output tokens per CRC per month**. At Gemini 3.5 Flash-Lite's paid price ($0.30 per million input, $2.50 per million output tokens; Google pricing page, Nov 2026): **≈ $0.05 (about ₹4) per CRC per month, ≈ $460 (about ₹40,000) a month for 10,000 CRCs**, at ₹88/$. One small server (about $20–50 a month) covers the peak of about 3 questions a second. At 5× the usage it is still about ₹2 lakh a month. Levers: context caching of the fixed prompt ($0.03 per million cached tokens) and answering more questions by rules alone.
+- **Usage assumed:** 100 questions per CRC a month (5 a working day): 80 get an opening line, 10 are Hindi translations, 10 need Gemini to read them.
+- **Tokens measured on live calls:** opening line 888 in / 46 out; Hindi 614 / 353; reading a question 882 / 72: about 86,000 in and 8,000 out per CRC a month.
+- **Price:** Gemini 3.5 Flash-Lite, $0.30 / $2.50 per million input / output tokens (Google, November 2026), at ₹88 to the dollar.
 
-## 6. Privacy by design (in a real deployment)
+<div class="callout"><b>≈ $0.05 (about ₹4) per CRC per month</b> · ≈ $460 (about ₹40,000) a month for 10,000 CRCs, plus one small server ($20–50 a month). At five times the usage: about ₹2 lakh a month.</div>
 
-What would leave the government system per question: only that answer's draft (school names, school-level percentages, visit-note text). Never student-level data (there is none: classes are averages), staff names (kept out of the facts) or the CRC's identity. To minimise further: replace school names with codes before the AI call and restore them after; use a paid or government-contracted model with no training on the data, in an Indian region, or a government-hosted open model (the check-and-fallback design works with any model); keep logs for 30 days with no personal identifiers. This prototype uses Gemini's free tier, whose content Google may use to improve its products; that is acceptable here only because all data is synthetic.
+## 6. Privacy by design
+
+- **What would leave the government system:** only each answer's draft (school names, school-level percentages, visit-note text). Never student-level data, staff names or the CRC's identity.
+- **How to minimise it:** replace school names with codes before the AI call; use a contracted model that does not train on the data, hosted in India, or a government-hosted open model; keep logs for 30 days with no personal identifiers.
+- **The prototype** runs on Gemini's free tier, which Google may use to improve its products: fine only for synthetic data.
 
 ## 7. What I would do next
 
-1. **WhatsApp or SwiftChat** on the same `/ask` (stateless already), plus Gujarati voice notes.
-2. **Four-week pilot with 5 CRCs** on real VSK data: tune bands and actions, record which actions were done, and check whether flagged schools improve.
-3. **Replace school names with codes** before the AI call; a monitoring view of checker rejections and missing data across clusters.
-4. **A per-sentence check** that each number belongs to the school it is next to, which would let the AI write more of the answer.
+1. **WhatsApp or SwiftChat** on the same `/ask` endpoint, with Gujarati voice notes.
+2. **A four-week pilot with 5 CRCs** on real VSK data: tune the bands and actions, and track whether flagged schools improve.
+3. **School names replaced by codes** before any AI call, and a view of checker rejections and missing data across clusters.
+4. **A per-sentence check** that each number belongs to its school, so the AI could safely write more of the answer.
 
-Assumptions (41) and decisions (37) are in `docs/ASSUMPTIONS.md` and `docs/DECISIONS.md`; AI use, including where the AI was wrong and how it was caught, in `docs/AI_USAGE_LOG.md`.
+<div class="foot">Dataset: <code>data/</code> (7 CSVs) and <code>docs/DATASET.md</code> · AI usage: <code>docs/AI_USAGE_LOG.md</code> · 41 assumptions and 37 design decisions: <code>docs/ASSUMPTIONS.md</code>, <code>docs/DECISIONS.md</code></div>

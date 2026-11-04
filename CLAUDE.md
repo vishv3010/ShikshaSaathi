@@ -33,7 +33,7 @@ Vishv works from two laptops: `git pull` before starting, commit and push before
 ## How we work
 
 - Every non-obvious choice goes in `docs/DECISIONS.md`; every assumption in `docs/ASSUMPTIONS.md` (the reviewer explicitly asked for assumptions).
-- Log AI use in `docs/AI_USAGE_LOG.md` as we go, including where AI output was wrong and how it was caught.
+- Keep `docs/AI_USAGE_LOG.md` the brief's "short list": tools and uses, how AI work was checked, a few AI mistakes and how they were caught (the full 4 Nov log is in git history).
 - Small commits with clear messages, so history shows the process.
 - Vishv makes the final call on design decisions and must be able to explain each one.
 
