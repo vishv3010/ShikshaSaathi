@@ -225,3 +225,31 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
 - **Cost:** the page is 12,884 bytes gzipped (12,916 with Windows line endings), inside the 13 KB budget with little room left.
 - **Unchanged:** every answer and every number; nothing in `saathi/` changed.
 - **Extended before merging (3 Nov, Windows laptop):** the first version drew bars on the cluster trend only. A school's months are written "children / teachers", which the pattern did not take, so Chandrapur's October drop and the Umarvada demo had no bars. The pattern now takes both, and on a school's line the bar shows the children's figure; a month with no children's figure still gets none, so a gap never looks like a low month. A test runs every school's real reply through the page's own pattern. The page grows by about 20 bytes, still inside 13 KB.
+
+### D-034 · Light only, a two-minute read, a need-for-help score, and charts that replace text — Accepted (4 Nov, Vishv)
+
+- **Problem (Vishv's six points):** "Auto" on the language button meant nothing to a teacher; the page should never turn dark; a CRC has 2–3 minutes and the answers asked her to read too much (the visit plan was about 250 words, Rampura's "why" and the missing-data answer about 160 each, and the first screen had 13 things to tap); the page still looked AI-made; "78/100" reads like good marks in a school, so a higher score could be read as a better school; should there be charts?
+- **Language button:** "Auto" became **"Any language"** (કોઈ પણ ભાષા, कोई भी भाषा) and the globe became **અA**, the Gujarati form of the 文A "translate" mark Android users know from Chrome and Google Translate. The button reads "અA Any language", then "અA ગુજરાતી" once a language is picked.
+- **Light only:** the dark theme was removed, and the page declares `color-scheme: only light`, which also keeps Chrome's automatic dark mode on Android from inverting it.
+- **A two-minute read, nothing lost.** The techniques: the answer first (bottom line up front); the same order in every answer (the answer, at most three reasons, what to do); progressive disclosure for the rest; charts where they replace lines of text.
+  - Visit-plan cards lost a label line and the coloured left edge; "What to do:" sits inside its box. Missing data stays in view, as its own line under the cards; the other notes (moved down, one weak class, not visited for 90 days) fold under "Also keep in mind (3)".
+  - Text answers fold only a *later* list under its own title and count, for example "Visit notes (2)" or "Other gaps, most recent first (6)". The first list of an answer, the "data cannot show the cause" line, the action, and any gap that blocks a score never fold. The visit plan never folds when it comes as text (Hindi), because its notes include the missing-data line.
+  - Copy still gives the whole WhatsApp text.
+  - The home screen lost the greeting, the three big numbers and the icon tiles: the board, a 20-square strip, four plain topic buttons, the example questions.
+- **Not AI-looking:** removed the template signs Vishv's comment pointed at (the 🙏 greeting, icons in tinted circles, a row of big numbers, pastel pill badges, coloured left edges, a logo in a rounded square, a heavy chat bubble). One idea from her work runs through the page instead: **one square = one school**, coloured by need. It is the rank on the board (in chalk colours), the strip of all 20 schools, and the rank on each card. The blackboard stays the one bold element (D-032).
+- **The score:** it is now called **"Need for help"** (મદદની જરૂર) everywhere it appears: "need for help 78/100" in replies and the officer note, a labelled red or amber meter on the cards, and the cards' subtitle "the higher it is, the sooner the school needs help". The home screen shows only rank and words. A test fails if any "/100" is shown without its name. **Rejected:** flipping the score so that higher means better. That would turn a support score into a report card (D-007) and change every scoring test.
+- **Charts, only where they replace text:**
+  - the strip of 20 squares instead of three numbers, with a key that gives each count in words;
+  - attendance months as one row each (month, a bar from zero, the server's exact words), about half the height, with no bar for a month without a figure (as D-033);
+  - a class's five-month trend (Rampura Grade 5 Maths, 45% to 36%) as small columns from zero, the latest month in ink, drawn only when every month has a figure;
+  - the need meter.
+
+  No chart library (the page budget, patchy 4G); bars start at zero so small changes are not exaggerated.
+- **Colours, measured not eyeballed:** the dataviz skill's validator passed red `#c8321f`, amber `#c47c00` and green `#4f9a6c` on all pairs: colour-blind separation ΔE 8.5, normal vision 15.4, every mark at least 3:1. The first amber and green were 2.9:1 and 2.6:1, and a darker green would have collapsed into amber for colour-blind readers. Every text pair passes WCAG AA: the lowest is 4.8:1, the rank number on an amber square (AA asks 4.5:1).
+- **Checked:**
+  - 242 tests, 8 of them new. Like the D-033 bar test, they run the page's own patterns over real replies: month rows take every month and nothing else, the trend columns carry the computed figures, only later lists fold, a missing score never folds, and every score is named.
+  - Four bugs planted in the page; each fails a test. The fold rule is pinned, because a Python port alone could not see a change to the page.
+  - The 10 planted bugs are all caught.
+  - In headless Chrome: 320, 360, 390 and 1280 px in English, Gujarati and Hindi, and no console errors. At 320 px "Chandrapur" broke mid-word, so a school name now never breaks and its label moves to the next line instead.
+- **Cost:** 12,941 bytes gzipped, inside the 13 KB budget. Removing the dark theme, the icons and the tiles paid for the new parts, and code comments were shortened, with the reasons kept here.
+- **Unchanged:** every number and every rule; only the wording of the score in `reply.py`, and the cards' missing-data line moving to its own field.

@@ -55,7 +55,7 @@ question ─▶ rules read it ─▶ (Gemini reads it only if the rules cannot, 
 
 - **Prevent made-up numbers:** the AI never sees the CSVs and never calculates; it only sees the answer the code wrote.
 - **Detect them:** every number in the AI's text (0-9, ૦-૯, ०-९, or a percentage in words) must exist in the computed facts; otherwise its text is thrown away and logged.
-- **Priority score (0–100):** student attendance, the fall in attendance, average score and the share of children below basic, in published bands; learning carries 60 of the 100 points. Each school shows its reasons and one action chosen by a fixed rule.
+- **Priority score (0–100), shown as "need for help":** a higher number means the school needs help sooner (D-034). It adds up student attendance, the fall in attendance, average score and the share of children below basic, in published bands; learning carries 60 of the 100 points. Each school shows its reasons and one action chosen by a fixed rule.
 
 Details: [architecture and plan](docs/PLAN.md) · [decisions](docs/DECISIONS.md) · [assumptions](docs/ASSUMPTIONS.md).
 

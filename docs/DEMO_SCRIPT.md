@@ -11,21 +11,22 @@ The brief asks for three real conversations, one with missing data. This script 
 ---
 
 **0:00–0:30 · The problem, and the first screen**
-> "This is Shiksha Saathi, for a cluster coordinator like Bhavnaben with 20 schools. Her block officer asks: which schools need attention this month, and what will you do about it? She has 10 minutes and a basic phone. Before she types anything, the first screen answers it: the three schools to visit first, each with its reason, and the month in three numbers: 3 need help first, 4 to keep an eye on, 1 still waiting for data."
+> "This is Shiksha Saathi, for a cluster coordinator like Bhavnaben with 20 schools. Her block officer asks: which schools need attention this month, and what will you do about it? She has 10 minutes and a basic phone. Before she types anything, the first screen answers it: the three schools to visit first, each with its reason, and a strip of 20 squares, one per school: 3 need help first, 4 to keep an eye on, 12 doing fine, and 1 still waiting for data."
 
 **0:30–1:30 · Conversation 1: the main question, in Gujarati**
-Tap the language picker (🌐 **Auto**, top right) and choose **ગુજરાતી**: the whole screen switches to Gujarati. Tap the white button at the bottom of the green "board", *મુલાકાતની યોજના જુઓ*.
-> "She gets the three schools to visit first as cards: Haripar, Chandrapur and Manekpur. Each card shows the priority, a score out of 100, why it is flagged, and one thing to do on the visit. The first line is written by Gemini; the cards, and every number on them, come from code."
+Tap the language button (**અA Any language**, top right) and choose **ગુજરાતી**: the whole screen switches to Gujarati. Tap the white button at the bottom of the green "board", *મુલાકાતની યોજના જુઓ*.
+> "She gets the three schools to visit first as cards: Haripar, Chandrapur and Manekpur. Each card shows the priority, its need for help out of 100 (higher means sooner, so 78 is not a good mark here), why it is flagged, and one thing to do on the visit. The first line is written by Gemini; the cards, and every number on them, come from code."
 
 Point at:
 - the line under the answer, *✓ AIની મદદથી લખ્યું, દરેક આંકડો રેકોર્ડ સાથે ચકાસ્યો* ("written with AI, every number checked against the records");
-- the box *આ પણ ધ્યાનમાં રાખો* ("also keep in mind"): Ambaliya was visited 5 days ago, so it is lower on the list (follow up by phone); Umarvada does not have enough October data to score.
+- the line under the cards: Umarvada does not have enough October data to score (missing data stays in view);
+- tap *આ પણ ધ્યાનમાં રાખો (3)* ("also keep in mind") to open it: Ambaliya was visited 5 days ago, so it is lower on the list (follow up by phone).
 
-Then set the picker back to **Auto** and scroll up to **Try asking**.
+Then set the picker back to **કોઈ પણ ભાષા** (Any language) and scroll up to **Try asking**.
 
 **1:30–2:20 · Conversation 2: "why"**
 Tap *Why is Grade 5 Maths low in Rampura?*
-> "36%, falling every month since June, 12.6 points below the cluster average. It quotes her own visit notes, and it says honestly that the data cannot show the exact cause. The action is a 20-minute place value activity she can start on the visit."
+> "36%, and the small columns show it falling every month since June, 12.6 points below the cluster average. Her own visit notes are one tap away (tap *Visit notes (2)*), and it says honestly that the data cannot show the exact cause. The action is a 20-minute place value activity she can start on the visit."
 
 **2:20–3:00 · Conversation 3: missing data**
 Tap *What was Umarvada's attendance in October?* (under **Try asking**).
@@ -38,7 +39,7 @@ Open **For reviewers** at the bottom and tick **Test the number checker**. Tap *
 Untick the switch.
 
 **3:50–4:30 · Conversation 4: Hindi and boundaries**
-Set the picker to **हिन्दी** and tap the first question in the list, *पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?* (Hindi answer, same numbers). Set the picker back to **Auto**, then type *Which teacher is lazy?*
+Set the picker to **हिन्दी** and tap the first question in the list, *पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?* (Hindi answer, same numbers). Set the picker back to **कोई भी भाषा** (Any language), then type *Which teacher is lazy?*
 > "Hindi works through Gemini, with the same checks. And it never blames people: it describes school patterns, and low teacher attendance can be leave or official duty."
 
 **4:30–5:00 · Close**
