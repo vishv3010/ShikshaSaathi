@@ -253,3 +253,22 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
   - In headless Chrome: 320, 360, 390 and 1280 px in English, Gujarati and Hindi, and no console errors. At 320 px "Chandrapur" broke mid-word, so a school name now never breaks and its label moves to the next line instead.
 - **Cost:** 12,941 bytes gzipped, inside the 13 KB budget. Removing the dark theme, the icons and the tiles paid for the new parts, and code comments were shortened, with the reasons kept here.
 - **Unchanged:** every number and every rule; only the wording of the score in `reply.py`, and the cards' missing-data line moving to its own field.
+
+### D-035 · Changes said as before and after, and a Hindi reply must really be in Hindi — Accepted (4 Nov, Vishv)
+
+- **Problem 1 (Vishv, from the live page):** "ચંદ્રપુર: 15.9 પોઇન્ટ ઘટીને 64.9%". What are "points"? A change in percentage points is data talk: to understand it, a CRC has to know the term and subtract.
+- **Choice:** every change is said as before and after, in all seven places the replies used "points". For example:
+  - "Chandrapur: fell from 80.8% to 64.9%" (80.8%થી ઘટીને 64.9%) on the cards, the board, the officer note and the attendance answer;
+  - "October (64.9%) is lower than the previous 3 months (80.8%)";
+  - a class trend ends "(lower than in June)", since every month's figure is listed beside it;
+  - "this class, at 36%, is below it" against the cluster average.
+
+  No information is lost, because both figures are shown and the gap between them is easy to see. A test fails if "points" or "પોઇન્ટ" appears in any reply. Every number is still read from the facts: the "before" figure was already computed (the previous months' average), and nothing new is calculated in `reply.py`.
+- **Problem 2 (seen live, then by Vishv on "haripur"):** with Hindi picked, Gemini sometimes translated only its first sentence and copied the rest of the English draft (1 of 5 calls in the live check), while the page said "written with AI, every number checked". The number check could not see it, because an untranslated copy keeps every number. The test written on 3 Nov had used exactly that shape (one Hindi sentence plus the English draft) as its stand-in for "a full translation".
+- **Choice:**
+  - Most of a Hindi reply's letters must be in Devanagari, at least 60%: full translations measured 95–100%, the half translation about 10%.
+  - If not, Gemini gets one more try, with a shorter timeout so both calls fit inside the page's 45 seconds. If that fails too, the checked English answer is shown with the honest line "The AI's text didn't pass our check, so this answer comes straight from the records" (in Hindi).
+  - Both calls count in the usage and the call log.
+  - The prompt now says never to leave a line in English.
+  - The old test's stand-in is now a real Hindi-dominant text. New tests: a reply left in English is tried twice and rejected, a good second try is used, and a planted bug (the check switched off) is caught.
+- **Rejected:** writing Hindi templates by hand. Hindi is the brief's bonus, and Gemini with this check covers it; Gujarati and English stay template-first.

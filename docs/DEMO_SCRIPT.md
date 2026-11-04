@@ -26,7 +26,7 @@ Then set the picker back to **કોઈ પણ ભાષા** (Any language) and
 
 **1:30–2:20 · Conversation 2: "why"**
 Tap *Why is Grade 5 Maths low in Rampura?*
-> "36%, and the small columns show it falling every month since June, 12.6 points below the cluster average. Her own visit notes are one tap away (tap *Visit notes (2)*), and it says honestly that the data cannot show the exact cause. The action is a 20-minute place value activity she can start on the visit."
+> "36%, and the small columns show it falling every month since June, below the cluster average of 48.6%. Her own visit notes are one tap away (tap *Visit notes (2)*), and it says honestly that the data cannot show the exact cause. The action is a 20-minute place value activity she can start on the visit."
 
 **2:20–3:00 · Conversation 3: missing data**
 Tap *What was Umarvada's attendance in October?* (under **Try asking**).
