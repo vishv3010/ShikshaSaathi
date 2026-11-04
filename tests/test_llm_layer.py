@@ -220,11 +220,13 @@ def test_a_translation_left_in_english_is_tried_once_more_then_rejected(gemini):
 
 
 def test_a_second_try_in_hindi_is_used_and_both_calls_are_counted(gemini):
-    replies = iter([lambda draft: OPENING + draft, in_hindi])
-    gemini(phrase=lambda draft: next(replies)(draft))
+    replies, prompts = iter([lambda draft: OPENING + draft, in_hindi]), []
+    gemini(phrase=lambda draft: prompts.append(draft) or next(replies)(draft))
     r = ask(HINDI, use_llm=True)
     assert (r["lang"], r["mode"]) == ("hi", "llm")
     assert r["trace"]["phrase"]["tokens_in"] == 200                    # cost estimates include the retry
+    assert "LEFT LINES OF THE DRAFT IN ENGLISH" not in prompts[0]      # a first try is unchanged
+    assert prompts[1].endswith("with every line in Hindi, in Devanagari script (write school names in Devanagari too).")
 
 
 def test_a_translation_that_drops_a_line_is_rejected(gemini):

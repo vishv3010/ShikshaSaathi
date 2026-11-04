@@ -196,9 +196,9 @@ def _clean(text):
     return re.sub(r"(?m)^#+\s*", "", text).strip()
 
 
-def _call(step, system, question, kind, facts, draft, lang, max_tokens, timeout):
+def _call(step, system, question, kind, facts, draft, lang, max_tokens, timeout, after=""):
     record = {"step": step, "question": question, "kind": kind, "lang": lang}
-    prompt = f"QUESTION: {question}\nWRITE IN: {LANG_NAMES[lang]}\n\nDRAFT:\n{draft}"
+    prompt = f"QUESTION: {question}\nWRITE IN: {LANG_NAMES[lang]}\n\nDRAFT:\n{draft}{after}"
     try:
         result = llm.generate(prompt, system, max_tokens=max_tokens, timeout=timeout)
     except llm.LLMError as error:
@@ -242,8 +242,11 @@ def translate(question, kind, facts, draft, lang, tamper=False):
     A reply left in English gets one more try; both calls count in the usage."""
     spent = {}
     for attempt in (1, 2):
+        # the second try is told what went wrong, after the draft, where a small model reads it last
+        after = "" if attempt == 1 else (f"\n\nYOUR LAST REPLY LEFT LINES OF THE DRAFT IN ENGLISH. Write the whole "
+                                         f"answer again with every line in {LANG_NAMES[lang]}.")
         record, text, usage = _call("translate", TRANSLATE_SYSTEM, question, kind, facts, draft, lang, max_tokens=2048,
-                                    timeout=20 if attempt == 1 else 12)    # both fit inside the page's 45 s
+                                    timeout=20 if attempt == 1 else 12, after=after)   # both fit in the page's 45 s
         if text is None:
             return usage
         usage = {k: v if k == "model" else round(v + spent.get(k, 0), 2) for k, v in usage.items()}
