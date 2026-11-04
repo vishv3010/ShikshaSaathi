@@ -38,6 +38,8 @@ BUGS = [
      ["    if list_markers:", 'NUMBER = re.compile(r"[0-9]+(?:\\.[0-9]+)?")']),
     ("Hindi translation allowed to drop lines", "saathi/llm_steps.py",
      'f"dropped numbers {dropped}" if dropped else None', "None"),
+    ("a Hindi reply left in English accepted", "saathi/llm_steps.py",
+     "if not problem and script_share(text, lang) < MIN_SCRIPT_SHARE:", "if False:"),
 ]
 
 

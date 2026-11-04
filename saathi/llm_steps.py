@@ -66,10 +66,15 @@ Rules:
 
 TRANSLATE_SYSTEM = """You are Shiksha Saathi, a helper for a Cluster Resource Coordinator (CRC) in rural Gujarat who reads on a basic phone.
 Translate the DRAFT answer into the requested language. Start with one short sentence that directly answers her QUESTION, then translate every line of the DRAFT.
+Write every line in the requested language and its script; never leave a line of the DRAFT in English.
 Keep every line, every school, every number and every action. Write school names in the script of the language.
 Rules:
 """ + COMMON_RULES
 MAX_LEAD_CHARS = 400   # a longer "opening" is not an opening; the draft alone is sent
+# Gemini sometimes translates only its first sentence and copies the rest of the draft in English (seen live on
+# 4 Nov). Every number survives that, so the number check cannot see it: most letters must be in the script (D-035).
+SCRIPTS = {"hi": ("\u0900", "\u097f")}
+MIN_SCRIPT_SHARE = 0.6   # full translations measured 95-100%, a half translation about 10%
 # Demo switch ("test the number checker"): a made-up figure is added to Gemini's text before the
 # check, to show on screen that the checker catches it. 99.9 appears nowhere in the data.
 FAKE_FIGURE = {"en": "Last year this was 99.9%.", "gu": "ગયા વર્ષે આ 99.9% હતું.", "hi": "पिछले साल यह 99.9% था।"}
@@ -222,15 +227,34 @@ def lead(question, kind, facts, draft, lang, tamper=False):
     return _finish(record, text, usage, verdict, "too_long" if len(text) > MAX_LEAD_CHARS else None)
 
 
+def script_share(text, lang):
+    """The share of a text's letters written in the language's own script (1.0 if it has no script rule)."""
+    if lang not in SCRIPTS:
+        return 1.0
+    low, high = SCRIPTS[lang]
+    letters = [c for c in text if c.isalpha()]
+    return sum(low <= c <= high for c in letters) / max(1, len(letters))
+
+
 def translate(question, kind, facts, draft, lang, tamper=False):
     """{'ok', 'text', ...}: the whole draft in a language without templates (Hindi), checked
-    for invented numbers and for dropped ones."""
-    record, text, usage = _call("translate", TRANSLATE_SYSTEM, question, kind, facts, draft, lang, max_tokens=2048,
-                                timeout=20)
-    if text is None:
-        return usage
-    if tamper:
-        text, record["tampered"] = f"{text}\n{FAKE_FIGURE[lang]}", True
-    verdict = check(text, facts)
-    dropped = sorted(set(numbers_in(draft)) - set(numbers_in(text)))
-    return _finish(record, text, usage, verdict, f"dropped numbers {dropped}" if dropped else None)
+    for invented numbers, for dropped ones, and for being in that language at all.
+    A reply left in English gets one more try; both calls count in the usage."""
+    spent = {}
+    for attempt in (1, 2):
+        record, text, usage = _call("translate", TRANSLATE_SYSTEM, question, kind, facts, draft, lang, max_tokens=2048,
+                                    timeout=20 if attempt == 1 else 12)    # both fit inside the page's 45 s
+        if text is None:
+            return usage
+        usage = {k: v if k == "model" else round(v + spent.get(k, 0), 2) for k, v in usage.items()}
+        spent = usage
+        if tamper:
+            text, record["tampered"] = f"{text}\n{FAKE_FIGURE[lang]}", True
+        verdict = check(text, facts)
+        dropped = sorted(set(numbers_in(draft)) - set(numbers_in(text)))
+        problem = f"dropped numbers {dropped}" if dropped else None
+        if not problem and script_share(text, lang) < MIN_SCRIPT_SHARE:
+            problem = "not_translated"
+        if problem != "not_translated" or attempt == 2:
+            return _finish(record, text, usage, verdict, problem)
+        _finish(record, text, usage, verdict, problem)                       # logged as rejected, then tried again

@@ -193,11 +193,38 @@ def test_unusable_understanding_leaves_the_rules_answer(gemini, answer):
 HINDI = "पाँचवीं कक्षा गणित रामपुरा में कम क्यों है?"
 
 
+OPENING = "रामपुरा में कक्षा 5 गणित 36% है।\n"
+
+
+def in_hindi(draft):
+    """Stands in for a full translation: every English word becomes a Hindi one, every number stays."""
+    import re
+    return OPENING + re.sub(r"[A-Za-z]+", "शब्द", draft)
+
+
 def test_hindi_reply_through_the_llm(gemini):
-    gemini(phrase=lambda draft: "रामपुरा में कक्षा 5 गणित 36% है।\n" + draft)      # stands in for a full translation
+    fake = gemini(phrase=in_hindi)
+    r = ask(HINDI, use_llm=True)
+    assert (r["lang"], r["mode"]) == ("hi", "llm") and fake.calls.count("translate") == 1
+    assert r["draft"].startswith("Rampura, Grade 5 Maths")              # the checked English draft underneath
+
+
+def test_a_translation_left_in_english_is_tried_once_more_then_rejected(gemini):
+    """Seen live on 4 Nov: only the first sentence in Hindi, the rest of the draft copied in English. Every number
+    survives, so the number check passes it; the script check does not (D-035)."""
+    fake = gemini(phrase=lambda draft: OPENING + draft)
+    r = ask(HINDI, use_llm=True)
+    assert (r["lang"], r["mode"]) == ("en", "rules") and r["text"] == r["draft"]
+    assert r["trace"]["phrase"]["problem"] == "not_translated" and fake.calls.count("translate") == 2
+    assert [e["outcome"] for e in logged()[-2:]] == ["rejected", "rejected"]
+
+
+def test_a_second_try_in_hindi_is_used_and_both_calls_are_counted(gemini):
+    replies = iter([lambda draft: OPENING + draft, in_hindi])
+    gemini(phrase=lambda draft: next(replies)(draft))
     r = ask(HINDI, use_llm=True)
     assert (r["lang"], r["mode"]) == ("hi", "llm")
-    assert r["draft"].startswith("Rampura, Grade 5 Maths")              # the checked English draft underneath
+    assert r["trace"]["phrase"]["tokens_in"] == 200                    # cost estimates include the retry
 
 
 def test_a_translation_that_drops_a_line_is_rejected(gemini):
