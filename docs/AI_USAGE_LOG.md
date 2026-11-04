@@ -17,7 +17,7 @@ I used AI throughout the build as a fast collaborator whose work was always chec
 
 ## How the AI's work was checked
 
-- **Tests from hand-worked values:** 284 automated tests whose expected values were worked out from the CSVs by hand, not copied from the code's output.
+- **Tests from hand-worked values:** 291 automated tests whose expected values were worked out from the CSVs by hand, not copied from the code's output.
 - **Planted bugs:** 13 known bugs are planted one at a time in a copy of the code, and the tests must catch every one. They do.
 - **Independent review:** an AI code review found 10 bugs the tests had missed; each was reproduced before it was fixed, and each now has a test.
 - **Unseen questions:** 68 questions written after the rules were built, in four language forms, measure understanding honestly (on the held-out set, 87% with rules alone and 91% with Gemini, before fixes).

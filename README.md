@@ -74,7 +74,7 @@ Synthetic data for one cluster of 20 schools, May-October 2026, as CSV files in 
 .venv/bin/pip install -r requirements-dev.txt
 bash scripts/check_all.sh                          # everything below in one go, plus a fresh-copy start
 .venv/bin/python scripts/validate_data.py          # the dataset: IDs, ranges, gaps kept as gaps
-.venv/bin/python -m pytest -q                      # 284 tests; never calls Gemini
+.venv/bin/python -m pytest -q                      # 291 tests; never calls Gemini
 .venv/bin/python scripts/check_tests_catch_bugs.py # plants 13 known bugs and confirms the tests catch each
 .venv/bin/python scripts/eval_understanding.py eval/round2.csv   # how well new phrasings are understood
 .venv/bin/python scripts/try_llm.py                # optional: the demo questions against live Gemini

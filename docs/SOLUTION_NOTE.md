@@ -9,7 +9,7 @@
 <div class="stats">
 <div><b>20</b>schools, May–October 2026, synthetic</div>
 <div><b>3</b>languages: Gujarati, English, Hindi</div>
-<div><b>284</b>automated tests; 13 of 13 planted bugs caught</div>
+<div><b>291</b>automated tests; 13 of 13 planted bugs caught</div>
 <div><b>≈ ₹4</b>per coordinator per month at 10,000</div>
 </div>
 
@@ -55,7 +55,7 @@ A *need-for-help* score from 0 to 100, built from published bands in the style o
 <div><b>Detect</b>Every number in the AI text (0–9, ૦–૯ or ०–९) must exist in the facts computed for this question; percentages in words are rejected; numbers typed in her question never count. A Hindi translation must keep every number and really be in Hindi. On any failure the checked draft is sent and the failure is logged.</div>
 </div>
 
-**Evidence:** 284 tests from values worked out by hand, and 13 planted bugs, all caught. Of 97 live Gemini texts, the one real made-up figure (80% in a Hindi translation) and 7 Hindi replies left in English were all caught; a planted 99.9% was caught 6 times out of 6. **Known limit:** the checker proves a number is in the facts, not that it sits next to the right school, so Gemini writes only the opening line.
+**Evidence:** 291 tests from values worked out by hand, and 13 planted bugs, all caught. Of 97 live Gemini texts, the one real made-up figure (80% in a Hindi translation) and 7 Hindi replies left in English were all caught; a planted 99.9% was caught 6 times out of 6. **Known limit:** the checker proves a number is in the facts, not that it sits next to the right school, so Gemini writes only the opening line.
 
 ## 4. Guardrails
 

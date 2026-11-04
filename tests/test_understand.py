@@ -44,6 +44,7 @@ def test_intent(question, intent):
     "મારા ક્લસ્ટરની બધી શાળાઓના નામ આપો", "કેટલી શાળાઓ છે?", "મારી શાળાઓ બતાવો", "मेरे क्लस्टर में कितने स्कूल हैं?",
     "sabhi school ke naam batao", "badhi shala na naam aapo", "kaun kaun se school hai mere cluster me",
     "कौन-कौन से स्कूल हैं?", "કઈ કઈ શાળાઓ છે?", "What schools do I look after?", "Can you tell me which schools I manage?",
+    "which are the total schools", "Total schools", "કુલ શાળાઓ કઈ છે?", "मेरे कुल स्कूल कौन से हैं?", "kul school ketli che",
 ])
 def test_the_whole_cluster_is_asked_for_in_many_ways(question):
     assert parse(question, D).intent == "list_schools"
@@ -58,6 +59,7 @@ def test_the_whole_cluster_is_asked_for_in_many_ways(question):
     ("How is attendance in my schools?", "attendance_trend"), ("મારી શાળાઓમાં હાજરી કેવી છે?", "attendance_trend"),
     ("Show me schools with missing data", "missing_data"), ("Give me the names of teachers in Haripar", "personal_info"),
     ("kaun kaun se school ko madad chahiye", "top_priority_schools"),
+    ("Total schools that need help", "top_priority_schools"), ("What is the total attendance in my schools?", "attendance_trend"),
 ])
 def test_asking_for_the_list_does_not_take_other_questions(question, intent):
     assert parse(question, D).intent == intent
