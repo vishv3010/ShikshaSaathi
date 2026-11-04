@@ -183,3 +183,107 @@ def test_attendance_bars_go_on_every_month_with_a_figure_and_nowhere_else(lang):
                      "Tell me about Chandrapur", "Which schools have missing data?", "Summary for my block officer",
                      "When did I last visit Sonpura?"]:
         assert bars(question) == [], question
+
+
+def _page_pattern(js):
+    """A regular expression lifted from the page's own code (re.ASCII: JavaScript's \\d reads ASCII digits only)."""
+    import re
+    return re.compile(re.search(js, web.PAGE.read_text(encoding="utf-8")).group(1), re.ASCII)
+
+
+def _month_rows(text):
+    """The page's month rows, ported: lines with a figure, and their neighbours that name a month without one."""
+    bar, month = _bar_pattern(), _page_pattern(r"const MONTH = /(.+?)/;")
+    lines = text.split("\n")
+    rows = [bool(bar.match(line)) for line in lines]
+    for _ in range(2):
+        for i, line in enumerate(lines):
+            if month.match(line) and ((i > 0 and rows[i - 1]) or (i + 1 < len(lines) and rows[i + 1])):
+                rows[i] = True
+    return [line.split(": ")[0] for line, row in zip(lines, rows) if row]
+
+
+@pytest.mark.parametrize("lang, months", [("en", ["May", "June", "July", "August", "September", "October"]),
+                                          ("gu", ["મે", "જૂન", "જુલાઈ", "ઑગસ્ટ", "સપ્ટેમ્બર", "ઑક્ટોબર"])])
+def test_month_rows_hold_every_month_and_nothing_else(lang, months):
+    """One row per month (D-034): a closed month and a month with no record keep their words in a row of their own,
+    so a gap is said, never dropped; the line about the cluster under them is not taken as a month."""
+    from saathi.assistant import ask
+    assert _month_rows(ask("What was Umarvada's attendance in October?", lang=lang)["text"]) == months
+    assert _month_rows(ask("Show attendance trend", lang=lang)["text"]) == months
+    for question in ["Which 3 schools need my visit this week?", "Why is Grade 5 Maths Low in Rampura?",
+                     "Tell me about Chandrapur", "Which schools have missing data?", "Summary for my block officer"]:
+        assert _month_rows(ask(question, lang=lang)["text"]) == [], question
+
+
+@pytest.mark.parametrize("lang", ["en", "gu"])
+def test_trend_columns_carry_the_computed_trend(lang):
+    """A class's trend is drawn as columns only when every month has a figure, and the columns carry exactly the
+    computed figures; a month without one leaves the line in words (D-034)."""
+    from saathi.assistant import ask
+    from saathi.data import load
+    whole = _page_pattern(r"const m = text\.match\(/(.+?)/\), pts")
+    point = _page_pattern(r'pts = m && m\[2\]\.split\(" → "\)\.map\(\(p\) => p\.match\(/(.+?)/\)\);')
+    drawn = 0
+    for village in load().schools.village:
+        r = ask(f"Why is Grade 5 Maths low in {village}?", lang=lang)
+        line = next(x[2:] for x in r["text"].splitlines() if x.startswith("• ") and " → " in x)
+        points = [point.match(p) for p in whole.match(line).group(2).split(" → ")]
+        want = [x["avg_score_pct"] for x in r["facts"]["trend"]]
+        if None in want:
+            assert not all(points), village
+        else:
+            assert [float(p.group(2)) for p in points] == want, village
+            drawn += 1
+    assert drawn >= 15
+    assert not all(point.match(p) for p in "June 45% → July no data → August 41%".split(" → "))
+
+
+def _folded(text):
+    """The sections the page folds, ported: a short line ending in ':' with bullets under it, after an earlier list."""
+    import re
+    lines = [line.rstrip() for line in text.split("\n")]
+    folded, lists, in_list, first = [], 0, False, True
+    for i, line in enumerate(lines):
+        if not line.strip():
+            in_list = False
+            continue
+        if first:
+            first = False
+            continue
+        if line.startswith("• "):
+            lists, in_list = lists + (not in_list), True
+            continue
+        in_list = False
+        if re.match(r"^\d+\.\s", line):
+            lists += 1
+        elif line.endswith(":") and len(line) < 70:
+            n = 0
+            while i + 1 + n < len(lines) and lines[i + 1 + n].startswith("• "):
+                n += 1
+            if lists and n:
+                folded.append(line)
+                in_list = True
+    return folded
+
+
+@pytest.mark.parametrize("lang", ["en", "gu"])
+def test_only_later_lists_fold_and_a_missing_score_never_does(lang):
+    """Folds hide nothing that decides a visit (D-034): the first list of an answer and the data that blocks a score
+    stay in view; later lists (visit notes, the other gaps) fold under their own title and count. The visit plan
+    never folds as text, and on cards its missing-data line sits outside the fold."""
+    from saathi import reply
+    from saathi.assistant import ask
+    assert _folded(ask("Why is Grade 5 Maths low in Rampura?", lang=lang)["text"]) == [reply.t("visit_notes", lang)]
+    gaps = ask("Which schools have missing data?", lang=lang)["text"]
+    assert _folded(gaps) == [reply.t("gaps_other", lang)]
+    assert reply.t("gaps_not_enough", lang, month=reply.month("2026-10", lang)) in gaps     # in view, above the fold
+    for question in ["Show attendance trend", "What was Umarvada's attendance in October?", "Tell me about Chandrapur",
+                     "Summary for my block officer"]:
+        assert _folded(ask(question, lang=lang)["text"]) == [], question
+    page = web.PAGE.read_text(encoding="utf-8")
+    assert "if (folds && lists && n) {" in page                  # the rule ported above, as the page runs it
+    assert 'r.intent !== "top_priority_schools"' in page
+    cards = ask("Which 3 schools need my visit this week?", lang=lang)["cards"]
+    assert [m.split(":")[0] for m in cards["missing"]] == [reply.short({"name": "Umarvada", "name_gu": "ઉમરવાડા"}, lang)]
+    assert not any(m in cards["also"] for m in cards["missing"])
