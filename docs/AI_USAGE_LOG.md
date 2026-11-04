@@ -9,7 +9,7 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 - **ChatGPT** wrote a second development plan, compared with Claude Code's and merged.
 - **Gemini 3.5 Flash-Lite, inside the product**, writes a one-line opening for each answer, Hindi translations, and reads questions typed in English letters. It never computes a number; a checker rejects any number it writes that is not in the data.
 - **Vishv decided**: what to build first, every design choice that changed the answers, the Gujarati wording, and the assumptions emailed to the reviewer.
-- **Where the AI was wrong**: 41 times, listed at the end with how each was caught.
+- **Where the AI was wrong**: 43 times, listed at the end with how each was caught.
 
 ## Tools
 
@@ -95,3 +95,5 @@ Which AI tools were used, for what, and who checked or decided what. Updated as 
 | 4 Nov | The first fold rule would also have folded the Hindi visit plan's "Also" list, which carries the line saying Umarvada's October data is missing; that would hide missing data behind a tap. | Found by reviewing each fold against the rule that missing data is said out loud; the visit plan never folds as text, and on cards the missing-data line sits outside the fold, with a test. |
 | 4 Nov | Of 4 bugs planted in the new page code, 2 passed the new tests: one plant changed nothing for the test input, and the fold test re-implemented the rule in Python, so it could not see a change to the page. | Found by planting the bugs before trusting the tests; the plant was redone, the fold rule is now pinned to the page's code, and all 4 fail a test. |
 | 4 Nov | Claude Code wrote "the 10 planted bugs are all caught" into D-034 while that run was still going, counted 6 new tests instead of 8 test cases, and claimed every text pair was at least 5:1 after a colour change had made the lowest 4.8:1. | Caught on re-reading the entry and re-measuring before pushing; the count and the contrast figure were corrected (4.8:1 still passes WCAG AA), and the planted-bug claim was kept only after the run reported. |
+| 4 Nov | Gemini (inside the product), asked to translate Rampura's answer into Hindi, translated only its first sentence and returned the rest in English (1 of 5 live Hindi calls). The number check passed, because an untranslated copy keeps every number, so the page labelled it as written with AI. | Seen in a live screenshot after the D-034 deploy; the four API calls around it were fully Hindi. Reported to Vishv with a proposed check that the reply is really in Hindi. |
+| 4 Nov | Gemini's Gujarati opening line for the visit plan said Manekpur is on the list because it has not been visited for a long time (48 days). The draft lists it for its need for help (66: marks 47.1%, attendance down 4.4 points). No number was wrong, so the checker could not see it. | Read in the live check after the deploy; the cards below it, written by code, give the real reasons. Reported to Vishv. |
