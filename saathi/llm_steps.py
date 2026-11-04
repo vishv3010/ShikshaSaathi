@@ -33,6 +33,7 @@ LLM_INTENTS = {
     "missing_data": "data that is missing, late or not uploaded",
     "recent_visits": "when a school was last visited, or schools not visited for long",
     "officer_summary": "a summary or report for the block officer",
+    "list_schools": "the schools in the cluster: their names, how many there are, or all of them ranked or grouped by need or type",
     "help": "greetings, or what the assistant can do",
     "out_of_scope": "anything not about these schools' attendance, learning, visits or next steps",
     "people_judgement": "judging, blaming or punishing a teacher, head teacher or child",
@@ -170,7 +171,7 @@ def understand_question(text, data):
 
 def _settle(q):
     """Make Gemini's choice consistent with what was actually found in the data."""
-    if q.intent in ("people_judgement", "personal_info", "not_allowed", "out_of_scope", "help"):
+    if q.intent in ("people_judgement", "personal_info", "not_allowed", "out_of_scope", "help", "list_schools"):
         return q.intent
     if len(q.school_ids) > 1:
         return "clarify_school"

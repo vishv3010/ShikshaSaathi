@@ -192,6 +192,15 @@ W = {  # every sentence, in both languages
     "visit_row": ("{name}: {d} days ({date})", "{name}: {d} દિવસ ({date})"),
     "visit_row_never": ("{name}: no visit recorded", "{name}: કોઈ મુલાકાત નોંધાઈ નથી"),
     "ask_visit": ('For notes, ask: "When did I last visit {name}?"', 'નોંધ માટે પૂછો: "{name}ની છેલ્લી મુલાકાત ક્યારે હતી?"'),
+    # --- the whole cluster (D-037) ---
+    "list_header": ("Your {n} schools, {month} (need for help out of 100: the higher it is, the sooner the school needs help):",
+                    "તમારી {n} શાળાઓ, {month} (મદદની જરૂર 100માંથી: આંકડો જેટલો વધુ, તેટલી શાળાને વહેલી મદદની જરૂર):"),
+    "list_group": ("{label} ({n}): {list}", "{label} ({n}): {list}"),
+    "lbl_waiting": ("Waiting for data", "માહિતી આવવાની બાકી"),
+    "list_types_header": ("Your {n} schools: {p} primary and {u} upper primary.", "તમારી {n} શાળાઓ: {p} પ્રાથમિક અને {u} ઉચ્ચ પ્રાથમિક."),
+    "lbl_primary": ("Primary", "પ્રાથમિક"),
+    "lbl_upper_primary": ("Upper primary", "ઉચ્ચ પ્રાથમિક"),
+    "visits_recent": ("Schools visited in the last {w} days: {list}", "છેલ્લા {w} દિવસમાં મુલાકાત લીધેલી શાળાઓ: {list}"),
     # --- officer summary ---
     "off_header": ("Cluster update, {month} {year} ({t} schools)", "ક્લસ્ટર અહેવાલ, {month} {year} ({t} શાળા)"),
     "off_counts": ("Priority: {h} High, {m} Medium, {l} Low; {n} with not enough data.",
@@ -712,7 +721,13 @@ def recent_visits(f, lang):
             lines.append(t("visit_earlier", lang, list=", ".join(
                 f"{date_text(x['date'], lang)} ({focus(x['focus_area'], lang)})" for x in visits[1:])))
         return lines, []
-    lines = [t("visits_30", lang, w=f["window_days"], n=f["visits_in_window"]), t("visits_longest", lang)]
+    lines = [t("visits_30", lang, w=f["window_days"], n=f["visits_in_window"])]
+    recent = sorted((r for r in f["schools"] if r["last_visit"] and r["last_visit"]["days_ago"] <= f["window_days"]),
+                    key=lambda r: r["last_visit"]["days_ago"])
+    if recent:                                        # "which schools did I visit this month?"
+        lines.append(t("visits_recent", lang, w=f["window_days"], list=", ".join(
+            f"{short(r, lang)} ({t('days_ago', lang, d=r['last_visit']['days_ago'])})" for r in recent)))
+    lines.append(t("visits_longest", lang))
     for i, r in enumerate(f["schools"][:MAX_VISIT_ROWS], 1):
         v = r["last_visit"]
         row = (t("visit_row", lang, name=short(r, lang), d=v["days_ago"], date=date_text(v["date"], lang)) if v
@@ -721,6 +736,28 @@ def recent_visits(f, lang):
     first = f["schools"][0]
     lines.append(t("ask_visit", lang, name=short(first, lang)))
     return lines, []
+
+
+def list_schools(f, lang):
+    """Every school in one short message: by need (with its need for help), or by type when that was asked."""
+    if f.get("by") == "type":
+        lines = [t("list_types_header", lang, n=f["schools_total"], p=f["types"]["primary"], u=f["types"]["upper_primary"])]
+        for kind in ("primary", "upper_primary"):
+            names = [short(s, lang) for s in f["schools"] if s["type"] == kind]
+            lines.append("• " + t("list_group", lang, label=t(f"lbl_{kind}", lang), n=len(names), list=", ".join(names)))
+    else:
+        lines = [t("list_header", lang, n=f["schools_total"], month=month(f["month"], lang))]
+        for p in ("High", "Medium", "Low", None):
+            group = [s for s in f["schools"] if s["priority"] == p]
+            if group:
+                names = ", ".join(short(s, lang) if p is None else f"{short(s, lang)} {s['score']}" for s in group)
+                label = t(f"lbl_{p}", lang) if p else t("lbl_waiting", lang)
+                lines.append("• " + t("list_group", lang, label=label, n=len(group), list=names))
+    first = f["schools"][0]
+    lines.append(t("ask_one_school", lang, q=t("q_about", lang, name=short(first, lang))))
+    options = [option(short(s, lang), t("q_about", lang, name=short(s, lang)), s["school_id"])
+               for s in f["schools"] if s["priority"] == "High"]
+    return lines, options
 
 
 def officer_summary(f, lang):
@@ -804,6 +841,7 @@ RENDER = {
     "missing_data": missing_data,
     "recent_visits": recent_visits,
     "officer_summary": officer_summary,
+    "list_schools": list_schools,
     "help": help_reply,
     "out_of_scope": boundary("out_of_scope"),
     "people_judgement": boundary("people_judgement"),

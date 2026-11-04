@@ -28,12 +28,12 @@ from .scoring import LONG_UNVISITED_DAYS, MIN_PREVIOUS_MONTHS, RECENT_VISIT_DAYS
 
 SUGGESTION_CUTOFF = 0.6   # how close an unknown name must be to suggest a school ("Rampur school" -> Rampura)
 SCORE_SCALE = 100         # priority scores are out of 100
-SCORED_KINDS = {"top_priority_schools", "school_summary", "officer_summary"}
+SCORED_KINDS = {"top_priority_schools", "school_summary", "officer_summary", "list_schools"}
 EXAMPLE_KINDS = {"help", "out_of_scope", "people_judgement", "personal_info", "not_allowed"}
 # Answers built from school data get Gemini's wording; boundaries and "which one?" questions keep
 # the fixed wording, except in Hindi, which has no templates.
 DATA_KINDS = {"top_priority_schools", "school_summary", "subject_analysis", "class_overview", "attendance_trend",
-              "missing_data", "recent_visits", "officer_summary"}
+              "missing_data", "recent_visits", "officer_summary", "list_schools"}
 
 
 def month_note(data, month, scored=False):
@@ -133,6 +133,9 @@ def _compute(q, data):
 
     if intent == "officer_summary":
         return intent, analytics.officer_summary(data)
+
+    if intent == "list_schools":
+        return intent, {**analytics.school_list(data), "by": "type" if understand.asks_school_type(q.text) else "need"}
 
     if intent == "school_not_found":
         return intent, _not_found(q, data)

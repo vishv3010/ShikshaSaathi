@@ -196,6 +196,7 @@ QUESTIONS = [
     "Which schools have not been visited?", "Give me a summary for my block officer", "Why is maths low in Rampura?",
     "How is grade 4 in Haripar?", "Tell me about Khanpur school", "Tell me about Shimpura", "Science in Haripar",
     "Grade 2 maths in Rampura", "Which teacher is lazy?", "hi", "What is the weather tomorrow?",
+    "List all schools", "Which schools are primary?", "Which schools did I visit this month?",
 ]
 
 
@@ -250,3 +251,31 @@ def test_words_about_percentages_are_not_made_up_numbers():
     assert check("The percentage of children below basic is high at Rampura.", {}).ok
     assert check("ટકાવારી ઘટી છે.", {}).ok
     assert not check("હાજરી નવ્વાણું ટકા છે.", {}).ok                # ninety-nine percent, in words
+
+
+@pytest.mark.parametrize("lang, first, waiting", [("en", "Needs help first (3): Haripar 78, Chandrapur 75, Ambaliya 71", "Umarvada"),
+                                                   ("gu", "પહેલાં મદદની જરૂર (3): હરિપર 78, ચંદ્રપુર 75, આંબલિયા 71", "ઉમરવાડા")])
+def test_the_whole_cluster_in_one_message(lang, first, waiting):
+    """All 20 schools by need, highest first, each with its need for help; the school without October data is said."""
+    r = ask("Give me all school name in the cluster", lang=lang)
+    lines = r["text"].splitlines()
+    assert r["intent"] == "list_schools" and lines[1] == "• " + first
+    assert lines[2].startswith("• " + ("Keep an eye on (4): Manekpur 66" if lang == "en" else "ધ્યાન રાખો (4): માણેકપુર 66"))
+    assert lines[3].startswith("• " + ("Doing fine (12): " if lang == "en" else "બરાબર ચાલે છે (12): "))
+    assert lines[4] == "• " + ("Waiting for data (1): " if lang == "en" else "માહિતી આવવાની બાકી (1): ") + waiting
+    assert len(lines[3].split(":", 1)[1].split(",")) == 12                 # every school appears, once
+    assert [o["label"] for o in r["options"]] == (["Haripar", "Chandrapur", "Ambaliya"] if lang == "en" else ["હરિપર", "ચંદ્રપુર", "આંબલિયા"])
+
+
+def test_the_list_by_type_when_type_is_asked():
+    r = ask("Which schools are primary?")
+    assert r["text"].startswith("Your 20 schools: 10 primary and 10 upper primary.")    # schools.csv: 10 of each
+    assert "• Primary (10): Haripar," in r["text"] and "• Upper primary (10): Chandrapur," in r["text"]
+
+
+def test_which_schools_were_visited_recently():
+    """visits.csv: five visits on or after 3 October, at four schools (Talavdi twice); last visits 28, 28, 22, 7 October."""
+    text = ask("Which schools did I visit this month?")["text"]
+    assert text.startswith("Visits in the last 30 days: 5.")
+    assert "Schools visited in the last 30 days: Vasantpur (5 days ago), Ambaliya (5 days ago), Talavdi (11 days ago), " \
+           "Rampura (26 days ago)" in text

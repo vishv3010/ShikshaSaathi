@@ -40,6 +40,11 @@ BUGS = [
      'f"dropped numbers {dropped}" if dropped else None', "None"),
     ("a Hindi reply left in English accepted", "saathi/llm_steps.py",
      "if not problem and script_share(text, lang) < MIN_SCRIPT_SHARE:", "if False:"),
+    ("\"which schools are in my cluster?\" no longer answered", "saathi/understand.py",
+     "if (_any(norm, LIST_STRONG) or _any(norm, LIST_WEAK)) and not _any(norm, NEED):", "if False:"),
+    ("the schools list takes questions that ask about need", "saathi/understand.py",
+     "if (_any(norm, LIST_STRONG) or _any(norm, LIST_WEAK)) and not _any(norm, NEED):",
+     "if _any(norm, LIST_STRONG) or _any(norm, LIST_WEAK):"),
 ]
 
 

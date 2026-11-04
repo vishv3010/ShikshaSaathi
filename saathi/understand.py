@@ -125,7 +125,9 @@ RECENT_VISITS = [r"\blast visit", r"\bwhen did i (?:last )?visit", r"\bwhen was 
                  r"\bvisit history", r"\bprevious visits?", r"\bpast visits?", r"\bhow long since",
                  r"\bvisited (?:recently|last)", r"\bhow many visits",
                  "છેલ્લી મુલાકાત", "છેલ્લે ક્યારે", "ક્યારે મુલાકાત", "મુલાકાત ક્યારે", "મુલાકાત લીધી",
-                 "મુલાકાત નથી", "आखिरी", "आख़िरी", "कब गई", "कब गया", "दौरा कब", "कब दौरा"]
+                 "મુલાકાત નથી", "आखिरी", "आख़िरी", "कब गई", "कब गया", "दौरा कब", "कब दौरा",
+                 r"\b(?:did|have) i (?:already )?visit(?:ed)?\b", r"\bi (?:have )?visited\b",
+                 "दौरा किया", "विज़िट की", "विजिट की"]
 ATTENDANCE = [r"\battend", r"\babsent", r"\babsence",
               r"\b(?:hajri|haajri|hajari|haziri|haaziri|hazri|upasthiti|gerhajar|gairhazir)\b",
               "હાજરી", "ગેરહાજર", "उपस्थिति", "हाजिरी", "हाज़िरी",
@@ -134,11 +136,38 @@ PRIORITY = [r"\bwhich (?:\d+ |one |two |three |four |five )?schools?\b", r"\bvis
             r"\bwhere (?:should|do|shall) i go\b",
             r"\b(?:kai|kayi|kaun ?se|kaunsi|kaunsa|konsi|konsa|kon si|kis|kin) (?:shala|school)",
             r"\bpriorit", r"\btop \d", r"\btop\b.{0,10}\bschools?", r"\bfocus\b", r"\bstruggl", r"\bweak",
-            r"\bworst\b", r"\bthis week\b", r"\bconcern", r"\burgent", r"\bat risk\b",
+            r"\bworst\b", r"\bthis week\b", r"\bconcern", r"\bworr(?:y|ied|ies)\b", r"\burgent", r"\bat risk\b",
             r"\bschools?\b.{0,40}\b(?:need|needs|support|help|first|low|poor|lagging|behind)\b",
             "કઈ શાળ", "કઇ શાળ", "કયી શાળ", "ધ્યાન", "મુલાકાત", "પ્રાથમિકતા", "નબળી", r"શાળા.{0,30}જરૂર",
             r"જરૂર.{0,30}શાળા", "कौन से स्कूल", "कौनसे स्कूल", "किन स्कूल", "किस स्कूल", "ध्यान", "प्राथमिकता",
             "विज़िट", "विजिट", "दौरा", "कमजोर", "कमज़ोर", r"स्कूल.{0,30}(?:ज़रूरत|जरूरत)"]
+# "Which schools are in my cluster?": the whole list (D-037), unless the question asks about need
+# ("List the schools that need help" and "Which primary schools need help?" stay the visit plan).
+LIST_STRONG = [r"\ball (?:the |my |of my |of the |our )?schools?\b", r"\bevery school\b",
+               r"\b(?:list|names?) (?:of )?(?:all )?(?:the |my |our )?(?:all )?schools?\b", r"\bschools?'? (?:names?|list)\b",
+               r"\blist (?:out )?(?:all |every |the |my )+.{0,12}schools?\b", r"\bhow many schools\b", r"\bnumber of schools\b",
+               r"\b(?:which|what) schools? (?:are|is|do i have) (?:there )?(?:in|under) (?:my|the|this) cluster\b",
+               r"\bschools? (?:are )?(?:there )?(?:in|under) (?:my|the|this) cluster\s*\??$",
+               r"\b(?:rank|ranking|sort|order)\b.{0,30}\bschools?\b", r"\bschools?\b.{0,25}\b(?:ranked|ranking|by score|by need)\b",
+               "બધી શાળા", "તમામ શાળા", "દરેક શાળા", "શાળાઓની યાદી", "શાળાની યાદી", "શાળાઓના નામ", "શાળાઓનાં નામ",
+               "શાળાના નામ", "શાળાનાં નામ", "કેટલી શાળા", "ક્લસ્ટરની શાળાઓ", "ક્લસ્ટરમાં કઈ શાળાઓ છે",
+               "सभी स्कूल", "सारे स्कूल", "सब स्कूल", "स्कूलों की सूची", "स्कूलों की लिस्ट", "स्कूलों के नाम", "स्कूल के नाम",
+               "कितने स्कूल", r"\b(?:badhi|tamam|darek) shala", r"\bshala(?:o|on)? (?:na|ni|nu|nan) (?:naam|nam|yadi|list)\b",
+               r"\b(?:sabhi|saare|sare|sab) (?:schools?|skool)\b", r"\bkitne (?:schools?|skool)\b", r"\bkitni shala",
+               r"\bschool(?:on)? (?:ke naam|ki list|ki suchi)\b",
+               # "which ones": the question word said twice asks for the whole list (कौन-कौन, કઈ-કઈ)
+               r"\bkaun[- ]kaun\b", r"\bkai[- ]kai\b", "कौन कौन", "कौन-कौन", "કઈ કઈ", "કઇ કઇ", "કઈ-કઈ",
+               r"\bschools?\b.{0,12}\b(?:i|we) (?:look after|manage|handle|cover|oversee|am responsible for|have)\b"]
+LIST_WEAK = [r"\b(?:doing|performing) (?:the )?(?:best|well|good|fine)\b", r"\bbest (?:performing )?schools?\b",
+             r"\bgood schools?\b", r"\b(?:high|medium|low)[- ]priority\b", r"\bdoing fine\b",
+             r"\b(?:upper )?primary schools?\b", r"\bwhich schools? (?:are|is) (?:upper )?primary\b", r"\bschool types?\b",
+             r"\btypes? of schools?\b", "પ્રાથમિક શાળાઓ", "સારી શાળા", "प्राथमिक स्कूल", "अच्छे स्कूल",
+             r"\b(?:show|see|view|display|give)(?: me)?(?: all)?(?: my| our| the)? schools?\b", r"^(?:my|our) schools?\s*\??$",
+             "શાળાઓ બતાવ", "મારી શાળાઓ", "स्कूल दिखा", "मेरे स्कूल"]
+NEED = [r"\bneeds?\b", r"\bhelp\b(?! me)", r"\bsupport\b", r"\battention\b", r"\bvisit", r"\bweak", r"\bstruggl", r"\bfocus\b",
+        r"\burgent", r"\bconcern", r"\blow (?:marks|scores?|results?)\b", "જરૂર", "મદદ", "મુલાકાત", "ध्यान", "मदद", "ज़रूरत", "जरूरत",
+        r"\bmadad\b", r"\b(?:jaroor|jarur|zaroor|zarur|jaruri|zaruri)\b", r"\bdhyan\b", r"\bmulakat\b"]
+SCHOOL_TYPE = [r"\bprimary\b", r"\btypes?\b", "પ્રાથમિક", "प्राथमिक"]
 HELP = [r"^(?:hi|hello|hey|namaste|namaskar|good (?:morning|afternoon|evening))\b", r"\bhelp\b",
         r"\bwhat can you\b", r"\bwhat (?:can|should) i ask\b", r"\bhow (?:can|do) you help\b",
         r"\bhow do i use\b", r"\bwho are you\b",
@@ -375,6 +404,11 @@ def find_reply_language(norm):
     return None, norm
 
 
+def asks_school_type(text):
+    """"Which schools are primary?": the list goes by school type instead of by need."""
+    return _any(normalize(text), SCHOOL_TYPE)
+
+
 def parse(text, data, school_id=None):
     """Read a question. `school_id` pins the school (used when she picks from a "which school?" list)."""
     q = Question(text=text, lang=detect_language(text), intent="out_of_scope")
@@ -423,6 +457,8 @@ def _intent(norm, q, ambiguous, unknown):
         return "attendance_trend"
     if one_school:
         return "school_summary"
+    if (_any(norm, LIST_STRONG) or _any(norm, LIST_WEAK)) and not _any(norm, NEED):
+        return "list_schools"
     if _any(norm, PRIORITY):
         return "top_priority_schools"
     if _any(norm, HELP):

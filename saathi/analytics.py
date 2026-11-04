@@ -206,6 +206,17 @@ def officer_summary(data):
             "cluster_attendance": next(r for r in cluster_attendance(data) if r["month"] == month)}
 
 
+def school_list(data):
+    """'Which schools are in my cluster?': every school, highest need first, with its type."""
+    entries = score_all(data)
+    schools = [{"school_id": e["school_id"], "name": e["name"], "name_gu": e["name_gu"], "priority": e["priority"],
+                "score": e["score"], "type": data.school(e["school_id"])["type"]} for e in entries]
+    counts = {p: sum(s["priority"] == p for s in schools) for p in ("High", "Medium", "Low")}
+    counts["not_enough_data"] = sum(s["priority"] is None for s in schools)
+    types = {t: sum(s["type"] == t for s in schools) for t in ("primary", "upper_primary")}
+    return {"month": data.latest_month, "schools_total": len(schools), "schools": schools, "counts": counts, "types": types}
+
+
 def school_gaps(data, school_id):
     """Every missing value for one school. Vacation months and grades the school
     does not have are not gaps, so they are never listed."""
