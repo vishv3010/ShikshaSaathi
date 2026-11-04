@@ -284,4 +284,9 @@ One entry per non-obvious choice: what we chose, what else we considered, and wh
   - The video is 3 min 30 s, 1920 × 1080.
 - **Every claim in the narration** comes from facts checked on 4 Nov (counts, numbers, behaviour). Gemini's lines in the takes are its real output.
 - **Kept outside the repo:** the video's source (`../ShikshaSaathi-video`, with its own git history) is not part of the submission; only the uploaded video is.
+- **Pacing (after Vishv found the first cut slow):** the video went from 3 min 30 s to 2 min 56 s, with nothing cut from the narration.
+  - Each wait for an answer is fast-forwarded 3× in the footage. The recorder logs when a question was sent and answered, so only real waiting is sped up, and a quarter-second of real time is kept at each end; in these takes the real waits were 0.6–1.8 s.
+  - The voice runs 12% faster (about 175 words a minute), and the pauses between lines and scenes are shorter.
+  - Captions light up word by word as they are spoken, using Kokoro's own word times, and the explainer's beats land on the words that name them (the phone on "phone", the counters on their numbers).
+  - The phone pushes in slowly, and conversations slide in like the next screen on a phone.
 - **Open:** Vishv's own voice can replace the AI voice later. The script stays in one file, and the scenes re-time themselves to the new audio.
